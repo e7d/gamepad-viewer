@@ -1,53 +1,53 @@
-.xbox-one {
+.gamepad {
     background-image: url(base.svg);
     height: 630px;
     width: 750px;
 }
 
-.xbox-one.white {
+.gamepad.white {
     background-image: url(base-white.svg);
 }
 
-.xbox-one.disconnected {
+.gamepad.disconnected {
     background-image: url(disconnected.svg);
 }
 
-.xbox-one.disconnected div {
+.gamepad.disconnected div {
     display: none;
 }
 
-.xbox-one .triggers {
+.gamepad .triggers {
     width: 446px;
     height: 121px;
     position: absolute;
     left: 152px;
 }
 
-.xbox-one .trigger {
+.gamepad .trigger {
     width: 88px;
     height: 121px;
     background: url(trigger.svg);
     opacity: 1;
 }
 
-.xbox-one .trigger.left {
+.gamepad .trigger.left {
     float: left;
     background-position: 0 0;
 }
 
-.xbox-one .trigger.right {
+.gamepad .trigger.right {
     float: right;
     transform: rotateY(180deg);
 }
 
-.xbox-one .bumper {
+.gamepad .bumper {
     width: 170px;
     height: 61px;
     background: url(bumper.svg);
     opacity: 0;
 }
 
-.xbox-one .bumpers {
+.gamepad .bumpers {
     position: absolute;
     width: 536px;
     height: 61px;
@@ -55,41 +55,41 @@
     top: 129px;
 }
 
-.xbox-one .bumper[data-pressed="true"] {
+.gamepad .bumper[data-pressed="true"] {
     opacity: 1;
 }
 
-.xbox-one .bumper.left {
+.gamepad .bumper.left {
     float: left;
 }
 
-.xbox-one .bumper.right {
+.gamepad .bumper.right {
     float: right;
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
 }
 
-.xbox-one .p0 {
+.gamepad .p0 {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
 }
 
-.xbox-one .p1 {
+.gamepad .p1 {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
 }
 
-.xbox-one .p2 {
+.gamepad .p2 {
     -webkit-transform: rotate(270deg);
     transform: rotate(270deg);
 }
 
-.xbox-one .p3 {
+.gamepad .p3 {
     -webkit-transform: rotate(180deg);
     transform: rotate(180deg);
 }
 
-.xbox-one .arrows {
+.gamepad .arrows {
     position: absolute;
     width: 141px;
     height: 33px;
@@ -97,27 +97,27 @@
     left: 306px;
 }
 
-.xbox-one .select, .xbox-one .start {
+.gamepad .select, .gamepad .start {
     background: url(start-select.svg);
     width: 33px;
     height: 33px;
     opacity: 0;
 }
 
-.xbox-one .select[data-pressed="true"], .xbox-one .start[data-pressed="true"] {
+.gamepad .select[data-pressed="true"], .gamepad .start[data-pressed="true"] {
     opacity: 1;
 }
 
-.xbox-one .select {
+.gamepad .select {
     float: left;
 }
 
-.xbox-one .start {
+.gamepad .start {
     background-position: 33px 0px;
     float: right;
 }
 
-.xbox-one .buttons {
+.gamepad .buttons {
     position: absolute;
     width: 153px;
     height: 156px;
@@ -125,43 +125,43 @@
     left: 488px;
 }
 
-.xbox-one .button {
+.gamepad .button {
     position: absolute;
     background: url(buttons.svg);
     width: 48px;
     height: 48px;
 }
 
-.xbox-one .button[data-pressed="true"] {
+.gamepad .button[data-pressed="true"] {
     background-position-y: -50px;
     opacity: 1;
 }
 
-.xbox-one .a {
+.gamepad .a {
     background-position: 0 0;
     top: 114px;
     left: 55px;
 }
 
-.xbox-one .b {
+.gamepad .b {
     background-position: -49px 0;
     top: 64px;
     right: 0px;
 }
 
-.xbox-one .x {
+.gamepad .x {
     background-position: -98px 0;
     top: 64px;
     left: 3px;
 }
 
-.xbox-one .y {
+.gamepad .y {
     background-position: 48px 0;
     top: 13px;
     left: 54px;
 }
 
-.xbox-one .sticks {
+.gamepad .sticks {
     position: absolute;
     width: 371px;
     height: 196px;
@@ -169,7 +169,7 @@
     left: 144px;
 }
 
-.xbox-one .stick {
+.gamepad .stick {
     position: absolute;
     background: url(stick.svg);
     background-position: -85px 0;
@@ -177,21 +177,21 @@
     width: 83px;
 }
 
-.xbox-one .stick[data-pressed="true"] {
+.gamepad .stick[data-pressed="true"] {
     background-position: 0 0;
 }
 
-.xbox-one .stick.left {
+.gamepad .stick.left {
     top: 0;
     left: 0;
 }
 
-.xbox-one .stick.right {
+.gamepad .stick.right {
     top: 113px;
     left: 288px;
 }
 
-.xbox-one .dpad {
+.gamepad .dpad {
     position: absolute;
     width: 110px;
     height: 111px;
@@ -199,17 +199,17 @@
     left: 223px;
 }
 
-.xbox-one .face {
+.gamepad .face {
     background: url(dpad.svg);
     position: absolute;
     opacity: 0;
 }
 
-.xbox-one .face[data-pressed="true"] {
+.gamepad .face[data-pressed="true"] {
     opacity: 1;
 }
 
-.xbox-one .face.up {
+.gamepad .face.up {
     background-position: 34px 0;
     left: 38px;
     top: 0px;
@@ -217,14 +217,14 @@
     height: 56px;
 }
 
-.xbox-one .face.down {
+.gamepad .face.down {
     left: 38px;
     bottom: 0;
     width: 34px;
     height: 56px;
 }
 
-.xbox-one .face.left {
+.gamepad .face.left {
     background-position: 0 -93px;
     width: 55px;
     height: 35px;
@@ -232,7 +232,7 @@
     left: 0;
 }
 
-.xbox-one .face.right {
+.gamepad .face.right {
     background-position: 0 -57px;
     width: 55px;
     height: 35px;

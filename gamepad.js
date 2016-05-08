@@ -83,23 +83,22 @@ function mapGamepad(gamepad) {
     }
 
     $.ajax(
-        activeGamepadType + '/template.html',
-        {
+        activeGamepadType + '/template.html', {
             async: true
         }
     ).done(function(template) {
-        $gamepad.html(template).addClass(activeGamepadType);
+        $gamepad.html(template);
 
         mapping.buttons = [];
         for (var buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
             button = activeGamepad.buttons[buttonIndex];
-            mapping.buttons[buttonIndex] = $('[data-button='+buttonIndex+']');
+            mapping.buttons[buttonIndex] = $('[data-button=' + buttonIndex + ']');
         }
 
         mapping.axes = [];
         for (var axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
             axis = activeGamepad.axes[axisIndex];
-            mapping.axes[axisIndex] = $('[data-axis-x='+axisIndex+'], [data-axis-y='+axisIndex+'], [data-axis-z='+axisIndex+']');
+            mapping.axes[axisIndex] = $('[data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
         }
 
         updateVisualStatus();
@@ -141,13 +140,13 @@ function updateVisualStatus() {
 
         axis = activeGamepad.axes[axisIndex];
 
-        if ($axis.is('[data-axis-x='+axisIndex+']')) {
+        if ($axis.is('[data-axis-x=' + axisIndex + ']')) {
             $axis.attr('data-value-x', axis);
         }
-        if ($axis.is('[data-axis-y='+axisIndex+']')) {
+        if ($axis.is('[data-axis-y=' + axisIndex + ']')) {
             $axis.attr('data-value-y', axis);
         }
-        if ($axis.is('[data-axis-z='+axisIndex+']')) {
+        if ($axis.is('[data-axis-z=' + axisIndex + ']')) {
             $axis.attr('data-value-z', axis);
         }
 

@@ -1,5 +1,4 @@
-function updateButton($button)
-{
+function updateButton($button) {
     value = $button.attr('data-value');
 
     if ($button.is('.trigger')) {
@@ -10,8 +9,8 @@ function updateButton($button)
 }
 
 var axisX, axisY, axisZ;
-function updateAxis($axis)
-{
+
+function updateAxis($axis) {
     axisX = $axis.attr('data-value-x');
     axisY = $axis.attr('data-value-y');
     axisZ = $axis.attr('data-value-z');
