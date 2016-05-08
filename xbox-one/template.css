@@ -1,0 +1,241 @@
+.xbox-one {
+    background-image: url(base.svg);
+    height: 630px;
+    width: 750px;
+}
+
+.xbox-one.white {
+    background-image: url(base-white.svg);
+}
+
+.xbox-one.disconnected {
+    background-image: url(disconnected.svg);
+}
+
+.xbox-one.disconnected div {
+    display: none;
+}
+
+.xbox-one .triggers {
+    width: 446px;
+    height: 121px;
+    position: absolute;
+    left: 152px;
+}
+
+.xbox-one .trigger {
+    width: 88px;
+    height: 121px;
+    background: url(trigger.svg);
+    opacity: 1;
+}
+
+.xbox-one .trigger.left {
+    float: left;
+    background-position: 0 0;
+}
+
+.xbox-one .trigger.right {
+    float: right;
+    transform: rotateY(180deg);
+}
+
+.xbox-one .bumper {
+    width: 170px;
+    height: 61px;
+    background: url(bumper.svg);
+    opacity: 0;
+}
+
+.xbox-one .bumpers {
+    position: absolute;
+    width: 536px;
+    height: 61px;
+    left: 107px;
+    top: 129px;
+}
+
+.xbox-one .bumper[data-pressed="true"] {
+    opacity: 1;
+}
+
+.xbox-one .bumper.left {
+    float: left;
+}
+
+.xbox-one .bumper.right {
+    float: right;
+    -webkit-transform: rotateY(180deg);
+    transform: rotateY(180deg);
+}
+
+.xbox-one .p0 {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+
+.xbox-one .p1 {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.xbox-one .p2 {
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg);
+}
+
+.xbox-one .p3 {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.xbox-one .arrows {
+    position: absolute;
+    width: 141px;
+    height: 33px;
+    top: 264px;
+    left: 306px;
+}
+
+.xbox-one .select, .xbox-one .start {
+    background: url(start-select.svg);
+    width: 33px;
+    height: 33px;
+    opacity: 0;
+}
+
+.xbox-one .select[data-pressed="true"], .xbox-one .start[data-pressed="true"] {
+    opacity: 1;
+}
+
+.xbox-one .select {
+    float: left;
+}
+
+.xbox-one .start {
+    background-position: 33px 0px;
+    float: right;
+}
+
+.xbox-one .buttons {
+    position: absolute;
+    width: 153px;
+    height: 156px;
+    top: 192px;
+    left: 488px;
+}
+
+.xbox-one .button {
+    position: absolute;
+    background: url(buttons.svg);
+    width: 48px;
+    height: 48px;
+}
+
+.xbox-one .button[data-pressed="true"] {
+    background-position-y: -50px;
+    opacity: 1;
+}
+
+.xbox-one .a {
+    background-position: 0 0;
+    top: 114px;
+    left: 55px;
+}
+
+.xbox-one .b {
+    background-position: -49px 0;
+    top: 64px;
+    right: 0px;
+}
+
+.xbox-one .x {
+    background-position: -98px 0;
+    top: 64px;
+    left: 3px;
+}
+
+.xbox-one .y {
+    background-position: 48px 0;
+    top: 13px;
+    left: 54px;
+}
+
+.xbox-one .sticks {
+    position: absolute;
+    width: 371px;
+    height: 196px;
+    top: 239px;
+    left: 144px;
+}
+
+.xbox-one .stick {
+    position: absolute;
+    background: url(stick.svg);
+    background-position: -85px 0;
+    height: 83px;
+    width: 83px;
+}
+
+.xbox-one .stick[data-pressed="true"] {
+    background-position: 0 0;
+}
+
+.xbox-one .stick.left {
+    top: 0;
+    left: 0;
+}
+
+.xbox-one .stick.right {
+    top: 113px;
+    left: 288px;
+}
+
+.xbox-one .dpad {
+    position: absolute;
+    width: 110px;
+    height: 111px;
+    top: 345px;
+    left: 223px;
+}
+
+.xbox-one .face {
+    background: url(dpad.svg);
+    position: absolute;
+    opacity: 0;
+}
+
+.xbox-one .face[data-pressed="true"] {
+    opacity: 1;
+}
+
+.xbox-one .face.up {
+    background-position: 34px 0;
+    left: 38px;
+    top: 0px;
+    width: 34px;
+    height: 56px;
+}
+
+.xbox-one .face.down {
+    left: 38px;
+    bottom: 0;
+    width: 34px;
+    height: 56px;
+}
+
+.xbox-one .face.left {
+    background-position: 0 -93px;
+    width: 55px;
+    height: 35px;
+    top: 38px;
+    left: 0;
+}
+
+.xbox-one .face.right {
+    background-position: 0 -57px;
+    width: 55px;
+    height: 35px;
+    top: 38px;
+    right: 0;
+}
