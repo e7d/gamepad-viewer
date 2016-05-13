@@ -3,39 +3,52 @@
     width: 806px;
     height: 598px;
 }
+
 .gamepad.white {
     background-image: url(base-white.svg);
 }
+
 .gamepad.disconnected {
     background-image: url(disconnected.svg);
 }
+
 .gamepad.disconnected div {
     display: none;
 }
+
 .gamepad .triggers {
     width: 588px;
     height: 90px;
     position: absolute;
     left: 109px;
 }
+
 .gamepad .trigger {
     width: 99px;
     height: 100%;
     background: url(triggers.svg);
 }
+
+.gamepad .trigger[data-value="0"] {
+    opacity: 0;
+}
+
 .gamepad .trigger.left {
     float: left;
 }
+
 .gamepad .trigger.right {
     float: right;
     background-position-x: 99px;
 }
+
 .gamepad .bumper {
     width: 99px;
     height: 23px;
     background: url(bumper.svg) no-repeat;
     opacity: 0;
 }
+
 .gamepad .bumpers {
     position: absolute;
     width: 588px;
@@ -43,18 +56,22 @@
     left: 109px;
     top: 94px;
 }
+
 .gamepad .bumper[data-pressed="true"] {
     opacity: 1;
 }
+
 .gamepad .bumper.left {
     /* -webkit-transform: rotateY(180deg); */
     /* transform: rotateY(180deg); */
     float: left;
 }
+
 .gamepad .bumper.right {
     float: right;
     transform: rotateY(180deg);
 }
+
 .gamepad .touchpad {
     width: 262px;
     height: 151px;
@@ -62,9 +79,11 @@
     left: 272px;
     top: 122px;
 }
+
 .gamepad .touchpad[data-pressed="true"] {
     background: url(touchpad.svg) no-repeat center;
 }
+
 .gamepad .meta {
     width: 42px;
     height: 42px;
@@ -72,9 +91,11 @@
     left: 382px;
     bottom: 216px;
 }
+
 .gamepad .meta[data-pressed="true"] {
     background: url(meta.svg) no-repeat center;
 }
+
 .gamepad .arrows {
     position: absolute;
     width: 352px;
@@ -82,22 +103,27 @@
     top: 142px;
     left: 227px;
 }
+
 .gamepad .select, .gamepad .start {
     background: url(start.svg);
     width: 28px;
     height: 46px;
     opacity: 0;
 }
+
 .gamepad .select[data-pressed="true"], .gamepad .start[data-pressed="true"] {
     opacity: 1;
 }
+
 .gamepad .select {
     float: left;
 }
+
 .gamepad .start {
     float: right;
     background-position: 28px 0;
 }
+
 .gamepad .buttons {
     position: absolute;
     width: 170px;
@@ -105,33 +131,40 @@
     top: 159px;
     left: 567px;
 }
+
 .gamepad .button {
     position: absolute;
     width: 56px;
     height: 56px;
     background: url(buttons.svg);
 }
+
 .gamepad .button[data-pressed="true"] {
     background-position-y: 56px;
 }
+
 .gamepad .a {
     background-position: 0 0;
     bottom: 0px;
     left: 56px;
 }
+
 .gamepad .b {
     background-position: -56px 0;
     top: 56px;
     right: 0px;
 }
+
 .gamepad .x {
     background-position: 112px 0;
     top: 56px;
 }
+
 .gamepad .y {
     background-position: 56px 0;
     left: 56px;
 }
+
 .gamepad .sticks {
     position: absolute;
     width: 361px;
@@ -139,26 +172,32 @@
     top: 308px;
     left: 228px;
 }
+
 .gamepad .stick {
     position: absolute;
     background: url(sticks.svg);
     height: 94px;
     width: 94px;
 }
+
 .gamepad .stick[data-pressed="true"].left {
     background-position-x: -96px;
 }
+
 .gamepad .stick[data-pressed="true"].right {
     background-position-x: -192px;
 }
+
 .gamepad .stick.left {
     top: 0;
     left: 0;
 }
+
 .gamepad .stick.right {
     top: calc(100% - 105px);
     left: calc(100% - 105px);
 }
+
 .gamepad .dpad {
     position: absolute;
     width: 125px;
@@ -166,42 +205,51 @@
     top: 181px;
     left: 92px;
 }
+
 .gamepad .face {
     background: url(dpad.svg);
     position: absolute;
 }
+
 .gamepad .face.up, .gamepad .face.down {
     width: 36px;
     height: 52px;
 }
+
 .gamepad .face.left, .gamepad .face.right {
     width: 52px;
     height: 36px;
 }
+
 .gamepad .face.up {
     left: 44px;
     top: 0;
     background-position: -37px 0px;
 }
+
 .gamepad .face.down {
     left: 44px;
     bottom: 0;
     background-position: 0px 0;
 }
+
 .gamepad .face.left {
     top: 44px;
     left: 0;
     background-position: 104px 0;
 }
+
 .gamepad .face.right {
     top: 44px;
     right: 0px;
     background-position: 52px 0;
 }
+
 .gamepad .face[data-pressed="true"] {
     /* margin-top: 5px; */
     background-position-y: 52px;
 }
+
 .gamepad.half {
     margin-top: -300px;
 }

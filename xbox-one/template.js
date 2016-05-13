@@ -1,5 +1,5 @@
 function updateButton($button) {
-    value = $button.attr('data-value');
+    value = parseFloat($button.attr('data-value'), 10);
 
     if ($button.is('.trigger')) {
         $button.css({

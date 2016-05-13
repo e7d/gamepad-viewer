@@ -30,6 +30,10 @@
     opacity: 1;
 }
 
+.gamepad .trigger[data-value="0"] {
+    opacity: 0;
+}
+
 .gamepad .trigger.left {
     float: left;
     background-position: 0 0;
