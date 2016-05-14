@@ -83,7 +83,7 @@ function mapGamepad(gamepad) {
     }
 
     $.ajax(
-        activeGamepadType + '/template.html', {
+        'templates/' + activeGamepadType + '/template.html', {
             async: true
         }
     ).done(function(template) {

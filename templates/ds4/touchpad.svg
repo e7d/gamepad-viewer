@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="263.9" height="151.2" viewBox="0 0 263.9 151.2">
+    <pattern x="-173.55" y="472.1" width="71" height="71" patternUnits="userSpaceOnUse" id="a" viewBox="0 -71 71 71" overflow="visible">
+        <path fill="none" d="M0 0h71v-71H0z"/>
+        <path fill="none" d="M0 0h71v-71H0z"/>
+        <path fill="#4C4C4C" d="M41.8-35.5c0-3.5-2.8-6.3-6.3-6.3s-6.3 2.8-6.3 6.3 2.8 6.3 6.3 6.3 6.3-2.8 6.3-6.3z"/>
+    </pattern>
+    <path fill="#EDEDED" d="M263.749 5.601c-.4-3.201-3.3-5.601-6.5-5.601H6.649c-3.2 0-6.1 2.301-6.5 5.602C.05 6.3.05 7 .05 7.701v127.4c0 8.898 7.199 16.1 16.1 16.1h231.6c8.9 0 16.101-7.201 16.101-16.1V7.701c-.002-.801-.002-1.5-.102-2.1z"/>
+    <path fill="#F7F7F7" d="M259.349 1.9c0-1-.8-1.9-1.9-1.9H6.349c-1 0-1.9.801-1.9 1.9v129.201c0 8.6 7 15.6 15.601 15.6h223.799c8.6 0 15.6-7 15.6-15.6V7.9l-.1-6z"/>
+    <g opacity=".12">
+        <pattern id="b" xlink:href="#a" patternTransform="matrix(.1017 0 0 -.1017 -14860.842 -2380.294)" opacity=".12"/>
+        <path fill="url(#b)" d="M4.449 131.101c0 8.6 7 15.6 15.601 15.6h223.799c8.6 0 15.6-7 15.6-15.6V24.5H4.55v106.602h-.101z"/>
+    </g>
+</svg>

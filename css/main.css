@@ -1,13 +1,12 @@
 body {
     background: darkgrey;
+    overflow: hidden;
 }
 .gamepad {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    margin-top: 0px !important;
-    margin-left: 0px !important;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
