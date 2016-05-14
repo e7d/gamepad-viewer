@@ -5,7 +5,7 @@
 }
 
 .gamepad.white {
-    /* background-image: url(base-white.svg); */
+     background-image: url(base-white.svg); 
 }
 
 .gamepad.disconnected {
