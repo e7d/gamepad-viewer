@@ -2,20 +2,29 @@ var haveEvents = 'ongamepadconnected' in window;
 var gamepads = {};
 var $gamepad = $('.gamepad');
 var gamepadIdentifiers = {
-    'ds4': /Vendor: 054c Product: 05c4/,
-    'xbox-one': /XInput/
+    'ds4': {
+        'id': /Vendor: 054c Product: 05c4/,
+        'colors': ['black', 'white', 'red', 'blue']
+    },
+    'xbox-one': {
+        'id': /XInput/,
+        'colors': ['black', 'white']
+    }
 };
-var activeGamepad = null;
+var activeGamepadIndex = null;
 var activeGamepadType = null;
+var activeGamepadIdentifier = null;
+var activeGamepadColor = null;
 var mapping = {
     buttons: [],
     axes: []
 };
 
-window.addEventListener("gamepadconnected", onGamepadConenct);
+window.addEventListener("gamepadconnected", onGamepadConnect);
 window.addEventListener("gamepaddisconnected", onGamepadDisconnect);
+window.addEventListener("keypress", onKeyPress);
 
-function onGamepadConenct(e) {
+function onGamepadConnect(e) {
     addGamepad(e.gamepad);
 }
 
@@ -23,62 +32,70 @@ function onGamepadDisconnect(e) {
     removeGamepad(e.gamepad.index);
 }
 
+function onKeyPress(e) {
+    switch (e.key) {
+        case "d":
+        case "D":
+            removeGamepad(activeGamepadIndex);
+            break;
+        case "c":
+        case "C":
+            changeGamepadColor();
+            break;
+    }
+}
+
+function getGamepads() {
+    return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+}
+
 function addGamepad(gamepad) {
     gamepads[gamepad.index] = gamepad;
-    requestAnimationFrame(updateStatus);
 }
 
 function removeGamepad(gamepadIndex) {
-    var gamepad = gamepads[gamepadIndex];
-    if (gamepad && activeGamepad && gamepad.index === activeGamepad.index) {
-        activeGamepad = null;
+    if (gamepadIndex === activeGamepadIndex) {
+        activeGamepadIndex = null;
         $gamepad.empty();
     }
     delete gamepads[gamepadIndex];
 }
 
+setInterval(scanGamepads, 500);
 function scanGamepads() {
-    var navigatorGamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
-    for (var gamepadIndex = 0; gamepadIndex < navigatorGamepads.length; gamepadIndex++) {
-        var gamepad = navigatorGamepads[gamepadIndex];
+    if (null !== activeGamepadIndex) {
+        return;
+    }
+
+    var gamepads = getGamepads();
+    for (var gamepadIndex = 0; gamepadIndex < gamepads.length; gamepadIndex++) {
+        var gamepad = gamepads[gamepadIndex];
         if (gamepad) {
             if (gamepad.index in gamepads) {
                 gamepads[gamepad.index] = gamepad;
-            } else {
-                addGamepad(gamepad);
             }
 
             for (var buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
                 button = gamepad.buttons[buttonIndex];
-                if (!activeGamepad && button.pressed) {
+                if (null === activeGamepadIndex && button.pressed) {
                     mapGamepad(gamepad);
                 }
             }
-        } else {
-            if (gamepadIndex in gamepads) {
-                removeGamepad(gamepadIndex);
-            }
         }
     }
-}
-
-function updateStatus() {
-    if (!haveEvents) {
-        scanGamepads();
-    }
-
-    requestAnimationFrame(updateStatus);
 }
 
 function mapGamepad(gamepad) {
     var button;
     var axis;
 
-    activeGamepad = gamepad;
+    activeGamepadIndex = gamepad.index;
 
     for (var gamepadType in gamepadIdentifiers) {
-        if (gamepadIdentifiers[gamepadType].test(activeGamepad.id)) {
+        if (gamepadIdentifiers[gamepadType].id.test(gamepad.id)) {
             activeGamepadType = gamepadType;
+            activeGamepadIdentifier = gamepadIdentifiers[gamepadType];
+            activeGamepadColor = 0;
         }
     }
 
@@ -90,14 +107,14 @@ function mapGamepad(gamepad) {
         $gamepad.html(template);
 
         mapping.buttons = [];
-        for (var buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
-            button = activeGamepad.buttons[buttonIndex];
+        for (var buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
+            button = gamepad.buttons[buttonIndex];
             mapping.buttons[buttonIndex] = $('[data-button=' + buttonIndex + ']');
         }
 
         mapping.axes = [];
-        for (var axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
-            axis = activeGamepad.axes[axisIndex];
+        for (var axisIndex = 0; axisIndex < gamepad.axes.length; axisIndex++) {
+            axis = gamepad.axes[axisIndex];
             mapping.axes[axisIndex] = $('[data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
         }
 
@@ -106,11 +123,12 @@ function mapGamepad(gamepad) {
 }
 
 function updateVisualStatus() {
-    requestAnimationFrame(updateVisualStatus);
-
-    if (!activeGamepad) {
+    if (null === activeGamepadIndex) {
         return;
     }
+
+    var gamepads = getGamepads();
+    var activeGamepad = gamepads[activeGamepadIndex];
 
     var button;
     var $button;
@@ -154,8 +172,15 @@ function updateVisualStatus() {
             updateAxis($axis);
         }
     }
+
+    requestAnimationFrame(updateVisualStatus);
 }
 
-if (!haveEvents) {
-    setInterval(scanGamepads, 500);
+function changeGamepadColor() {
+    activeGamepadColor++;
+    if (activeGamepadColor > activeGamepadIdentifier.colors.length - 1) {
+        activeGamepadColor = 0;
+    }
+
+    $gamepad.attr('data-color', activeGamepadIdentifier.colors[activeGamepadColor]);
 }
