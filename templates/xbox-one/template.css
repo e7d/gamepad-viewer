@@ -4,8 +4,8 @@
     width: 750px;
 }
 
-.gamepad.white {
-     background-image: url(base-white.svg); 
+.gamepad[data-color="white"] {
+    background-image: url(base-white.svg);
 }
 
 .gamepad.disconnected {

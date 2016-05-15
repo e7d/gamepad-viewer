@@ -4,8 +4,16 @@
     height: 598px;
 }
 
-.gamepad.white {
+.gamepad[data-color="white"] {
     background-image: url(base-white.svg);
+}
+
+.gamepad[data-color="red"] {
+    background-image: url(base-red.svg);
+}
+
+.gamepad[data-color="blue"] {
+    background-image: url(base-blue.svg);
 }
 
 .gamepad.disconnected {
