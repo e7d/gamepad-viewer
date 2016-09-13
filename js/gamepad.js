@@ -115,6 +115,10 @@ function mapGamepad(gamepad) {
     ).done(function(template) {
         $gamepad.html(template);
 
+        if ($.urlParam('color')) {
+            changeGamepadColor($.urlParam('color'));
+        }
+
         mapping.buttons = [];
         for (var buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
             button = gamepad.buttons[buttonIndex];
@@ -189,10 +193,15 @@ function updateVisualStatus() {
     requestAnimationFrame(updateVisualStatus);
 }
 
-function changeGamepadColor() {
-    activeGamepadColor++;
-    if (activeGamepadColor > activeGamepadIdentifier.colors.length - 1) {
-        activeGamepadColor = 0;
+function changeGamepadColor(gamepadColor) {
+    if (!! gamepadColor) {
+        activeGamepadColor = gamepadColor;
+    } else {
+        activeGamepadColor++;
+
+        if (activeGamepadColor > activeGamepadIdentifier.colors.length - 1) {
+            activeGamepadColor = 0;
+        }
     }
 
     $gamepad.attr('data-color', activeGamepadIdentifier.colors[activeGamepadColor]);
