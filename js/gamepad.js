@@ -1,13 +1,22 @@
+$.urlParam = function(name) {
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results === null) {
+       return null;
+    } else {
+       return decodeURIComponent(results[1]) || 0;
+    }
+};
+
 var haveEvents = 'ongamepadconnected' in window;
 var gamepads = {};
 var $gamepad = $('.gamepad');
 var gamepadIdentifiers = {
     'ds4': {
-        'id': /Vendor: 054c Product: 05c4/,
+        'id': /054c.*?05c4/,
         'colors': ['black', 'white', 'red', 'blue']
     },
     'xbox-one': {
-        'id': /XInput/,
+        'id': /xinput|XInput/,
         'colors': ['black', 'white']
     }
 };
@@ -129,6 +138,10 @@ function updateVisualStatus() {
 
     var gamepads = getGamepads();
     var activeGamepad = gamepads[activeGamepadIndex];
+
+    if (!activeGamepad) {
+        return;
+    }
 
     var button;
     var $button;
