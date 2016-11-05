@@ -33,7 +33,7 @@ var mapping = {
 
 window.addEventListener("gamepadconnected", onGamepadConnect);
 window.addEventListener("gamepaddisconnected", onGamepadDisconnect);
-window.addEventListener("keypress", onKeyPress);
+window.addEventListener("keydown", onKeyDown);
 
 function onGamepadConnect(e) {
     addGamepad(e.gamepad);
@@ -43,15 +43,22 @@ function onGamepadDisconnect(e) {
     removeGamepad(e.gamepad.index);
 }
 
-function onKeyPress(e) {
-    switch (e.key) {
-        case "d":
-        case "D":
+function onKeyDown(e) {
+    switch (e.code) {
+        case "Delete":
+        case "Escape":
             removeGamepad(activeGamepadIndex);
             break;
-        case "c":
-        case "C":
+        case "KeyC":
             changeGamepadColor();
+            break;
+        case "NumpadAdd":
+        case "Equal":
+            changeZoom("+");
+            break;
+        case "NumpadSubtract":
+        case "Minus":
+            changeZoom("-");
             break;
     }
 }
@@ -106,7 +113,7 @@ function mapGamepad(gamepad) {
         if (gamepadIdentifiers[gamepadType].id.test(gamepad.id)) {
             activeGamepadType = gamepadType;
             activeGamepadIdentifier = gamepadIdentifiers[gamepadType];
-            activeGamepadColor = 0;
+            activeGamepadColorIndex = 0;
         }
     }
 
@@ -119,6 +126,16 @@ function mapGamepad(gamepad) {
 
         if ($.urlParam('color')) {
             changeGamepadColor($.urlParam('color'));
+        }
+        if ($.urlParam('c')) {
+            changeGamepadColor($.urlParam('c'));
+        }
+
+        if ($.urlParam('zoom')) {
+            changeZoom($.urlParam('zoom'));
+        }
+        if ($.urlParam('z')) {
+            changeZoom($.urlParam('z'));
         }
 
         mapping.buttons = [];
@@ -223,5 +240,35 @@ function changeGamepadColor(gamepadColor) {
         activeGamepadColorName = activeGamepadIdentifier.colors[activeGamepadColorIndex];
     }
 
-    $gamepad.attr('data-color', activeGamepadIdentifier.colors[activeGamepadColor]);
+    $gamepad.attr('data-color', activeGamepadColorName);
+}
+
+function changeZoom(zoomLevel) {
+    if (! activeGamepadIdentifier) {
+        return;
+    }
+
+    if (! zoomLevel) {
+        return;
+    }
+
+    if ('+' === zoomLevel && activeGamepadZoomLevel < 2) {
+        activeGamepadZoomLevel += 0.1;
+    }
+    if ('-' === zoomLevel && activeGamepadZoomLevel > 0.2) {
+        activeGamepadZoomLevel -= 0.1;
+    }
+
+    if (! isNaN(zoomLevel = parseFloat(zoomLevel))) {
+        activeGamepadZoomLevel = zoomLevel;
+    }
+
+    // hack: fix floatjs float issues
+    activeGamepadZoomLevel = +activeGamepadZoomLevel.toFixed(1);
+
+    $gamepad.css('transform', 'translate(-50%, -50%) scale(' + activeGamepadZoomLevel + ', ' + activeGamepadZoomLevel + ')');
+}
+
+function toggleHelp(zoomLevel) {
+    $help.toggleClass('active');
 }
