@@ -23,7 +23,9 @@ var gamepadIdentifiers = {
 var activeGamepadIndex = null;
 var activeGamepadType = null;
 var activeGamepadIdentifier = null;
-var activeGamepadColor = null;
+var activeGamepadColorIndex = null;
+var activeGamepadColorName = null;
+var activeGamepadZoomLevel = 1;
 var mapping = {
     buttons: [],
     axes: []
@@ -194,14 +196,31 @@ function updateVisualStatus() {
 }
 
 function changeGamepadColor(gamepadColor) {
-    if (!! gamepadColor) {
-        activeGamepadColor = gamepadColor;
-    } else {
-        activeGamepadColor++;
+    if (! activeGamepadIdentifier) {
+        return;
+    }
 
-        if (activeGamepadColor > activeGamepadIdentifier.colors.length - 1) {
-            activeGamepadColor = 0;
+    if (!! gamepadColor) {
+        if (! isNaN(parseInt(gamepadColor))) {
+            activeGamepadColorIndex = gamepadColor;
+            activeGamepadColorName = activeGamepadIdentifier.colors[activeGamepadColorIndex];
+        } else {
+            activeGamepadColorName = gamepadColor;
+            activeGamepadColorIndex = 0;
+            for (var gamepadColorName in activeGamepadIdentifier.colors) {
+                if (activeGamepadColorName === gamepadColorName) {
+                    break;
+                }
+                activeGamepadColorIndex++;
+            }
         }
+    } else {
+        activeGamepadColorIndex++;
+        if (activeGamepadColorIndex > activeGamepadIdentifier.colors.length - 1) {
+            activeGamepadColorIndex = 0;
+        }
+
+        activeGamepadColorName = activeGamepadIdentifier.colors[activeGamepadColorIndex];
     }
 
     $gamepad.attr('data-color', activeGamepadIdentifier.colors[activeGamepadColor]);
