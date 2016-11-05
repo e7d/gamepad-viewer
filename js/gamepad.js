@@ -10,6 +10,7 @@ $.urlParam = function(name) {
 var haveEvents = 'ongamepadconnected' in window;
 var gamepads = {};
 var $gamepad = $('.gamepad');
+var $help = $('.help');
 var gamepadIdentifiers = {
     'ds4': {
         'id': /054c.*?05c4/,
@@ -51,6 +52,9 @@ function onKeyDown(e) {
             break;
         case "KeyC":
             changeGamepadColor();
+            break;
+        case "KeyH":
+            toggleHelp();
             break;
         case "NumpadAdd":
         case "Equal":
