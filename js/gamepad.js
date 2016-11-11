@@ -192,6 +192,8 @@ function updateVisualStatus() {
         return;
     }
 
+    requestAnimationFrame(updateVisualStatus);
+
     var button;
     var $button;
     for (var buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
@@ -234,8 +236,6 @@ function updateVisualStatus() {
             updateAxis($axis);
         }
     }
-
-    requestAnimationFrame(updateVisualStatus);
 }
 
 function changeGamepadColor(gamepadColor) {
@@ -291,7 +291,7 @@ function changeZoom(zoomLevel) {
         activeGamepadZoomLevel = zoomLevel;
     }
 
-    // hack: fix floatjs float issues
+    // hack: fix js float issues
     activeGamepadZoomLevel = +activeGamepadZoomLevel.toFixed(1);
 
     $gamepad.css('transform', 'translate(-50%, -50%) scale(' + activeGamepadZoomLevel + ', ' + activeGamepadZoomLevel + ')');
