@@ -93,7 +93,7 @@ function scanGamepads() {
         return;
     }
 
-    var gamepads = getGamepads();
+    gamepads = getGamepads();
     for (var gamepadIndex = 0; gamepadIndex < gamepads.length; gamepadIndex++) {
         var gamepad = gamepads[gamepadIndex];
         if (gamepad) {

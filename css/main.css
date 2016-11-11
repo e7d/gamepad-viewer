@@ -2,6 +2,13 @@ body {
     background: transparent;
     overflow: hidden;
 }
+.no-gamepad {
+    width: 100vw;
+    line-height: 100vh;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
 .gamepad {
     position: absolute;
     top: 50%;
