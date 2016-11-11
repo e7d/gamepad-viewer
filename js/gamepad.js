@@ -64,6 +64,10 @@ function onKeyDown(e) {
         case "Minus":
             changeZoom("-");
             break;
+        case "Numpad0":
+        case "Digit0":
+            changeZoom("0");
+            break;
     }
 }
 
@@ -256,14 +260,16 @@ function changeZoom(zoomLevel) {
         return;
     }
 
-    if ('+' === zoomLevel && activeGamepadZoomLevel < 2) {
+    if ('0' === zoomLevel) {
+        activeGamepadZoomLevel = 1;
+    }
+    else if ('+' === zoomLevel && activeGamepadZoomLevel < 2) {
         activeGamepadZoomLevel += 0.1;
     }
-    if ('-' === zoomLevel && activeGamepadZoomLevel > 0.2) {
+    else if ('-' === zoomLevel && activeGamepadZoomLevel > 0.2) {
         activeGamepadZoomLevel -= 0.1;
     }
-
-    if (! isNaN(zoomLevel = parseFloat(zoomLevel))) {
+    else if (! isNaN(zoomLevel = parseFloat(zoomLevel))) {
         activeGamepadZoomLevel = zoomLevel;
     }
 
