@@ -10,6 +10,7 @@ $.urlParam = function(name) {
 var haveEvents = 'ongamepadconnected' in window;
 var gamepads = {};
 var $gamepad = $('.gamepad');
+var $nogamepad = $('.no-gamepad');
 var $help = $('.help');
 var gamepadIdentifiers = {
     'ds4': {
@@ -21,6 +22,8 @@ var gamepadIdentifiers = {
         'colors': ['black', 'white']
     }
 };
+var gamepadHelpTimeout = null;
+var gamepadHelpDelay = 10000;
 var activeGamepadIndex = null;
 var activeGamepadType = null;
 var activeGamepadIdentifier = null;
@@ -35,6 +38,17 @@ var mapping = {
 window.addEventListener("gamepadconnected", onGamepadConnect);
 window.addEventListener("gamepaddisconnected", onGamepadDisconnect);
 window.addEventListener("keydown", onKeyDown);
+
+displayGamepadHelp();
+function displayGamepadHelp() {
+    gamepadHelpTimeout = window.setTimeout(function() {
+        $nogamepad.fadeIn();
+    }, gamepadHelpDelay);
+}
+function hideGamepadHelp() {
+    window.clearTimeout(gamepadHelpTimeout);
+    $nogamepad.hide();
+}
 
 function onGamepadConnect(e) {
     addGamepad(e.gamepad);
@@ -85,6 +99,8 @@ function removeGamepad(gamepadIndex) {
         $gamepad.empty();
     }
     delete gamepads[gamepadIndex];
+
+    displayGamepadHelp();
 }
 
 setInterval(scanGamepads, 500);
@@ -116,6 +132,8 @@ function mapGamepad(gamepad) {
     var axis;
 
     activeGamepadIndex = gamepad.index;
+
+    hideGamepadHelp();
 
     for (var gamepadType in gamepadIdentifiers) {
         if (gamepadIdentifiers[gamepadType].id.test(gamepad.id)) {
@@ -167,7 +185,7 @@ function updateVisualStatus() {
         return;
     }
 
-    var gamepads = getGamepads();
+    gamepads = getGamepads();
     var activeGamepad = gamepads[activeGamepadIndex];
 
     if (!activeGamepad) {

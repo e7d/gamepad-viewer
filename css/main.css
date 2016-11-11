@@ -3,11 +3,12 @@ body {
     overflow: hidden;
 }
 .no-gamepad {
+    position: absolute;
+    bottom: 0;
+    display: none;
     width: 100vw;
-    line-height: 100vh;
+    line-height: 2em;
     text-align: center;
-    text-transform: uppercase;
-    font-weight: 700;
 }
 .gamepad {
     position: absolute;
