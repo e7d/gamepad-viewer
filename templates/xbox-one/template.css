@@ -17,15 +17,15 @@
 }
 
 .gamepad .triggers {
-    width: 446px;
-    height: 121px;
+    width: 448px;
+    height: 122px;
     position: absolute;
-    left: 152px;
+    left: 151px;
 }
 
 .gamepad .trigger {
-    width: 88px;
-    height: 121px;
+    width: 89px;
+    height: 122px;
     background: url(trigger.svg);
     opacity: 1;
 }
