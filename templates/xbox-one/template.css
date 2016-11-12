@@ -215,9 +215,9 @@
 }
 
 .gamepad .face.up {
-    background-position: 34px 0;
+    background-position: 35px 0;
     left: 38px;
-    top: 0px;
+    top: 1px;
     width: 34px;
     height: 56px;
 }
@@ -231,16 +231,16 @@
 
 .gamepad .face.left {
     background-position: 0 -93px;
-    width: 55px;
-    height: 35px;
-    top: 38px;
+    width: 56px;
+    height: 34px;
+    top: 39px;
     left: 0;
 }
 
 .gamepad .face.right {
     background-position: 0 -57px;
-    width: 55px;
-    height: 35px;
-    top: 38px;
+    width: 56px;
+    height: 34px;
+    top: 39px;
     right: 0;
 }
