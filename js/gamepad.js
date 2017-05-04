@@ -24,7 +24,7 @@
         }
     };
     var gamepadHelpTimeout = null;
-    var gamepadHelpDelay = 10000;
+    var gamepadHelpDelay = 5000;
     var activeGamepadIndex = null;
     var activeGamepadType = null;
     var activeGamepadIdentifier = null;
