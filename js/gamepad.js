@@ -9,6 +9,7 @@
     };
 
     var haveEvents = 'ongamepadconnected' in window;
+    var scanGamepadsDelay = 1000;
     var gamepads = {};
     var $gamepad = $('.gamepad');
     var $nogamepad = $('.no-gamepad');
@@ -104,7 +105,7 @@
         displayGamepadHelp();
     }
 
-    setInterval(scanGamepads, 500);
+    setInterval(scanGamepads, scanGamepadsDelay);
     function scanGamepads() {
         if (null !== activeGamepadIndex) {
             return;
