@@ -2,6 +2,16 @@ body {
     background: transparent;
     overflow: hidden;
 }
+.debug {
+    position: absolute;
+    top: 0;
+    display: none;
+    width: 100vw;
+    font-size: 60px;
+    color: red;
+    line-height: 80px;
+    text-align: center;
+}
 .no-gamepad {
     position: absolute;
     bottom: 0;

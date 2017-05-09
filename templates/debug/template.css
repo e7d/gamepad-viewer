@@ -1,0 +1,33 @@
+ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    display: inline-block;
+    min-width: 50px;
+    padding: 3px;
+    margin: 0 5px 5px 0;
+    background: #333333;
+    line-height: 1;
+}
+li.medium {
+    min-width: 100px;
+}
+li.large {
+    min-width: 200px;
+}
+
+label {
+    width: 20px;
+    color: #aaaaaa;
+}
+
+value {
+    display: block;
+    text-align: right;
+    margin-top: 3px;
+    overflow: hidden;
+    white-space: nowrap;
+}

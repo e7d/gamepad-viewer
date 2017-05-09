@@ -1,4 +1,4 @@
-(function(window, document, undefined) {
+// (function(window, document, undefined) {
     $.urlParam = function(name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results === null) {
@@ -9,19 +9,25 @@
     };
 
     var haveEvents = 'ongamepadconnected' in window;
+    var debug = false;
     var gamepads = {};
     var $gamepad = $('.gamepad');
     var $nogamepad = $('.no-gamepad');
+    var $debug = $('.debug');
     var $help = $('.help');
     var gamepadIdentifiers = {
+        'debug': {
+            'id': /xinput|XInput/,
+            'colors': []
+        },
         'ds4': {
             'id': /054c.*?05c4/,
             'colors': ['black', 'white', 'red', 'blue']
         },
-        'xbox-one': {
-            'id': /xinput|XInput/,
-            'colors': ['black', 'white']
-        }
+        // 'xbox-one': {
+        //     'id': /xinput|XInput/,
+        //     'colors': ['black', 'white']
+        // }
     };
     var gamepadHelpTimeout = null;
     var gamepadHelpDelay = 10000;
@@ -67,6 +73,9 @@
                 break;
             case "KeyC":
                 changeGamepadColor();
+                break;
+            case "KeyD":
+                toggleDebug();
                 break;
             case "KeyH":
                 toggleHelp();
@@ -174,7 +183,7 @@
             mapping.axes = [];
             for (var axisIndex = 0; axisIndex < gamepad.axes.length; axisIndex++) {
                 axis = gamepad.axes[axisIndex];
-                mapping.axes[axisIndex] = $('[data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
+                mapping.axes[axisIndex] = $('[data-axis=' + axisIndex + '], [data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
             }
 
             updateVisualStatus();
@@ -223,6 +232,9 @@
 
             axis = activeGamepad.axes[axisIndex];
 
+            if ($axis.is('[data-axis=' + axisIndex + ']')) {
+                $axis.attr('data-value', axis);
+            }
             if ($axis.is('[data-axis-x=' + axisIndex + ']')) {
                 $axis.attr('data-value-x', axis);
             }
@@ -301,4 +313,10 @@
     function toggleHelp(zoomLevel) {
         $help.toggleClass('active');
     }
-})(window, document);
+
+    function toggleDebug() {
+        debug = !debug;
+
+        $debug[debug ? 'fadeIn' : 'fadeOut']();
+    }
+// })(window, document);
