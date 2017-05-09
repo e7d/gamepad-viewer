@@ -1,4 +1,4 @@
-// (function(window, document, undefined) {
+(function(window, document, undefined) {
     $.urlParam = function(name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results === null) {
@@ -10,6 +10,7 @@
 
     var haveEvents = 'ongamepadconnected' in window;
     var debug = false;
+    var scanGamepadsDelay = 1000;
     var gamepads = {};
     var $gamepad = $('.gamepad');
     var $nogamepad = $('.no-gamepad');
@@ -17,20 +18,20 @@
     var $help = $('.help');
     var gamepadIdentifiers = {
         'debug': {
-            'id': /xinput|XInput/,
+            'id': /debug/,
             'colors': []
         },
         'ds4': {
             'id': /054c.*?05c4/,
             'colors': ['black', 'white', 'red', 'blue']
         },
-        // 'xbox-one': {
-        //     'id': /xinput|XInput/,
-        //     'colors': ['black', 'white']
-        // }
+        'xbox-one': {
+            'id': /xinput|XInput/,
+            'colors': ['black', 'white']
+        }
     };
     var gamepadHelpTimeout = null;
-    var gamepadHelpDelay = 10000;
+    var gamepadHelpDelay = 5000;
     var activeGamepadIndex = null;
     var activeGamepadType = null;
     var activeGamepadIdentifier = null;
@@ -113,7 +114,7 @@
         displayGamepadHelp();
     }
 
-    setInterval(scanGamepads, 500);
+    setInterval(scanGamepads, scanGamepadsDelay);
     function scanGamepads() {
         if (null !== activeGamepadIndex) {
             return;
@@ -319,4 +320,4 @@
 
         $debug[debug ? 'fadeIn' : 'fadeOut']();
     }
-// })(window, document);
+})(window, document);
