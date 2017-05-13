@@ -21,6 +21,7 @@ li.large {
 
 label {
     width: 20px;
+    font-size: 0.8em;
     color: #aaaaaa;
 }
 
@@ -30,4 +31,5 @@ value {
     margin-top: 3px;
     overflow: hidden;
     white-space: nowrap;
+    color: white;
 }

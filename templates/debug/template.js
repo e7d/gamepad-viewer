@@ -5,7 +5,6 @@ var $timestamp = $('#info-timestamp value'),
     $buttons = $('.buttons ul');
 
 var gamepad = gamepads[activeGamepadIndex];
-console.log(gamepad);
 
 $timestamp.html(gamepad.timestamp);
 $index.html(gamepad.index);
@@ -40,8 +39,12 @@ function updateAxis($axis) {
 function updateElem($elem, precision = 2) {
     updateTimestamp();
 
-    value = parseFloat($elem.attr('data-value'), 10).toFixed(precision);
+    var value = parseFloat($elem.attr('data-value'), 10).toFixed(precision);
     $elem.html(value);
+    var color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
+    $elem.css({
+        'color': 'rgb(' + color + ', ' + color + ', ' + color + ')'
+    });
 }
 
 function updateTimestamp() {
