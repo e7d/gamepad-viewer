@@ -1,6 +1,6 @@
 class Gamepad {
     constructor() {
-        this.haveEvents = 'ongamepadconnected' in window;
+        this.haveEvents = 'GamepadEvent' in window;
         
         // cached DOM references
         this.$gamepad = $('.gamepad');
