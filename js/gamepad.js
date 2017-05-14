@@ -72,7 +72,7 @@ class Gamepad {
         switch (e.code) {
             case "Delete":
             case "Escape":
-                this.removeGamepad();
+                this.removeGamepad(this.activeGamepadIndex);
                 break;
             case "KeyC":
                 this.changeGamepadColor();
