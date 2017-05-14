@@ -1,5 +1,5 @@
-function updateButton($button) {
-    value = parseFloat($button.attr('data-value'), 10);
+gamepad.updateButton = function($button) {
+    const value = parseFloat($button.attr('data-value'), 10);
 
     if ($button.is('.trigger')) {
         $button.css({
@@ -8,12 +8,10 @@ function updateButton($button) {
     }
 }
 
-var axisX, axisY, axisZ;
-
-function updateAxis($axis) {
-    axisX = $axis.attr('data-value-x');
-    axisY = $axis.attr('data-value-y');
-    axisZ = $axis.attr('data-value-z');
+gamepad.updateAxis = function($axis) {
+    const axisX = $axis.attr('data-value-x');
+    const axisY = $axis.attr('data-value-y');
+    const axisZ = $axis.attr('data-value-z');
 
     if ($axis.is('.stick')) {
         $axis.css({
