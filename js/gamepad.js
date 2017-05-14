@@ -24,6 +24,7 @@ class Gamepad {
         };
         this.gamepadHelpTimeout = null;
         this.gamepadHelpDelay = 5000;
+        this.activeGamepad = null;
         this.activeGamepadIndex = null;
         this.activeGamepadType = null;
         this.activeGamepadIdentifier = null;
@@ -143,13 +144,17 @@ class Gamepad {
     }
 
     mapGamepad(gamepadIndex) {
+        if ('undefined' === typeof gamepadIndex) {
+            return;
+        }
+
         this.activeGamepadIndex = gamepadIndex;
-        const gamepad = this.gamepads[this.activeGamepadIndex];
+        this.activeGamepad = this.gamepads[this.activeGamepadIndex];
 
-        let button;
-        let axis;
-
-        this.hideGamepadHelp();
+        // ensure that a gamepad is currently active
+        if (!this.activeGamepad) {
+            return;
+        }
 
         if (this.debug) {
             this.activeGamepadType = 'debug';
@@ -157,7 +162,7 @@ class Gamepad {
             this.activeGamepadColorIndex = 0;
         } else {
             for (let gamepadType in this.gamepadIdentifiers) {
-                if (this.gamepadIdentifiers[gamepadType].id.test(gamepad.id)) {
+                if (this.gamepadIdentifiers[gamepadType].id.test(this.activeGamepad.id)) {
                     this.activeGamepadType = gamepadType;
                     this.activeGamepadIdentifier = this.gamepadIdentifiers[gamepadType];
                     this.activeGamepadColorIndex = 0;
@@ -165,10 +170,11 @@ class Gamepad {
             }
         }
 
+        let button;
+        let axis;
+        this.hideGamepadHelp();
         $.ajax(
-            'templates/' + this.activeGamepadType + '/template.html', {
-                async: true
-            }
+            'templates/' + this.activeGamepadType + '/template.html'
         ).done((template) => {
             this.$gamepad.html(template);
 
@@ -187,14 +193,14 @@ class Gamepad {
             }
 
             this.mapping.buttons = [];
-            for (let buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
-                button = gamepad.buttons[buttonIndex];
+            for (let buttonIndex = 0; buttonIndex < this.activeGamepad.buttons.length; buttonIndex++) {
+                button = this.activeGamepad.buttons[buttonIndex];
                 this.mapping.buttons[buttonIndex] = $('[data-button=' + buttonIndex + ']');
             }
 
             this.mapping.axes = [];
-            for (let axisIndex = 0; axisIndex < gamepad.axes.length; axisIndex++) {
-                axis = gamepad.axes[axisIndex];
+            for (let axisIndex = 0; axisIndex < this.activeGamepad.axes.length; axisIndex++) {
+                axis = this.activeGamepad.axes[axisIndex];
                 this.mapping.axes[axisIndex] = $('[data-axis=' + axisIndex + '], [data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
             }
 
@@ -203,14 +209,9 @@ class Gamepad {
     }
 
     updateVisualStatus() {
-        if (null === this.activeGamepadIndex) {
-            return;
-        }
-
         this.gamepads = this.getGamepads();
-        const activeGamepad = this.gamepads[this.activeGamepadIndex];
-
-        if (!activeGamepad) {
+        // ensure that a gamepad is currently active
+        if (!this.activeGamepad) {
             return;
         }
 
@@ -218,13 +219,13 @@ class Gamepad {
 
         let button;
         let $button;
-        for (let buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
+        for (let buttonIndex = 0; buttonIndex < this.activeGamepad.buttons.length; buttonIndex++) {
             $button = this.mapping.buttons[buttonIndex];
             if (!$button) {
                 break;
             }
 
-            button = activeGamepad.buttons[buttonIndex];
+            button = this.activeGamepad.buttons[buttonIndex];
 
             $button.attr('data-pressed', button.pressed);
             $button.attr('data-value', button.value);
@@ -236,13 +237,13 @@ class Gamepad {
 
         let axis;
         let $axis;
-        for (let axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
+        for (let axisIndex = 0; axisIndex < this.activeGamepad.axes.length; axisIndex++) {
             $axis = this.mapping.axes[axisIndex];
             if (!$axis) {
                 break;
             }
 
-            axis = activeGamepad.axes[axisIndex];
+            axis = this.activeGamepad.axes[axisIndex];
 
             if ($axis.is('[data-axis=' + axisIndex + ']')) {
                 $axis.attr('data-value', axis);
@@ -264,7 +265,8 @@ class Gamepad {
     }
 
     changeGamepadColor(gamepadColor) {
-        if (!this.activeGamepadIdentifier) {
+        // ensure that a gamepad is currently active
+        if (!this.activeGamepad) {
             return;
         }
 
@@ -295,7 +297,8 @@ class Gamepad {
     }
 
     changeZoom(zoomLevel) {
-        if (!this.activeGamepadIdentifier) {
+        // ensure that a gamepad is currently active
+        if (!this.activeGamepad) {
             return;
         }
 
@@ -330,10 +333,12 @@ class Gamepad {
     }
 
     toggleDebug() {
-        if (null === this.activeGamepadIndex) {
+        // ensure that a gamepad is currently active
+        if (!this.activeGamepad) {
             return;
         }
 
+        // update debug value
         this.debug = !this.debug;
 
         // remap current gamepad
