@@ -3,8 +3,8 @@
     $timestamp = $('#info-timestamp .value');
     $index = $('#info-index .value');
     $mapping = $('#info-mapping .value');
-    $axes = $('.axes ul');
-    $buttons = $('.buttons ul');
+    $axes = $('.axes .container');
+    $buttons = $('.buttons .container');
 
     gamepad = window.gamepad;
     activeGamepad = gamepad.getActiveGamepad();
@@ -20,19 +20,23 @@
 
     for (let axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
         $axes.append(
-            '<li class="medium">' +
-            '    <div class="label">AXIS ' + axisIndex + '</div>' +
-            '    <div class="value" data-axis="' + axisIndex + '">0</div>' +
-            '</li>'
+            '<div class="box medium">' +
+            '   <div class="content">' +
+            '       <div class="label">AXIS ' + axisIndex + '</div>' +
+            '       <div class="value" data-axis="' + axisIndex + '">0</div>' +
+            '   </div>' +
+            '</div>'
         );
     }
 
     for (let buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
         $buttons.append(
-            '<li>' +
-            '    <div class="label">B' + buttonIndex + '</div>' +
-            '    <div class="value" data-button="' + buttonIndex + '">0</div>' +
-            '</li>'
+            '<div class="box small">' +
+            '   <div class="content">' +
+            '       <div class="label">B' + buttonIndex + '</div>' +
+            '       <div class="value" data-button="' + buttonIndex + '">0</div>' +
+            '   </div>' +
+            '</div>'
         );
     }
 
