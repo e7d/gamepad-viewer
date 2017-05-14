@@ -97,11 +97,7 @@ class Gamepad {
     }
 
     getActiveGamepad() {
-        if (null === this.activeGamepadIndex) {
-            return null;
-        }
-
-        return this.gamepads[this.activeGamepadIndex];
+        return this.activeGamepad;
     }
 
     addGamepad(gamepad) {
