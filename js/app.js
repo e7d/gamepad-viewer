@@ -1,0 +1,1 @@
+window.gamepad = new Gamepad();
