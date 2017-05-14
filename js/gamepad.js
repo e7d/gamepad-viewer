@@ -92,8 +92,8 @@ class Gamepad {
         }
     }
 
-    getGamepads() {
-        return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+    refreshGamepads() {
+        this.gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
     }
 
     getActiveGamepad() {
@@ -124,7 +124,7 @@ class Gamepad {
             return;
         }
 
-        this.gamepads = this.getGamepads();
+        this.refreshGamepads();
         for (let gamepadIndex = 0; gamepadIndex < this.gamepads.length; gamepadIndex++) {
             const gamepad = this.gamepads[gamepadIndex];
             if (gamepad) {
@@ -209,7 +209,8 @@ class Gamepad {
     }
 
     updateVisualStatus() {
-        this.gamepads = this.getGamepads();
+        this.refreshGamepads();
+
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
             return;
