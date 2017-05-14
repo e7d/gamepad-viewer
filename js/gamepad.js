@@ -223,12 +223,12 @@ class Gamepad {
 
         // determine gamepad type
         this.activeGamepadType = null;
-        if (this.params.gamepadType) {
-            // if the gamepad type is set through params, apply it
-            this.activeGamepadType = this.params.gamepadType;
-        } else if (this.debug) {
+        if (this.debug) {
             // if the debug option is active, use the associated template
             this.activeGamepadType = 'debug';
+        } else if (this.params.gamepadType) {
+            // if the gamepad type is set through params, apply it
+            this.activeGamepadType = this.params.gamepadType;
         } else {
             // else, determine the template to use from the gamepad identifier
             for (let gamepadType in this.gamepadIdentifiers) {
