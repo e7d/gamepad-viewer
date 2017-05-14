@@ -152,8 +152,6 @@ class Gamepad {
     }
 
     mapGamepad(gamepadIndex) {
-        this.removeGamepad();
-        
         this.activeGamepadIndex = gamepadIndex;
         const gamepad = this.gamepads[this.activeGamepadIndex];
 
@@ -348,7 +346,6 @@ class Gamepad {
         this.debug = !this.debug;
 
         // remap current gamepad
-        this.removeGamepad();
         this.mapGamepad(this.activeGamepadIndex);
     }
 }
