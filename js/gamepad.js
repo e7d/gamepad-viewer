@@ -158,6 +158,8 @@ class Gamepad {
 
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
+            this.displayGamepadHelp();
+
             return;
         }
 
@@ -173,6 +175,10 @@ class Gamepad {
                     this.activeGamepadColorIndex = 0;
                 }
             }
+        }
+
+        if (!this.activeGamepadType) {
+            return;
         }
 
         let button;
