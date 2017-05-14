@@ -41,6 +41,12 @@ class Gamepad {
         window.addEventListener("keydown", this.onKeyDown.bind(this));
 
         window.setInterval(this.scanGamepads.bind(this), this.scanGamepadsDelay);
+
+        this.params = {
+            gamepadColor: $.urlParam('color') || $.urlParam('c') || null,
+            zoom: $.urlParam('zoom') || $.urlParam('z') || null
+        };
+
         this.displayGamepadHelp();
     }
     
@@ -177,18 +183,11 @@ class Gamepad {
         ).done((template) => {
             this.$gamepad.html(template);
 
-            if ($.urlParam('color')) {
-                this.changeGamepadColor($.urlParam('color'));
+            if (this.params.gamepadColor) {
+                this.changeGamepadColor(this.params.gamepadColor);
             }
-            if ($.urlParam('c')) {
-                this.changeGamepadColor($.urlParam('c'));
-            }
-
-            if ($.urlParam('zoom')) {
-                this.changeZoom($.urlParam('zoom'));
-            }
-            if ($.urlParam('z')) {
-                this.changeZoom($.urlParam('z'));
+            if (this.params.zoom) {
+                this.changeZoom(this.params.zoom);
             }
 
             this.mapping.buttons = [];
