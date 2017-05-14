@@ -215,12 +215,12 @@ class Gamepad {
     }
 
     updateVisualStatus() {
-        this.refreshGamepads();
-
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
             return;
         }
+
+        this.refreshGamepads();
 
         requestAnimationFrame(this.updateVisualStatus.bind(this));
 
