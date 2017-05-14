@@ -105,7 +105,10 @@ class Gamepad {
     }
 
     removeGamepad(gamepadIndex) {
-        if (!gamepadIndex || gamepadIndex === this.activeGamepadIndex) {
+        if ('undefined' === typeof gamepadIndex) {
+            return;
+        }
+        if (gamepadIndex === this.activeGamepadIndex) {
             this.activeGamepadIndex = null;
             this.$gamepad.empty();
         }
