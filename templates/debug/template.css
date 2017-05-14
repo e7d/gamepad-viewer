@@ -6,27 +6,28 @@ ul, li {
 
 li {
     display: inline-block;
-    min-width: 50px;
-    padding: 3px;
+    min-width: 40px;
+    padding: 5px;
     margin: 0 5px 5px 0;
     background: #333333;
     line-height: 1;
 }
 li.medium {
-    min-width: 100px;
+    min-width: 95px;
 }
 li.large {
-    min-width: 200px;
+    min-width: 205px;
+}
+li.extra-large {
+    min-width: 425px;
 }
 
-label {
-    width: 20px;
+.label {
     font-size: 0.8em;
     color: #aaaaaa;
 }
 
-value {
-    display: block;
+.value {
     text-align: right;
     margin-top: 3px;
     overflow: hidden;

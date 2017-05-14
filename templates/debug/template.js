@@ -1,52 +1,61 @@
-var $timestamp = $('#info-timestamp value'),
-    $index = $('#info-index value'),
-    $mapping = $('#info-mapping value'),
-    $axes = $('.axes ul'),
+(() => {
+    $id = $('#info-id .value');
+    $timestamp = $('#info-timestamp .value');
+    $index = $('#info-index .value');
+    $mapping = $('#info-mapping .value');
+    $axes = $('.axes ul');
     $buttons = $('.buttons ul');
 
-var gamepad = gamepads[activeGamepadIndex];
+    gamepad = window.gamepad;
+    activeGamepad = gamepad.getActiveGamepad();
 
-$timestamp.html(gamepad.timestamp);
-$index.html(gamepad.index);
-$mapping.html(gamepad.mapping);
+    if (!activeGamepad) {
+        return;
+    }
 
-for (var axisIndex = 0; axisIndex < gamepad.axes.length; axisIndex++) {
-    $axes.append(
-        '<li class="medium">' +
-        '    <label>AXIS ' + axisIndex + '</label>' +
-        '    <value data-axis="' + axisIndex + '">0</value>' +
-        '</li>'
-    );
-}
+    $id.html(activeGamepad.id);
+    $timestamp.html(activeGamepad.timestamp);
+    $index.html(activeGamepad.index);
+    $mapping.html(activeGamepad.mapping);
 
-for (var buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
-    $buttons.append(
-        '<li>' +
-        '    <label>B' + buttonIndex + '</label>' +
-        '    <value data-button="' + buttonIndex + '">0</value>' +
-        '</li>'
-    );
-}
+    for (let axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
+        $axes.append(
+            '<li class="medium">' +
+            '    <div class="label">AXIS ' + axisIndex + '</div>' +
+            '    <div class="value" data-axis="' + axisIndex + '">0</div>' +
+            '</li>'
+        );
+    }
 
-function updateButton($button) {
-    updateElem($button);
-}
+    for (let buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
+        $buttons.append(
+            '<li>' +
+            '    <div class="label">B' + buttonIndex + '</div>' +
+            '    <div class="value" data-button="' + buttonIndex + '">0</div>' +
+            '</li>'
+        );
+    }
 
-function updateAxis($axis) {
-    updateElem($axis, 6);
-}
+    gamepad.updateButton = function($button) {
+        updateElem($button);
+    }
 
-function updateElem($elem, precision = 2) {
-    updateTimestamp();
+    gamepad.updateAxis = function($axis) {
+        updateElem($axis, 6);
+    }
 
-    var value = parseFloat($elem.attr('data-value'), 10).toFixed(precision);
-    $elem.html(value);
-    var color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
-    $elem.css({
-        'color': 'rgb(' + color + ', ' + color + ', ' + color + ')'
-    });
-}
+    function updateElem($elem, precision = 2) {
+        updateTimestamp();
 
-function updateTimestamp() {
-    $timestamp.html(gamepad.timestamp);
-}
+        var value = parseFloat($elem.attr('data-value'), 10).toFixed(precision);
+        $elem.html(value);
+        var color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
+        $elem.css({
+            'color': 'rgb(' + color + ', ' + color + ', ' + color + ')'
+        });
+    }
+
+    function updateTimestamp() {
+        $timestamp.html(activeGamepad.timestamp);
+    }
+})();
