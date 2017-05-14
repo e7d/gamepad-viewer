@@ -13,14 +13,17 @@ class Gamepad {
         this.gamepadIdentifiers = {
             'debug': {
                 'id': /debug/,
+                'name': 'Debug',
                 'colors': []
             },
             'ds4': {
                 'id': /054c.*?05c4/,
+                'name': 'DualShock 4',
                 'colors': ['black', 'white', 'red', 'blue']
             },
             'xbox-one': {
                 'id': /xinput|XInput/,
+                'name': 'Xbox One',
                 'colors': ['black', 'white']
             }
         };
@@ -56,8 +59,9 @@ class Gamepad {
 
         // read URI for display parameters to initalize
         this.params = {
-            gamepadIndex: $.urlParam('index') || $.urlParam('i') || null,
             gamepadColor: $.urlParam('color') || $.urlParam('c') || null,
+            gamepadIndex: $.urlParam('index') || $.urlParam('i') || null,
+            gamepadType: $.urlParam('type') || $.urlParam('t') || null,
             zoom: $.urlParam('zoom') || $.urlParam('z') || null
         };
 
@@ -153,6 +157,7 @@ class Gamepad {
         if (gamepadIndex === this.activeGamepadIndex) {
             // clear associated date
             this.activeGamepadIndex = null;
+            this.activeGamepad = null;
             this.$gamepad.empty();
         }
         delete this.gamepads[gamepadIndex];
@@ -216,22 +221,24 @@ class Gamepad {
             return;
         }
 
+        // determine gamepad type
         this.activeGamepadType = null;
-        if (this.debug) {
+        if (this.params.gamepadType) {
+            // if the gamepad type is set through params, apply it
+            this.activeGamepadType = this.params.gamepadType;
+        } else if (this.debug) {
             // if the debug option is active, use the associated template
             this.activeGamepadType = 'debug';
-            this.activeGamepadIdentifier = this.gamepadIdentifiers[this.activeGamepadType];
-            this.activeGamepadColorIndex = 0;
         } else {
             // else, determine the template to use from the gamepad identifier
             for (let gamepadType in this.gamepadIdentifiers) {
                 if (this.gamepadIdentifiers[gamepadType].id.test(this.activeGamepad.id)) {
                     this.activeGamepadType = gamepadType;
-                    this.activeGamepadIdentifier = this.gamepadIdentifiers[gamepadType];
-                    this.activeGamepadColorIndex = 0;
                 }
             }
         }
+        this.activeGamepadIdentifier = this.gamepadIdentifiers[this.activeGamepadType];
+        this.activeGamepadColorIndex = 0;
 
         // ensure a valid gamepad type was discovered
         if (!this.activeGamepadType) {
