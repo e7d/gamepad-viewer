@@ -134,7 +134,7 @@ class Gamepad {
                 let button;
                 for (let buttonIndex = 0; buttonIndex < gamepad.buttons.length; buttonIndex++) {
                     button = gamepad.buttons[buttonIndex];
-                    if (null === this.activeGamepadIndex && button.pressed) {
+                    if (button.pressed) {
                         this.mapGamepad(gamepad.index);
                     }
                 }
