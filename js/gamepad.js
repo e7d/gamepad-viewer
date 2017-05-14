@@ -158,7 +158,9 @@ class Gamepad {
 
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
-            this.displayGamepadHelp();
+            this.activeGamepadIndex = null;
+            this.activeGamepad = null;
+            this.displayGamepadHelp(true);
 
             return;
         }
