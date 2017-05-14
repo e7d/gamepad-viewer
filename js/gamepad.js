@@ -280,18 +280,18 @@ class Gamepad {
             }
 
             // enqueue the initial display refresh
-            this.updateVisualStatus();
+            this.updateStatus();
         });
     }
 
-    updateVisualStatus() {
+    updateStatus() {
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
             return;
         }
 
         // enqueue the next refresh right away
-        this.rAF(this.updateVisualStatus.bind(this));
+        this.rAF(this.updateStatus.bind(this));
 
         // load latest gamepad data
         this.refreshGamepads();
