@@ -1,6 +1,9 @@
 class Gamepad {
     constructor() {
         this.haveEvents = 'GamepadEvent' in window;
+        this.rAF = window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.requestAnimationFrame;
         
         // cached DOM references
         this.$gamepad = $('.gamepad');
@@ -288,7 +291,7 @@ class Gamepad {
         }
 
         // enqueue the next refresh right away
-        requestAnimationFrame(this.updateVisualStatus.bind(this));
+        this.rAF(this.updateVisualStatus.bind(this));
 
         // load latest gamepad data
         this.refreshGamepads();
