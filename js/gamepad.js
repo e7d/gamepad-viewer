@@ -384,8 +384,8 @@ class Gamepad {
                 // the color is a string, load it by its name
                 this.activeGamepadColorName = gamepadColor;
                 this.activeGamepadColorIndex = 0;
-                for (let gamepadColorName in this.activeGamepadIdentifier.colors) {
-                    if (this.activeGamepadColorName === gamepadColorName) {
+                for (let gamepadColorIndex in this.activeGamepadIdentifier.colors) {
+                    if (this.activeGamepadColorName === this.activeGamepadIdentifier.colors[gamepadColorIndex]) {
                         break;
                     }
                     this.activeGamepadColorIndex++;
