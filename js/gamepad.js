@@ -360,7 +360,7 @@ class Gamepad {
             return;
         }
 
-        if ('undefined' === typeof zoomLevel) {
+        if ('undefined' === typeof gamepadColor) {
             // no color was specified, load the next one in list
             this.activeGamepadColorIndex++;
             if (this.activeGamepadColorIndex > this.activeGamepadIdentifier.colors.length - 1) {
