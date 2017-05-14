@@ -1,4 +1,12 @@
+/**
+ * The main Gamepad class
+ * 
+ * @class Gamepad
+ */
 class Gamepad {
+    /**
+     * Creates an instance of Gamepad.
+     */
     constructor() {
         this.haveEvents = 'GamepadEvent' in window;
         
@@ -73,12 +81,17 @@ class Gamepad {
             return;
         }
 
-        // by default, enqueue a delayed display of the help tooltip
+        // by default, enqueue a delayed display of the help modal
         this.displayGamepadHelp();
     }
     
+    /**
+     * Displays the help modal on screen
+     * 
+     * @param {boolean} [displayNow=false] 
+     */
     displayGamepadHelp(displayNow = false) {
-        // display help tooltip if no gamepad is active after X ms
+        // display help modal if no gamepad is active after X ms
         this.gamepadHelpTimeout = window.setTimeout(
             () => {
                 this.$nogamepad.fadeIn();
@@ -87,23 +100,41 @@ class Gamepad {
         );
     }
 
+    /**
+     * Hides the help modal
+     */
     hideGamepadHelp() {
-        // cancel the queued display of the help tooltip, if any
+        // cancel the queued display of the help modal, if any
         window.clearTimeout(this.gamepadHelpTimeout);
-        // hide the help tooltip
+        // hide the help modal
         this.$nogamepad.hide();
     }
 
+    /**
+     * Handles the gamepad connection event
+     * 
+     * @param {GamepadEvent} e 
+     */
     onGamepadConnect(e) {
         // on gamepad connection, add it to the list
         this.addGamepad(e.gamepad);
     }
 
+    /**
+     * Handles the gamepad disconnection event
+     * 
+     * @param {GamepadEvent} e 
+     */
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
         this.removeGamepad(e.gamepad.index);
     }
 
+    /**
+     * Handles the keyboard "keydown" event
+     * 
+     * @param {KeyboardEvent} e 
+     */
     onKeyDown(e) {
         switch (e.code) {
             case "Delete":
@@ -134,19 +165,35 @@ class Gamepad {
         }
     }
 
+    /**
+     * Reloads gamepads data
+     */
     refreshGamepads() {
         // get fresh information from DOM about gamepads
         this.gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
     }
 
+    /**
+     * Return the connected gamepad
+     */
     getActiveGamepad() {
         return this.activeGamepad;
     }
 
+    /**
+     * Adds a gamepad to the gamepads collection
+     * 
+     * @param {object} gamepad 
+     */
     addGamepad(gamepad) {
         this.gamepads[gamepad.index] = gamepad;
     }
 
+    /**
+     * Removes a gamepad to the gamepads collection
+     * 
+     * @param {object} gamepad 
+     */
     removeGamepad(gamepadIndex) {
         // ensure we have an index to remove
         if ('undefined' === typeof gamepadIndex) {
@@ -162,11 +209,14 @@ class Gamepad {
         }
         delete this.gamepads[gamepadIndex];
 
-        // enqueue a display of the help tooltip
+        // enqueue a display of the help modal
         this.displayGamepadHelp();
         this.debug = false;
     }
 
+    /**
+     * Scans gamepads for activity
+     */
     scanGamepads() {
         // don't scan if we have an active gamepad
         if (null !== this.activeGamepadIndex) {
@@ -199,6 +249,11 @@ class Gamepad {
         }
     }
 
+    /**
+     * Sets a gamepad as active from its index
+     * 
+     * @param {int} gamepadIndex 
+     */
     mapGamepad(gamepadIndex) {
         // ensure a gamepad need to be mapped
         if ('undefined' === typeof gamepadIndex) {
@@ -215,7 +270,7 @@ class Gamepad {
             // - remove the active gamepad index and reference
             this.activeGamepadIndex = null;
             this.activeGamepad = null;
-            // - enqueue a display of the help tooltip right away
+            // - enqueue a display of the help modal right away
             this.displayGamepadHelp(true);
 
             return;
@@ -288,6 +343,9 @@ class Gamepad {
         });
     }
 
+    /**
+     * Updates the status of the active gamepad
+     */
     updateStatus() {
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
@@ -361,6 +419,11 @@ class Gamepad {
         }
     }
 
+    /**
+     * Changes the active gamepad color
+     * 
+     * @param {any} gamepadColor
+     */
     changeGamepadColor(gamepadColor) {
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
@@ -397,6 +460,11 @@ class Gamepad {
         this.$gamepad.attr('data-color', this.activeGamepadColorName);
     }
 
+    /**
+     * Changes the active gamepad zoom level
+     * 
+     * @param {any} zoomLevel
+     */
     changeZoom(zoomLevel) {
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
@@ -435,10 +503,16 @@ class Gamepad {
         );
     }
 
-    toggleHelp(zoomLevel) {
+    /**
+     * Toggles the on-screen help message
+     */
+    toggleHelp() {
         this.$help.toggleClass('active');
     }
 
+    /**
+     * Toggles the debug template for the active gamepad, if any
+     */
     toggleDebug() {
         // ensure that a gamepad is currently active
         if (!this.activeGamepad) {
