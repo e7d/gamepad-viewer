@@ -1,6 +1,7 @@
 body {
     background: transparent;
     overflow: hidden;
+    font-family: sans-serif;
 }
 .debug {
     position: absolute;
