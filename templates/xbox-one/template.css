@@ -101,14 +101,16 @@
     left: 306px;
 }
 
-.gamepad .select, .gamepad .start {
+.gamepad .select,
+.gamepad .start {
     background: url(start-select.svg);
     width: 33px;
     height: 33px;
     opacity: 0;
 }
 
-.gamepad .select[data-pressed="true"], .gamepad .start[data-pressed="true"] {
+.gamepad .select[data-pressed="true"],
+.gamepad .start[data-pressed="true"] {
     opacity: 1;
 }
 

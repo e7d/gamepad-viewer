@@ -112,14 +112,16 @@
     left: 227px;
 }
 
-.gamepad .select, .gamepad .start {
+.gamepad .select,
+.gamepad .start {
     background: url(start.svg);
     width: 28px;
     height: 46px;
     opacity: 0;
 }
 
-.gamepad .select[data-pressed="true"], .gamepad .start[data-pressed="true"] {
+.gamepad .select[data-pressed="true"],
+.gamepad .start[data-pressed="true"] {
     opacity: 1;
 }
 
@@ -219,12 +221,14 @@
     position: absolute;
 }
 
-.gamepad .face.up, .gamepad .face.down {
+.gamepad .face.up,
+.gamepad .face.down {
     width: 36px;
     height: 52px;
 }
 
-.gamepad .face.left, .gamepad .face.right {
+.gamepad .face.left,
+.gamepad .face.right {
     width: 52px;
     height: 36px;
 }

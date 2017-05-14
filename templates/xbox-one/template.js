@@ -1,4 +1,4 @@
-gamepad.updateButton = function($button) {
+gamepad.updateButton = function ($button) {
     const value = parseFloat($button.attr('data-value'), 10);
 
     if ($button.is('.trigger')) {
@@ -8,7 +8,7 @@ gamepad.updateButton = function($button) {
     }
 }
 
-gamepad.updateAxis = function($axis) {
+gamepad.updateAxis = function ($axis) {
     const axisX = $axis.attr('data-value-x');
     const axisY = $axis.attr('data-value-y');
     const axisZ = $axis.attr('data-value-z');

@@ -3,7 +3,7 @@
     padding: 0;
     list-style: none;
     display: flex;
-    flex-flow: row wrap; 
+    flex-flow: row wrap;
     max-width: 600px;
 }
 
@@ -12,18 +12,22 @@
     line-height: 1;
     box-sizing: border-box;
 }
+
 .box.small {
     width: 12.5%;
     min-width: 50px;
 }
+
 .box.medium {
     width: 25%;
     min-width: 100px;
 }
+
 .box.large {
     width: 50%;
     min-width: 200px;
 }
+
 .box.extra-large {
     width: 100%;
     min-width: 400px;

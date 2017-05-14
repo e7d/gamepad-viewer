@@ -1,6 +1,6 @@
 /**
  * The main Gamepad class
- * 
+ *
  * @class Gamepad
  */
 class Gamepad {
@@ -9,7 +9,7 @@ class Gamepad {
      */
     constructor() {
         this.haveEvents = 'GamepadEvent' in window;
-        
+
         // cached DOM references
         this.$gamepad = $('.gamepad');
         this.$nogamepad = $('.no-gamepad');
@@ -39,7 +39,7 @@ class Gamepad {
         // gamepad help default values
         this.gamepadHelpTimeout = null;
         this.gamepadHelpDelay = 5000;
-        
+
         // active gamepad default values
         this.scanGamepadsDelay = 500;
         this.debug = false;
@@ -58,7 +58,7 @@ class Gamepad {
         // listen for gamepad related events
         window.addEventListener("gamepadconnected", this.onGamepadConnect.bind(this));
         window.addEventListener("gamepaddisconnected", this.onGamepadDisconnect.bind(this));
-        
+
         // listen for keyboard events
         window.addEventListener("keydown", this.onKeyDown.bind(this));
 
@@ -84,11 +84,11 @@ class Gamepad {
         // by default, enqueue a delayed display of the help modal
         this.displayGamepadHelp();
     }
-    
+
     /**
      * Displays the help modal on screen
-     * 
-     * @param {boolean} [displayNow=false] 
+     *
+     * @param {boolean} [displayNow=false]
      */
     displayGamepadHelp(displayNow = false) {
         // display help modal if no gamepad is active after X ms
@@ -112,8 +112,8 @@ class Gamepad {
 
     /**
      * Handles the gamepad connection event
-     * 
-     * @param {GamepadEvent} e 
+     *
+     * @param {GamepadEvent} e
      */
     onGamepadConnect(e) {
         // on gamepad connection, add it to the list
@@ -122,8 +122,8 @@ class Gamepad {
 
     /**
      * Handles the gamepad disconnection event
-     * 
-     * @param {GamepadEvent} e 
+     *
+     * @param {GamepadEvent} e
      */
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
@@ -132,8 +132,8 @@ class Gamepad {
 
     /**
      * Handles the keyboard "keydown" event
-     * 
-     * @param {KeyboardEvent} e 
+     *
+     * @param {KeyboardEvent} e
      */
     onKeyDown(e) {
         switch (e.code) {
@@ -182,8 +182,8 @@ class Gamepad {
 
     /**
      * Adds a gamepad to the gamepads collection
-     * 
-     * @param {object} gamepad 
+     *
+     * @param {object} gamepad
      */
     addGamepad(gamepad) {
         this.gamepads[gamepad.index] = gamepad;
@@ -191,8 +191,8 @@ class Gamepad {
 
     /**
      * Removes a gamepad to the gamepads collection
-     * 
-     * @param {object} gamepad 
+     *
+     * @param {object} gamepad
      */
     removeGamepad(gamepadIndex) {
         // ensure we have an index to remove
@@ -251,8 +251,8 @@ class Gamepad {
 
     /**
      * Sets a gamepad as active from its index
-     * 
-     * @param {int} gamepadIndex 
+     *
+     * @param {int} gamepadIndex
      */
     mapGamepad(gamepadIndex) {
         // ensure a gamepad need to be mapped
@@ -421,7 +421,7 @@ class Gamepad {
 
     /**
      * Changes the active gamepad color
-     * 
+     *
      * @param {any} gamepadColor
      */
     changeGamepadColor(gamepadColor) {
@@ -462,7 +462,7 @@ class Gamepad {
 
     /**
      * Changes the active gamepad zoom level
-     * 
+     *
      * @param {any} zoomLevel
      */
     changeZoom(zoomLevel) {
@@ -479,16 +479,13 @@ class Gamepad {
         if ('0' === zoomLevel) {
             // "0" means a zoom reset
             this.activeGamepadZoomLevel = 1;
-        }
-        else if ('+' === zoomLevel && this.activeGamepadZoomLevel < 2) {
+        } else if ('+' === zoomLevel && this.activeGamepadZoomLevel < 2) {
             // "+" means a zoom in if we still can
             this.activeGamepadZoomLevel += 0.1;
-        }
-        else if ('-' === zoomLevel && this.activeGamepadZoomLevel > 0.2) {
+        } else if ('-' === zoomLevel && this.activeGamepadZoomLevel > 0.2) {
             // "-" means a zoom out if we still can
             this.activeGamepadZoomLevel -= 0.1;
-        }
-        else if (!isNaN(zoomLevel = parseFloat(zoomLevel))) {
+        } else if (!isNaN(zoomLevel = parseFloat(zoomLevel))) {
             // an integer value means a value-based zoom
             this.activeGamepadZoomLevel = zoomLevel;
         }

@@ -40,11 +40,11 @@
         );
     }
 
-    gamepad.updateButton = function($button) {
+    gamepad.updateButton = function ($button) {
         updateElem($button);
     }
 
-    gamepad.updateAxis = function($axis) {
+    gamepad.updateAxis = function ($axis) {
         updateElem($axis, 6);
     }
 
