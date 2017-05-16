@@ -8,7 +8,7 @@ class Gamepad {
      * Creates an instance of Gamepad.
      */
     constructor() {
-        this.haveEvents = 'GamepadEvent' in window;
+        this.gamepadDemo = new GamepadDemo(this);
 
         // cached DOM references
         this.$gamepad = $('.gamepad');
@@ -56,8 +56,11 @@ class Gamepad {
         };
 
         // listen for gamepad related events
-        window.addEventListener("gamepadconnected", this.onGamepadConnect.bind(this));
-        window.addEventListener("gamepaddisconnected", this.onGamepadDisconnect.bind(this));
+        this.haveEvents = 'GamepadEvent' in window;
+        if (this.haveEvents) {
+            window.addEventListener("gamepadconnected", this.onGamepadConnect.bind(this));
+            window.addEventListener("gamepaddisconnected", this.onGamepadDisconnect.bind(this));
+        }
 
         // listen for keyboard events
         window.addEventListener("keydown", this.onKeyDown.bind(this));
@@ -67,6 +70,7 @@ class Gamepad {
 
         // read URI for display parameters to initalize
         this.params = {
+            demoMode: $.urlParam('demo') || null,
             gamepadColor: $.urlParam('color') || $.urlParam('c') || null,
             gamepadIndex: $.urlParam('index') || $.urlParam('i') || null,
             gamepadType: $.urlParam('type') || $.urlParam('t') || null,
@@ -77,6 +81,12 @@ class Gamepad {
         if (this.params.gamepadIndex) {
             this.refreshGamepads();
             this.mapGamepad(+this.params.gamepadIndex);
+
+            return;
+        }
+
+        if (this.params.demoMode) {
+            this.gamepadDemo.start(this.params.demoMode);
 
             return;
         }
@@ -139,7 +149,7 @@ class Gamepad {
         switch (e.code) {
             case "Delete":
             case "Escape":
-                this.removeGamepad(this.activeGamepadIndex);
+                this.removeGamepad(true);
                 break;
             case "KeyC":
                 this.changeGamepadColor();
@@ -170,7 +180,10 @@ class Gamepad {
      */
     refreshGamepads() {
         // get fresh information from DOM about gamepads
-        this.gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+        const navigatorGamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+        for (let key in navigatorGamepads) {
+            this.gamepads[key] = navigatorGamepads[key];
+        }
     }
 
     /**
@@ -200,8 +213,14 @@ class Gamepad {
             return;
         }
 
+        // ensure to kill demo mode
+        if ('demo' === this.activeGamepadIndex) {
+            this.gamepadDemo.stop();
+        }
+
         // if this is the active gamepad
-        if (gamepadIndex === this.activeGamepadIndex) {
+        if (true === gamepadIndex ||
+            this.activeGamepadIndex === gamepadIndex) {
             // clear associated date
             this.activeGamepadIndex = null;
             this.activeGamepad = null;
