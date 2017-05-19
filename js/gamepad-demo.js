@@ -12,7 +12,7 @@ class GamepadDemo {
     constructor(gamepad) {
         this.gamepad = gamepad;
         this.demoGamepad = {
-            'id': id,
+            'id': 'xinput',
             'timestamp': 0,
             'index': 'demo',
             'mapping': 'standard',
