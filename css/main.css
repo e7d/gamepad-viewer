@@ -40,7 +40,7 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     display: none;
-    font-size: 10pt;
+    font-size: 0.9em;
     left: 50%;
     min-width: 400px;
     padding: 20px;
