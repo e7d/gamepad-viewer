@@ -59,7 +59,7 @@ class GamepadDemo {
                 break;
             case 'sequential':
             default:
-               callback = this.launchSequentialDemoMode;
+               callback = this.sequentialModeCallback;
                 this.controlType = 'axis';
                 this.controlIndex = 0;
                 this.demoUpdateDelay = 1000;
