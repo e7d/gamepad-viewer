@@ -43,7 +43,6 @@ class Gamepad {
         // active gamepad default values
         this.scanGamepadsDelay = 500;
         this.debug = false;
-        this.activeGamepad = null;
         this.activeGamepadIndex = null;
         this.activeGamepadType = null;
         this.activeGamepadIdentifier = null;
@@ -190,7 +189,7 @@ class Gamepad {
      * Return the connected gamepad
      */
     getActiveGamepad() {
-        return this.activeGamepad;
+        return this.gamepads[this.activeGamepadIndex];
     }
 
     /**
@@ -223,7 +222,6 @@ class Gamepad {
             this.activeGamepadIndex === gamepadIndex) {
             // clear associated date
             this.activeGamepadIndex = null;
-            this.activeGamepad = null;
             this.$gamepad.empty();
         }
         delete this.gamepads[gamepadIndex];
@@ -281,14 +279,13 @@ class Gamepad {
 
         // update local references
         this.activeGamepadIndex = gamepadIndex;
-        this.activeGamepad = this.gamepads[this.activeGamepadIndex];
+        const activeGamepad = this.getActiveGamepad();
 
         // ensure that a gamepad was actually found for this index
-        if (!this.activeGamepad) {
+        if (!activeGamepad) {
             // this mapping request was probably a mistake :
             // - remove the active gamepad index and reference
             this.activeGamepadIndex = null;
-            this.activeGamepad = null;
             // - enqueue a display of the help modal right away
             this.displayGamepadHelp(true);
 
@@ -306,7 +303,7 @@ class Gamepad {
         } else {
             // else, determine the template to use from the gamepad identifier
             for (let gamepadType in this.gamepadIdentifiers) {
-                if (this.gamepadIdentifiers[gamepadType].id.test(this.activeGamepad.id)) {
+                if (this.gamepadIdentifiers[gamepadType].id.test(activeGamepad.id)) {
                     this.activeGamepadType = gamepadType;
                 }
             }
@@ -345,15 +342,15 @@ class Gamepad {
 
             // save the buttons mapping of this template
             this.mapping.buttons = [];
-            for (let buttonIndex = 0; buttonIndex < this.activeGamepad.buttons.length; buttonIndex++) {
-                button = this.activeGamepad.buttons[buttonIndex];
+            for (let buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
+                button = activeGamepad.buttons[buttonIndex];
                 this.mapping.buttons[buttonIndex] = $('[data-button=' + buttonIndex + ']');
             }
 
             // save the axes mapping of this template
             this.mapping.axes = [];
-            for (let axisIndex = 0; axisIndex < this.activeGamepad.axes.length; axisIndex++) {
-                axis = this.activeGamepad.axes[axisIndex];
+            for (let axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
+                axis = activeGamepad.axes[axisIndex];
                 this.mapping.axes[axisIndex] = $('[data-axis=' + axisIndex + '], [data-axis-x=' + axisIndex + '], [data-axis-y=' + axisIndex + '], [data-axis-z=' + axisIndex + ']');
             }
 
@@ -367,7 +364,7 @@ class Gamepad {
      */
     updateStatus() {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepad) {
+        if (!this.activeGamepadIndex) {
             return;
         }
 
@@ -376,6 +373,7 @@ class Gamepad {
 
         // load latest gamepad data
         this.refreshGamepads();
+        const activeGamepad = this.getActiveGamepad();
 
         // hoist some variables
         let button;
@@ -384,7 +382,7 @@ class Gamepad {
         let $axis;
 
         // update the buttons
-        for (let buttonIndex = 0; buttonIndex < this.activeGamepad.buttons.length; buttonIndex++) {
+        for (let buttonIndex = 0; buttonIndex < activeGamepad.buttons.length; buttonIndex++) {
             // find the DOM element
             $button = this.mapping.buttons[buttonIndex];
             if (!$button) {
@@ -393,7 +391,7 @@ class Gamepad {
             }
 
             // read the button data
-            button = this.activeGamepad.buttons[buttonIndex];
+            button = activeGamepad.buttons[buttonIndex];
 
             // update the display values
             $button.attr('data-pressed', button.pressed);
@@ -406,7 +404,7 @@ class Gamepad {
         }
 
         // update the axes
-        for (let axisIndex = 0; axisIndex < this.activeGamepad.axes.length; axisIndex++) {
+        for (let axisIndex = 0; axisIndex < activeGamepad.axes.length; axisIndex++) {
             // find the DOM element
             $axis = this.mapping.axes[axisIndex];
             if (!$axis) {
@@ -415,7 +413,7 @@ class Gamepad {
             }
 
             // read the axis data
-            axis = this.activeGamepad.axes[axisIndex];
+            axis = activeGamepad.axes[axisIndex];
 
             // update the display values
             if ($axis.is('[data-axis=' + axisIndex + ']')) {
@@ -445,10 +443,11 @@ class Gamepad {
      */
     changeGamepadColor(gamepadColor) {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepad) {
+        if (!this.activeGamepadIndex) {
             return;
         }
 
+        const activeGamepad = this.getActiveGamepad();
         if ('undefined' === typeof gamepadColor) {
             // no color was specified, load the next one in list
             this.activeGamepadColorIndex++;
@@ -486,7 +485,7 @@ class Gamepad {
      */
     changeZoom(zoomLevel) {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepad) {
+        if (!this.activeGamepadIndex) {
             return;
         }
 
@@ -531,7 +530,7 @@ class Gamepad {
      */
     toggleDebug() {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepad) {
+        if (!this.activeGamepadIndex) {
             return;
         }
 
