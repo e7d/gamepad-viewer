@@ -11,10 +11,14 @@ class Gamepad {
         this.gamepadDemo = new GamepadDemo(this);
 
         // cached DOM references
+        this.$body = $('body');
         this.$gamepad = $('.gamepad');
         this.$nogamepad = $('.no-gamepad');
         this.$debug = $('.debug');
         this.$help = $('.help');
+
+        this.backgroundColors = ['transparent', 'dimgrey', 'black', 'green', 'magenta'];
+        this.backgroundColorIndex = 0;
 
         // gamepad collection default values
         this.gamepads = {};
@@ -149,6 +153,9 @@ class Gamepad {
             case "Delete":
             case "Escape":
                 this.removeGamepad(true);
+                break;
+            case "KeyB":
+                this.changeBackgroundColor();
                 break;
             case "KeyC":
                 this.changeGamepadColor();
@@ -437,6 +444,25 @@ class Gamepad {
     }
 
     /**
+     * Changes the background color
+     *
+     * @param {any} backgroundColor
+     */
+    changeBackgroundColor(backgroundColor) {
+        if ('undefined' === typeof gamepadColor) {
+            this.backgroundColorIndex++;
+            if (this.backgroundColorIndex > this.backgroundColors.length - 1) {
+                this.backgroundColorIndex = 0;
+            }
+        } else {
+            this.backgroundColorIndex = backgroundColor;
+        }
+
+
+        this.$body.css('background', this.backgroundColors[this.backgroundColorIndex]);
+    }
+
+    /**
      * Changes the active gamepad color
      *
      * @param {any} gamepadColor
@@ -447,7 +473,6 @@ class Gamepad {
             return;
         }
 
-        const activeGamepad = this.getActiveGamepad();
         if ('undefined' === typeof gamepadColor) {
             // no color was specified, load the next one in list
             this.activeGamepadColorIndex++;
