@@ -14,13 +14,28 @@
 </head>
 
 <body>
-	<div class="no-gamepad">No active gamepad detected. Press <kbd>H</kbd> to read instructions.</div>
-	<div class="gamepad"></div>
-	<div class="help">
+	<div id="no-gamepad">No active gamepad detected. Press <kbd>H</kbd> to read instructions.</div>
+	<div id="gamepad"></div>
+	<div id="help">
 		<h2>Help</h2>
 
 		<h3>Instructions</h3>
 		<p>Press and hold any of your gamepad buttons for at least 1 second. If your gamepad is supported, it shows up.</p>
+
+		<h3>Detected Controllers</h3>
+		<table id="gamepad-list">
+			<thead>
+				<tr>
+					<th>Index</th>
+					<th>Controller ID</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="2">No gamepad detected.</td>
+				</tr>
+			</tbody>
+		</table>
 
 		<h3>Keyboard shortcuts</h3>
 		<table>

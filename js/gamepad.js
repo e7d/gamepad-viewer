@@ -12,10 +12,10 @@ class Gamepad {
 
         // cached DOM references
         this.$body = $('body');
-        this.$gamepad = $('.gamepad');
-        this.$nogamepad = $('.no-gamepad');
-        this.$debug = $('.debug');
-        this.$help = $('.help');
+        this.$gamepad = $('#gamepad');
+        this.$nogamepad = $('#no-gamepad');
+        this.$help = $('#help');
+        this.$gamepadList = $('#gamepad-list');
 
         this.backgroundColors = ['transparent', 'dimgrey', 'black', 'lime', 'magenta'];
         this.backgroundColorIndex = 0;
@@ -190,6 +190,28 @@ class Gamepad {
         for (let key in navigatorGamepads) {
             this.gamepads[key] = navigatorGamepads[key];
         }
+
+        this.buildHelpGamepadList();
+    }
+
+    /**
+     * Builds the help gamepad list
+     */
+    buildHelpGamepadList() {
+        const $tbody = [];
+        for (let key in this.gamepads) {
+            const gamepad = this.gamepads[key];
+            if (!gamepad) {
+                continue;
+            }
+
+            $tbody.push('<tr><td>' + gamepad.index + '</td><td>' + gamepad.id + '</td></tr>');
+        }
+        if ($tbody.length === 0) {
+            $tbody.push('<tr><td colspan="2">No gamepad detected.</td></tr>');
+        }
+
+        this.$gamepadList.html($tbody.join(''));
     }
 
     /**
