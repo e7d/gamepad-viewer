@@ -199,7 +199,7 @@ class Gamepad {
      */
     buildHelpGamepadList() {
         const $tbody = [];
-        for (let key in this.gamepads) {
+        for (let key = 0; key < this.gamepads.length; key++) {
             const gamepad = this.gamepads[key];
             if (!gamepad) {
                 continue;
