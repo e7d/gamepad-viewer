@@ -4,7 +4,7 @@ body {
     font-family: sans-serif;
 }
 
-.debug {
+#debug {
     position: absolute;
     top: 0;
     display: none;
@@ -15,7 +15,7 @@ body {
     text-align: center;
 }
 
-.no-gamepad {
+#no-gamepad {
     position: absolute;
     top: 20px;
     display: none;
@@ -24,7 +24,7 @@ body {
     text-align: center;
 }
 
-.gamepad {
+#gamepad {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -34,7 +34,7 @@ body {
     background-size: contain;
 }
 
-.help {
+#help {
     background: whitesmoke;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -49,43 +49,43 @@ body {
     transform: translate(-50%, -50%);
 }
 
-.help.active {
+#help.active {
     display: block;
 }
 
-.help h2 {
+#help h2 {
     margin-top: 0;
     margin-bottom: 1.5em;
 }
 
-.help h3 {
+#help h3 {
     margin-top: 1.5em;
 }
 
-.help p:last-child {
+#help p:last-child {
     margin-bottom: 0;
 }
 
-.help table {
+#help table {
     border-collapse: collapse;
     border-spacing: 0;
     max-width: 100%;
     width: 100%;
 }
 
-.help th {
+#help th {
     text-align: left;
 }
 
-.help th,
-.help td {
+#help th,
+#help td {
     border-top: 1px solid #ddd;
     line-height: 1.42857143;
     padding: 8px;
     vertical-align: top;
 }
 
-.help table>thead>tr>th {
+#help table>thead>tr>th {
     border-bottom: 2px solid #ddd;
     border-top: 0;
     vertical-align: bottom;
