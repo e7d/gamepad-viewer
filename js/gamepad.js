@@ -17,7 +17,7 @@ class Gamepad {
         this.$debug = $('.debug');
         this.$help = $('.help');
 
-        this.backgroundColors = ['transparent', 'dimgrey', 'black', 'green', 'magenta'];
+        this.backgroundColors = ['transparent', 'dimgrey', 'black', 'lime', 'magenta'];
         this.backgroundColorIndex = 0;
 
         // gamepad collection default values
