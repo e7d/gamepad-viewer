@@ -364,7 +364,7 @@ class Gamepad {
      */
     updateStatus() {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepadIndex) {
+        if (null === this.activeGamepadIndex) {
             return;
         }
 
@@ -443,7 +443,7 @@ class Gamepad {
      */
     changeGamepadColor(gamepadColor) {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepadIndex) {
+        if (null === this.activeGamepadIndex) {
             return;
         }
 
@@ -485,7 +485,7 @@ class Gamepad {
      */
     changeZoom(zoomLevel) {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepadIndex) {
+        if (null === this.activeGamepadIndex) {
             return;
         }
 
@@ -530,7 +530,7 @@ class Gamepad {
      */
     toggleDebug() {
         // ensure that a gamepad is currently active
-        if (!this.activeGamepadIndex) {
+        if (null === this.activeGamepadIndex) {
             return;
         }
 
