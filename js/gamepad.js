@@ -14,6 +14,7 @@ class Gamepad {
         this.$body = $('body');
         this.$gamepad = $('#gamepad');
         this.$nogamepad = $('#no-gamepad');
+        this.$nogamepadLink = $('#no-gamepad a');
         this.$help = $('#help');
         this.$gamepadList = $('#gamepad-list');
 
@@ -65,6 +66,8 @@ class Gamepad {
             window.addEventListener("gamepaddisconnected", this.onGamepadDisconnect.bind(this));
         }
 
+        // listen for mouse move events
+        window.addEventListener("mousemove", this.onMouseMove.bind(this));
         // listen for keyboard events
         window.addEventListener("keydown", this.onKeyDown.bind(this));
 
@@ -73,23 +76,41 @@ class Gamepad {
 
         // read URI for display parameters to initalize
         this.params = {
-            demoMode: $.urlParam('demo') || null,
-            gamepadColor: $.urlParam('color') || $.urlParam('c') || null,
-            gamepadIndex: $.urlParam('index') || $.urlParam('i') || null,
-            gamepadType: $.urlParam('type') || $.urlParam('t') || null,
+            background: $.urlParam('background') || $.urlParam('b') || null,
+            color: $.urlParam('color') || $.urlParam('c') || null,
+            demo: $.urlParam('demo') || null,
+            index: $.urlParam('index') || $.urlParam('i') || null,
+            type: $.urlParam('type') || $.urlParam('t') || null,
             zoom: $.urlParam('zoom') || $.urlParam('z') || null
         };
 
-        // if a gamepad index is specified, try to map the corresponding gamepad
-        if (this.params.gamepadIndex) {
-            this.refreshGamepads();
-            this.mapGamepad(+this.params.gamepadIndex);
+        // change the background is specified
+        if (this.params.background) {
+            for (let i = 0; i < this.backgroundColors.length; i++) {
+                if (this.params.background === this.backgroundColors[i]) {
+                    this.backgroundColorIndex = i;
+                    break;
+                }
+            }
+
+            if (!this.backgroundColorIndex) {
+                return;
+            }
+
+            this.$body.css('background', this.backgroundColors[this.backgroundColorIndex]);
+        }
+
+        // start the demo if requested by params
+        if (this.params.demo) {
+            this.gamepadDemo.start(this.params.demo);
 
             return;
         }
 
-        if (this.params.demoMode) {
-            this.gamepadDemo.start(this.params.demoMode);
+        // if a gamepad index is specified, try to map the corresponding gamepad
+        if (this.params.index) {
+            this.refreshGamepads();
+            this.mapGamepad(+this.params.index);
 
             return;
         }
@@ -100,27 +121,39 @@ class Gamepad {
 
     /**
      * Displays the help modal on screen
-     *
-     * @param {boolean} [displayNow=false]
      */
-    displayGamepadHelp(displayNow = false) {
-        // display help modal if no gamepad is active after X ms
-        this.gamepadHelpTimeout = window.setTimeout(
-            () => {
-                this.$nogamepad.fadeIn();
-            },
-            displayNow ? 0 : this.gamepadHelpDelay
-        );
+    displayGamepadHelp() {
+        // do not display help if we have an active gamepad
+        if (null !== this.activeGamepadIndex) {
+            return;
+        }
+
+        // cancel the queued display of the help modal, if any
+        window.clearTimeout(this.gamepadHelpTimeout);
+        // hide the help modal
+        this.$nogamepad.show();
+
+        // enqueue a delayed display of the help modal
+        this.hideGamepadHelp();
     }
 
     /**
      * Hides the help modal
+     *
+     * @param {boolean} [hideNow=false]
      */
-    hideGamepadHelp() {
-        // cancel the queued display of the help modal, if any
-        window.clearTimeout(this.gamepadHelpTimeout);
-        // hide the help modal
-        this.$nogamepad.hide();
+    hideGamepadHelp(hideNow = false) {
+        // hide the message right away if needed
+        if (hideNow) {
+            this.$nogamepad.hide();
+        }
+
+        // hide help modal if no gamepad is active after X ms
+        this.gamepadHelpTimeout = window.setTimeout(
+            () => {
+                this.$nogamepad.fadeOut();
+            }, this.gamepadHelpDelay
+        );
     }
 
     /**
@@ -141,6 +174,15 @@ class Gamepad {
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
         this.removeGamepad(e.gamepad.index);
+    }
+
+    /**
+     * Handles the mouse "mouslmove" event
+     *
+     * @param {MouseEvent} e
+     */
+    onMouseMove() {
+        this.displayGamepadHelp();
     }
 
     /**
@@ -165,6 +207,9 @@ class Gamepad {
                 break;
             case "KeyH":
                 this.toggleHelp();
+                break;
+            case "KeyO":
+                this.gamepadDemo.start();
                 break;
             case "NumpadAdd":
             case "Equal":
@@ -306,6 +351,9 @@ class Gamepad {
             return;
         }
 
+        // hide the help message
+        this.hideGamepadHelp(true);
+
         // update local references
         this.activeGamepadIndex = gamepadIndex;
         const activeGamepad = this.getActiveGamepad();
@@ -326,9 +374,9 @@ class Gamepad {
         if (this.debug) {
             // if the debug option is active, use the associated template
             this.activeGamepadType = 'debug';
-        } else if (this.params.gamepadType) {
+        } else if (this.params.type) {
             // if the gamepad type is set through params, apply it
-            this.activeGamepadType = this.params.gamepadType;
+            this.activeGamepadType = this.params.type;
         } else {
             // else, determine the template to use from the gamepad identifier
             for (let gamepadType in this.gamepadIdentifiers) {
@@ -361,8 +409,8 @@ class Gamepad {
 
             // read for parameters to apply:
             // - color
-            if (this.params.gamepadColor) {
-                this.changeGamepadColor(this.params.gamepadColor);
+            if (this.params.color) {
+                this.changeGamepadColor(this.params.color);
             }
             // - zoom
             if (this.params.zoom) {
