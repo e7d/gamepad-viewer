@@ -1,5 +1,5 @@
 $.urlParam = function(name) {
-    let results = new RegExp('[\?&]' + name + '(=([^&#]*))?').exec(window.location.href);
+    let results = new RegExp('[\?&]' + name + '(=([^&#]*))?').exec(window.location.search);
     if (results === null) {
         return null;
     }
