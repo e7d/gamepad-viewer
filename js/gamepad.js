@@ -30,20 +30,15 @@ class Gamepad {
         // gamepad collection default values
         this.gamepads = {};
         this.gamepadIdentifiers = {
-            "debug": {
+            debug: {
                 id: /debug/,
                 name: "Debug",
                 colors: []
             },
-            "ds4": {
+            ds4: {
                 id: /054c.*?05c4/,
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"]
-            },
-            "switch-pro": {
-                id: /057e/,
-                name: "Nintendo Switch Pro Controller",
-                colors: ["black"]
             },
             "xbox-one": {
                 id: /xinput|XInput/,
@@ -86,7 +81,7 @@ class Gamepad {
         // listen for mouse move events
         window.addEventListener("mousemove", this.onMouseMove.bind(this));
         // listen for keyboard events
-        window.addEventListener("keydown", this.onKeyDown.bind(this));
+        window.addEventListener("keypress", this.onKeyPress.bind(this));
 
         // bind a gamepads scan
         window.setInterval(
@@ -202,7 +197,8 @@ class Gamepad {
      *
      * @param {KeyboardEvent} e
      */
-    onKeyDown(e) {
+    onKeyPress(e) {
+        console.log(e);
         switch (e.code) {
             case "Delete":
             case "Escape":
@@ -230,6 +226,9 @@ class Gamepad {
             case "NumpadSubtract":
             case "Minus":
                 this.changeZoom("-");
+                break;
+            case "NumpadDecimal":
+                this.autoAdjustZoom();
                 break;
             case "Numpad0":
             case "Digit0":
@@ -452,6 +451,9 @@ class Gamepad {
 
                 // inject the template HTML
                 this.$gamepad.html(template);
+                window.setTimeout(() => {
+                    this.autoAdjustZoom(1);
+                });
 
                 // read for parameters to apply:
                 // - color
@@ -670,6 +672,24 @@ class Gamepad {
 
         // update the DOM with the color value
         this.$gamepad.attr("data-color", this.activeGamepadColorName);
+    }
+
+    /**
+     * Adjusts the zoom level to the available space
+     */
+    autoAdjustZoom(maxZoom = null) {
+        // let the browser the time to paint
+        const smallerRatio = Math.min(
+            window.innerWidth /
+                (this.$gamepad.width() / this.activeGamepadZoomLevel),
+            window.innerHeight /
+                (this.$gamepad.height() / this.activeGamepadZoomLevel)
+        );
+        this.changeZoom(
+            maxZoom !== null && smallerRatio >= maxZoom
+                ? maxZoom
+                : Math.floor(smallerRatio * 10) / 10
+        );
     }
 
     /**
