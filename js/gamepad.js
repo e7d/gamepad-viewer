@@ -30,15 +30,20 @@ class Gamepad {
         // gamepad collection default values
         this.gamepads = {};
         this.gamepadIdentifiers = {
-            debug: {
+            "debug": {
                 id: /debug/,
                 name: "Debug",
                 colors: []
             },
-            ds4: {
+            "ds4": {
                 id: /054c.*?05c4/,
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"]
+            },
+            "switch-pro": {
+                id: /057e/,
+                name: "Nintendo Switch Pro Controller",
+                colors: ["black"]
             },
             "xbox-one": {
                 id: /xinput|XInput/,
