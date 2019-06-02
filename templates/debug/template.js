@@ -44,7 +44,7 @@
                    <div class="label">B${buttonIndex}</div>
                    <div class="value" data-button="${buttonIndex}">0</div>
                </div>
-            </div>'
+            </div>
         `);
     }
 
