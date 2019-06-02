@@ -59,6 +59,7 @@ class Gamepad {
         this.activeGamepadIdentifier = null;
         this.activeGamepadColorIndex = null;
         this.activeGamepadColorName = null;
+        this.activeGamepadZoomMode = "manual";
         this.activeGamepadZoomLevel = 1;
         this.mapping = {
             buttons: [],
@@ -81,7 +82,9 @@ class Gamepad {
         // listen for mouse move events
         window.addEventListener("mousemove", this.onMouseMove.bind(this));
         // listen for keyboard events
-        window.addEventListener("keypress", this.onKeyPress.bind(this));
+        window.addEventListener("keydown", this.onKeyDown.bind(this));
+        // listen for keyboard events
+        window.addEventListener("resize", this.onResize.bind(this));
 
         // bind a gamepads scan
         window.setInterval(
@@ -91,11 +94,11 @@ class Gamepad {
 
         // read URI for display parameters to initalize
         this.params = {
-            background: $.urlParam("background") || null,
-            color: $.urlParam("color") || null,
-            type: $.urlParam("type") || null,
-            demo: $.urlParam("demo") || null,
-            zoom: $.urlParam("zoom") || null
+            background: this.getUrlParam("background") || null,
+            color: this.getUrlParam("color") || null,
+            type: this.getUrlParam("type") || null,
+            demo: this.getUrlParam("demo") || null,
+            zoom: this.getUrlParam("zoom") || null
         };
 
         // change the background is specified
@@ -126,6 +129,22 @@ class Gamepad {
 
         // by default, enqueue a delayed display of the help modal
         this.displayGamepadHelp();
+    }
+
+    /**
+     * Reads an URL search parameter
+     *
+     * @param {*} name
+     */
+    getUrlParam(name) {
+        let results = new RegExp("[?&]" + name + "(=([^&#]*))?").exec(
+            window.location.search
+        );
+        if (results === null) {
+            return null;
+        }
+
+        return decodeURIComponent(results[2] || true) || true;
     }
 
     /**
@@ -197,8 +216,7 @@ class Gamepad {
      *
      * @param {KeyboardEvent} e
      */
-    onKeyPress(e) {
-        console.log(e);
+    onKeyDown(e) {
         switch (e.code) {
             case "Delete":
             case "Escape":
@@ -228,13 +246,22 @@ class Gamepad {
                 this.changeZoom("-");
                 break;
             case "NumpadDecimal":
-                this.autoAdjustZoom();
+                this.autoAdjustZoom(1);
                 break;
             case "Numpad0":
             case "Digit0":
                 this.changeZoom("0");
                 break;
         }
+    }
+
+    /**
+     * Handles the keyboard "keydown" event
+     *
+     * @param {WindowEvent} e
+     */
+    onResize(e) {
+        if (this.activeGamepadZoomMode === "auto") this.autoAdjustZoom(1);
     }
 
     /**
@@ -445,9 +472,6 @@ class Gamepad {
     loadTemplate(activeGamepad) {
         $.ajax("templates/" + this.activeGamepadType + "/template.html").done(
             template => {
-                // hoist some template related variables
-                let button;
-                let axis;
 
                 // inject the template HTML
                 this.$gamepad.html(template);
@@ -472,7 +496,6 @@ class Gamepad {
                     buttonIndex < activeGamepad.buttons.length;
                     buttonIndex++
                 ) {
-                    button = activeGamepad.buttons[buttonIndex];
                     this.mapping.buttons[buttonIndex] = $(
                         `[data-button="${buttonIndex}"]`
                     );
@@ -485,7 +508,6 @@ class Gamepad {
                     axisIndex < activeGamepad.axes.length;
                     axisIndex++
                 ) {
-                    axis = activeGamepad.axes[axisIndex];
                     this.mapping.axes[axisIndex] = $(
                         `[data-axis=${axisIndex}], [data-axis-x=${axisIndex}], [data-axis-y=${axisIndex}], [data-axis-z=${axisIndex}]`
                     );
@@ -507,11 +529,17 @@ class Gamepad {
         }
 
         // enqueue the next refresh right away
-        window.requestAnimationFrame(this.updateStatus.bind(this));
+        window.setTimeout(this.updateStatus.bind(this), 1000 / 60);
+        // window.requestAnimationFrame(this.updateStatus.bind(this));
 
         // load latest gamepad data
         this.refreshGamepads();
         const activeGamepad = this.getActiveGamepad();
+
+        if (activeGamepad.timestamp === this.activeGamepadTimestamp) {
+            return;
+        }
+        this.activeGamepadTimestamp = activeGamepad.timestamp;
 
         this.updateButtons(activeGamepad);
         this.updateAxes(activeGamepad);
@@ -523,10 +551,6 @@ class Gamepad {
      * @param {*} activeGamepad
      */
     updateButtons(activeGamepad) {
-        // hoist some variables
-        let button;
-        let $button;
-
         // update the buttons
         for (
             let buttonIndex = 0;
@@ -534,14 +558,14 @@ class Gamepad {
             buttonIndex++
         ) {
             // find the DOM element
-            $button = this.mapping.buttons[buttonIndex];
+            const $button = this.mapping.buttons[buttonIndex];
             if (!$button) {
                 // nothing to do for this button if no DOM element exists
                 break;
             }
 
             // read the button data
-            button = activeGamepad.buttons[buttonIndex];
+            const button = activeGamepad.buttons[buttonIndex];
 
             // update the display values
             $button.attr("data-pressed", button.pressed);
@@ -560,10 +584,6 @@ class Gamepad {
      * @param {*} activeGamepad
      */
     updateAxes(activeGamepad) {
-        // hoist some variables
-        let axis;
-        let $axis;
-
         // update the axes
         for (
             let axisIndex = 0;
@@ -571,14 +591,14 @@ class Gamepad {
             axisIndex++
         ) {
             // find the DOM element
-            $axis = this.mapping.axes[axisIndex];
+            const $axis = this.mapping.axes[axisIndex];
             if (!$axis) {
                 // nothing to do for this button if no DOM element exists
                 break;
             }
 
             // read the axis data
-            axis = activeGamepad.axes[axisIndex];
+            const axis = activeGamepad.axes[axisIndex];
 
             // update the display values
             if ($axis.is("[data-axis=" + axisIndex + "]")) {
@@ -681,14 +701,15 @@ class Gamepad {
         // let the browser the time to paint
         const smallerRatio = Math.min(
             window.innerWidth /
-                (this.$gamepad.width() / this.activeGamepadZoomLevel),
-            window.innerHeight /
-                (this.$gamepad.height() / this.activeGamepadZoomLevel)
+            (this.$gamepad.width() / this.activeGamepadZoomLevel),
+        window.innerHeight /
+            (this.$gamepad.height() / this.activeGamepadZoomLevel)
         );
         this.changeZoom(
             maxZoom !== null && smallerRatio >= maxZoom
                 ? maxZoom
-                : Math.floor(smallerRatio * 10) / 10
+                : Math.floor(smallerRatio * 100) / 100,
+            "auto"
         );
     }
 
@@ -697,7 +718,7 @@ class Gamepad {
      *
      * @param {any} zoomLevel
      */
-    changeZoom(zoomLevel) {
+    changeZoom(zoomLevel, zoomMode = "manual") {
         // ensure that a gamepad is currently active
         if (null === this.activeGamepadIndex) {
             return;
@@ -707,6 +728,8 @@ class Gamepad {
         if ("undefined" === typeof zoomLevel) {
             return;
         }
+
+        this.activeGamepadZoomMode = zoomMode;
 
         if ("0" === zoomLevel) {
             // "0" means a zoom reset
@@ -723,7 +746,7 @@ class Gamepad {
         }
 
         // hack: fix js float issues
-        this.activeGamepadZoomLevel = +this.activeGamepadZoomLevel.toFixed(1);
+        this.activeGamepadZoomLevel = +this.activeGamepadZoomLevel.toFixed(2);
 
         // update the DOM with the zoom value
         this.$gamepad.css(
@@ -757,3 +780,5 @@ class Gamepad {
         this.mapGamepad(this.activeGamepadIndex);
     }
 }
+
+window.gamepad = new Gamepad();

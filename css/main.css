@@ -1,3 +1,7 @@
+.no-break {
+    display: inline-block;
+}
+
 body {
     background: transparent;
     overflow: hidden;
