@@ -23,7 +23,7 @@ class Gamepad {
             "dimgrey",
             "black",
             "lime",
-            "magenta"
+            "magenta",
         ];
         this.backgroundColorIndex = 0;
 
@@ -33,18 +33,18 @@ class Gamepad {
             debug: {
                 id: /debug/,
                 name: "Debug",
-                colors: []
+                colors: [],
             },
             ds4: {
                 id: /054c.*?05c4/,
                 name: "DualShock 4",
-                colors: ["black", "white", "red", "blue"]
+                colors: ["black", "white", "red", "blue"],
             },
             "xbox-one": {
-                id: /xinput|XInput/,
+                id: /xinput|XInput|045e.*?02ea/,
                 name: "Xbox One",
-                colors: ["black", "white"]
-            }
+                colors: ["black", "white"],
+            },
         };
 
         // gamepad help default values
@@ -63,7 +63,7 @@ class Gamepad {
         this.activeGamepadZoomLevel = 1;
         this.mapping = {
             buttons: [],
-            axes: []
+            axes: [],
         };
 
         // listen for gamepad related events
@@ -98,7 +98,7 @@ class Gamepad {
             color: this.getUrlParam("color") || null,
             type: this.getUrlParam("type") || null,
             demo: this.getUrlParam("demo") || null,
-            zoom: this.getUrlParam("zoom") || null
+            zoom: this.getUrlParam("zoom") || null,
         };
 
         // change the background is specified
@@ -265,18 +265,22 @@ class Gamepad {
     }
 
     /**
-     * Reloads gamepads data
+     * Get navigator gamepads collection
      */
-    refreshGamepads() {
-        // get fresh information from DOM about gamepads
-        const navigatorGamepads = navigator.getGamepads
+    getNavigatorGamepads() {
+        return navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
             ? navigator.webkitGetGamepads()
             : [];
-        for (let key in navigatorGamepads) {
-            this.gamepads[key] = navigatorGamepads[key];
-        }
+    }
+
+    /**
+     * Reloads gamepads data
+     */
+    refreshGamepads() {
+        // get fresh information from DOM about gamepads
+        this.gamepads = this.getNavigatorGamepads();
 
         this.buildHelpGamepadList();
     }
@@ -471,8 +475,7 @@ class Gamepad {
      */
     loadTemplate(activeGamepad) {
         $.ajax("templates/" + this.activeGamepadType + "/template.html").done(
-            template => {
-
+            (template) => {
                 // inject the template HTML
                 this.$gamepad.html(template);
                 window.setTimeout(() => {
@@ -701,9 +704,9 @@ class Gamepad {
         // let the browser the time to paint
         const smallerRatio = Math.min(
             window.innerWidth /
-            (this.$gamepad.width() / this.activeGamepadZoomLevel),
-        window.innerHeight /
-            (this.$gamepad.height() / this.activeGamepadZoomLevel)
+                (this.$gamepad.width() / this.activeGamepadZoomLevel),
+            window.innerHeight /
+                (this.$gamepad.height() / this.activeGamepadZoomLevel)
         );
         this.changeZoom(
             maxZoom !== null && smallerRatio >= maxZoom
@@ -751,9 +754,7 @@ class Gamepad {
         // update the DOM with the zoom value
         this.$gamepad.css(
             "transform",
-            `translate(-50%, -50%) scale(${this.activeGamepadZoomLevel}, ${
-                this.activeGamepadZoomLevel
-            })`
+            `translate(-50%, -50%) scale(${this.activeGamepadZoomLevel}, ${this.activeGamepadZoomLevel})`
         );
     }
 
