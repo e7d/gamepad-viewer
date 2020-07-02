@@ -30,18 +30,23 @@ class Gamepad {
         // gamepad collection default values
         this.gamepads = {};
         this.gamepadIdentifiers = {
-            debug: {
+            "debug": {
                 id: /debug/,
                 name: "Debug",
                 colors: [],
             },
-            ds4: {
+            "ds4": {
                 id: /054c.*?05c4/,
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
             },
+            // "switch-pro": {
+            //     id: /057e.*?2009/,
+            //     name: "Switch Pro Controller",
+            //     colors: ["black"],
+            // },
             "xbox-one": {
-                id: /xinput|XInput|045e.*?02ea/,
+                id: /045e.*?02ea|xinput|XInput/,
                 name: "Xbox One",
                 colors: ["black", "white"],
             },
@@ -532,8 +537,8 @@ class Gamepad {
         }
 
         // enqueue the next refresh right away
-        window.setTimeout(this.updateStatus.bind(this), 1000 / 60);
-        // window.requestAnimationFrame(this.updateStatus.bind(this));
+        // window.setTimeout(this.updateStatus.bind(this), 1000 / 60);
+        window.requestAnimationFrame(this.updateStatus.bind(this));
 
         // load latest gamepad data
         this.refreshGamepads();
