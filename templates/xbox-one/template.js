@@ -3,7 +3,8 @@ gamepad.updateButton = function($button) {
 
     if ($button.is(".trigger")) {
         $button.css({
-            "-webkit-clip-path": `inset(${(1 - value) * 100}% 0px 0px 0pc)`
+            // "opacity": `${(value) * 100}%`,
+            "clip-path": `inset(${(1 - value) * 100}% 0px 0px 0pc)`
         });
     }
 };

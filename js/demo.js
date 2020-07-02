@@ -1,11 +1,11 @@
 /**
  * The Gamepad demo class
  *
- * @class GamepadDemo
+ * @class Demo
  */
-class GamepadDemo {
+class Demo {
     /**
-     * Creates an instance of GamepadDemo.
+     * Creates an instance of Demo.
      *
      * @param Gamepad gamepad
      */

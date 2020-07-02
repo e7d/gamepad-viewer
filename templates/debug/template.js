@@ -7,7 +7,7 @@
     $buttons = $(".buttons .container");
 
     gamepad = window.gamepad;
-    activeGamepad = gamepad.getActiveGamepad();
+    activeGamepad = gamepad.getActive();
 
     if (!activeGamepad) {
         return;
@@ -27,7 +27,7 @@
             <div class="box medium">
                <div class="content">
                    <div class="label">AXIS ${axisIndex}</div>
-                   <div class="value" data-axis="${axisIndex}">0</div>
+                   <div class="value" data-axis="${axisIndex}"></div>
                </div>
             </div>
         `);
@@ -42,7 +42,7 @@
             <div class="box small">
                <div class="content">
                    <div class="label">B${buttonIndex}</div>
-                   <div class="value" data-button="${buttonIndex}">0</div>
+                   <div class="value" data-button="${buttonIndex}"></div>
                </div>
             </div>
         `);
@@ -66,7 +66,7 @@
     }
 
     function updateTimestamp() {
-        activeGamepad = gamepad.getActiveGamepad();
+        activeGamepad = gamepad.getActive();
         if (!activeGamepad) {
             return;
         }
