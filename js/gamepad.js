@@ -29,23 +29,24 @@ class Gamepad {
         // gamepad collection default values
         this.gamepads = {};
         this.identifiers = {
+            // See: https://html5gamepad.com/codes
             debug: {
                 id: /debug/,
                 name: "Debug",
                 colors: [],
             },
             ds4: {
-                id: /054c.*?05c4/,
+                id: /054c/,
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
             },
             // "switch-pro": {
-            //     id: /057e.*?2009/,
+            //     id: /057e/,
             //     name: "Switch Pro Controller",
             //     colors: ["black"],
             // },
             "xbox-one": {
-                id: /045e.*?02ea|xinput|XInput/,
+                id: /045e|xinput|XInput/,
                 name: "Xbox One",
                 colors: ["black", "white"],
             },
