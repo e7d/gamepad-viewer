@@ -335,7 +335,7 @@ class Gamepad {
                 return gamepadType;
             }
         }
-        return "debug";
+        return "xbox-one";
     }
 
     /**
