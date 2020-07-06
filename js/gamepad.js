@@ -187,7 +187,7 @@ class Gamepad {
      */
     onGamepadConnect(e) {
         // on gamepad connection, refresh available gamepads list
-        this.refresh(e.gamepad);
+        this.scan();
     }
 
     /**
@@ -198,6 +198,7 @@ class Gamepad {
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
         this.disconnect(e.gamepad.index);
+        this.scan();
     }
 
     /**
