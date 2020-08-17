@@ -8,8 +8,6 @@ class Gamepad {
      * Creates an instance of Gamepad.
      */
     constructor() {
-        this.demo = new Demo(this);
-
         // cached DOM references
         this.$body = $("body");
         this.$gamepad = $("#gamepad");
@@ -23,6 +21,13 @@ class Gamepad {
             "black",
             "lime",
             "magenta",
+        ];
+        this.textColors = [
+            "black",
+            "black",
+            "white",
+            "black",
+            "black",
         ];
 
         // gamepad collection default values
@@ -118,12 +123,6 @@ class Gamepad {
             }
 
             this.$body.css("background", this.backgroundColors[this.index]);
-        }
-
-        // start the demo if requested by params
-        if (this.params.demo) {
-            this.demo.start(this.params.demo);
-            return;
         }
 
         // by default, enqueue a delayed display of the help modal
@@ -231,9 +230,6 @@ class Gamepad {
                 break;
             case "KeyH":
                 this.toggleHelp();
-                break;
-            case "KeyO":
-                this.demo.start();
                 break;
             case "NumpadAdd":
             case "Equal":
@@ -420,11 +416,6 @@ class Gamepad {
         // ensure we have an index to remove
         if ("undefined" === typeof index) return;
 
-        // ensure to kill demo mode
-        if ("demo" === this.index) {
-            this.demo.stop();
-        }
-
         // if this is the active gamepad
         if (true === index || this.index === index) {
             // clear associated date
@@ -590,10 +581,10 @@ class Gamepad {
             this.backgroundColorIndex = color;
         }
 
-        this.$body.css(
-            "background",
-            this.backgroundColors[this.backgroundColorIndex]
-        );
+        this.$body.css({
+            background: this.backgroundColors[this.backgroundColorIndex],
+            color: this.textColors[this.backgroundColorIndex],
+        });
     }
 
     /**
