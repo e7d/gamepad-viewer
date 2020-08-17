@@ -38,13 +38,10 @@ class Demo {
      * @param {string} [id='xinput']
      */
     start(mode = 'random', id = 'xinput') {
-        // remove any active gamepad
-        this.gamepad.removeGamepad(true);
-
         // add the demo gamepad to the gamepads list
         this.gamepad.gamepads['demo'] = this.demoGamepad;
         // map the demo gamepad as active gamepad
-        this.gamepad.mapGamepad('demo');
+        this.gamepad.map('demo');
 
         // determine the callback to use following the demo mode
         let callback;

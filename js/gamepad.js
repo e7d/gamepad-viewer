@@ -13,8 +13,7 @@ class Gamepad {
         // cached DOM references
         this.$body = $("body");
         this.$gamepad = $("#gamepad");
-        this.$nogamepad = $("#no-gamepad");
-        this.$nogamepadLink = $("#no-gamepad a");
+        this.$nogamepad = $(".no-gamepad");
         this.$help = $("#help");
         this.$gamepadList = $("#gamepad-list");
 
@@ -36,17 +35,17 @@ class Gamepad {
                 colors: [],
             },
             ds4: {
-                id: /054c/,
+                id: /054c|0810|2563/, // 054c = Sony vendor code, 0810,2563 = PS-like controllers vendor codes
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
             },
             // "switch-pro": {
-            //     id: /057e/,
+            //     id: /057e/, // 057e = Nintendo vendor code
             //     name: "Switch Pro Controller",
             //     colors: ["black"],
             // },
             "xbox-one": {
-                id: /045e|xinput|XInput/,
+                id: /045e|xinput|XInput/, // 045e = Microsoft vendor code, xinput = standard Windows controller
                 name: "Xbox One",
                 colors: ["black", "white"],
             },
@@ -54,7 +53,7 @@ class Gamepad {
 
         // gamepad help default values
         this.helpTimeout = null;
-        this.helpDelay = 5000;
+        this.helpDelay = 12000;
 
         // active gamepad default values
         this.scanDelay = 500;
