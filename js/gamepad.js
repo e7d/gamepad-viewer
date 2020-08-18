@@ -189,8 +189,15 @@ class Gamepad {
      */
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
-        this.disconnect(e.gamepad.index);
-        this.scan();
+        this.$gamepad.addClass('disconnected');
+
+        window.setTimeout(() => {
+            this.$gamepad.removeClass('disconnected');
+
+            // remove gamepad from the list and start back scanning
+            this.disconnect(e.gamepad.index);
+            this.scan();
+        }, 5000);
     }
 
     /**
