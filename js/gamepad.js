@@ -268,9 +268,11 @@ class Gamepad {
      */
     refresh() {
         // get fresh information from DOM about gamepads
-        this.gamepads = this.getNavigatorGamepads();
-
-        this.buildHelpGamepadList();
+        const gamepads = this.getNavigatorGamepads();
+        if (gamepads !== this.gamepads) {
+            this.gamepads = gamepads;
+            this.buildHelpGamepadList();
+        }
     }
 
     /**
@@ -453,7 +455,7 @@ class Gamepad {
      * @param {*} gamepad
      */
     loadTemplate(gamepad) {
-        $.ajax(`templates/${this.type}/template.html`, {async: true}).done((template) => {
+        $.ajax(`templates/${this.type}/template.html`).done((template) => {
             // inject the template HTML
             this.$gamepad.html(template);
             window.setTimeout(() => {
@@ -593,9 +595,11 @@ class Gamepad {
             }
         } else {
             this.backgroundColorIndex = color;
-            this.backgroundColorName
+            this.backgroundColorName;
         }
-        this.backgroundColorName = this.backgroundColors[this.backgroundColorIndex];
+        this.backgroundColorName = this.backgroundColors[
+            this.backgroundColorIndex
+        ];
 
         this.$body.css({
             background: this.backgroundColorName,
