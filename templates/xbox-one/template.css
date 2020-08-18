@@ -1,7 +1,10 @@
 #gamepad {
-    background-image: url(base.svg);
     height: 630px;
     width: 750px;
+}
+
+#gamepad[data-color="black"] {
+    background-image: url(base-black.svg);
 }
 
 #gamepad[data-color="white"] {
