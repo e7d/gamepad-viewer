@@ -70,7 +70,7 @@ class Gamepad {
         this.helpDelay = 12000;
 
         // active gamepad default values
-        this.scanDelay = 500;
+        this.scanDelay = 200;
         this.debug = false;
         this.index = null;
         this.type = null;
@@ -419,10 +419,14 @@ class Gamepad {
 
         // determine gamepad type
         this.type = this.getType(gamepad);
-        this.identifier = this.identifiers[this.type];
-        this.colorIndex = 0;
+
         // ensure a valid gamepad type was discovered
         if (!this.type) return;
+
+        // initial setup of the gamepad
+        this.identifier = this.identifiers[this.type];
+        this.colorIndex = 0;
+        this.changeGamepadColor(this.identifier.colors[this.colorIndex]);
 
         // load the HTML template file
         this.loadTemplate(gamepad);
