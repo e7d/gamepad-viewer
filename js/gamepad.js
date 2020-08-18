@@ -22,13 +22,7 @@ class Gamepad {
             "lime",
             "magenta",
         ];
-        this.textColors = [
-            "black",
-            "black",
-            "white",
-            "black",
-            "black",
-        ];
+        this.textColors = ["black", "black", "white", "black", "black"];
 
         // gamepad collection default values
         this.gamepads = {};
@@ -125,8 +119,8 @@ class Gamepad {
             this.$body.css("background", this.backgroundColors[this.index]);
         }
 
-        // by default, enqueue a delayed display of the help modal
-        this.displayHelp();
+        // by default, enqueue a delayed display of the instructions animation
+        this.displayInstructions();
     }
 
     /**
@@ -146,33 +140,33 @@ class Gamepad {
     }
 
     /**
-     * Displays the help modal on screen
+     * Displays the instructions animation on screen
      */
-    displayHelp() {
+    displayInstructions() {
         // do not display help if we have an active gamepad
         if (null !== this.index) return;
 
-        // cancel the queued display of the help modal, if any
+        // cancel the queued display of the instructions animation, if any
         window.clearTimeout(this.helpTimeout);
-        // hide the help modal
+        // hide the instructions animation
         this.$nogamepad.show();
 
-        // enqueue a delayed display of the help modal
-        this.hideHelp();
+        // enqueue a delayed display of the instructions animation
+        this.hideInstructions();
     }
 
     /**
-     * Hides the help modal
+     * Hides the instructions animation
      *
      * @param {boolean} [hideNow=false]
      */
-    hideHelp(hideNow = false) {
+    hideInstructions(hideNow = false) {
         // hide the message right away if needed
         if (hideNow) {
             this.$nogamepad.hide();
         }
 
-        // hide help modal if no gamepad is active after X ms
+        // hide instructions animation if no gamepad is active after X ms
         this.helpTimeout = window.setTimeout(() => {
             this.$nogamepad.fadeOut();
         }, this.helpDelay);
@@ -205,7 +199,7 @@ class Gamepad {
      * @param {MouseEvent} e
      */
     onMouseMove() {
-        this.displayHelp();
+        this.displayInstructions();
     }
 
     /**
@@ -375,7 +369,7 @@ class Gamepad {
         if ("undefined" === typeof index) return;
 
         // hide the help messages
-        this.hideHelp(true);
+        this.hideInstructions(true);
         this.$help.removeClass("active");
 
         // update local references
@@ -387,8 +381,8 @@ class Gamepad {
             // this mapping request was probably a mistake :
             // - remove the active gamepad index and reference
             this.index = null;
-            // - enqueue a display of the help modal right away
-            this.displayHelp(true);
+            // - enqueue a display of the instructions animation right away
+            this.displayInstructions(true);
 
             return;
         }
@@ -404,7 +398,17 @@ class Gamepad {
         this.loadTemplate(gamepad);
 
         // hide the help before displaying the template
-        this.hideHelp();
+        this.hideInstructions();
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "map",
+                eventLabel: "Map",
+                eventValue: this.identifier,
+            });
+        }
     }
 
     /**
@@ -415,6 +419,16 @@ class Gamepad {
     disconnect(index) {
         // ensure we have an index to remove
         if ("undefined" === typeof index) return;
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "disconnect",
+                eventLabel: "Disconnect",
+                eventValue: this.identifier,
+            });
+        }
 
         // if this is the active gamepad
         if (true === index || this.index === index) {
@@ -428,8 +442,8 @@ class Gamepad {
             this.$gamepad.empty();
         }
 
-        // enqueue a display of the help modal
-        this.displayHelp();
+        // enqueue a display of the instructions animation
+        this.displayInstructions();
         this.debug = false;
     }
 
@@ -439,7 +453,7 @@ class Gamepad {
      * @param {*} gamepad
      */
     loadTemplate(gamepad) {
-        $.ajax(`templates/${this.type}/template.html`).done((template) => {
+        $.ajax(`templates/${this.type}/template.html`, {async: true}).done((template) => {
             // inject the template HTML
             this.$gamepad.html(template);
             window.setTimeout(() => {
@@ -579,12 +593,24 @@ class Gamepad {
             }
         } else {
             this.backgroundColorIndex = color;
+            this.backgroundColorName
         }
+        this.backgroundColorName = this.backgroundColors[this.backgroundColorIndex];
 
         this.$body.css({
-            background: this.backgroundColors[this.backgroundColorIndex],
+            background: this.backgroundColorName,
             color: this.textColors[this.backgroundColorIndex],
         });
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "change-background-color",
+                eventLabel: "Change Background Color",
+                eventValue: this.backgroundColorName,
+            });
+        }
     }
 
     /**
@@ -627,6 +653,16 @@ class Gamepad {
 
         // update the DOM with the color value
         this.$gamepad.attr("data-color", this.colorName);
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "change-gamepad-color",
+                eventLabel: "Change Gamepad Color",
+                eventValue: this.colorName,
+            });
+        }
     }
 
     /**
@@ -682,6 +718,16 @@ class Gamepad {
             "transform",
             `translate(-50%, -50%) scale(${this.zoomLevel}, ${this.zoomLevel})`
         );
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "change-zoom",
+                eventLabel: "Change Zoom",
+                eventValue: this.zoomLevel,
+            });
+        }
     }
 
     /**
@@ -689,6 +735,16 @@ class Gamepad {
      */
     toggleHelp() {
         this.$help.toggleClass("active");
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "toggle-help",
+                eventLabel: "Toggle Help",
+                eventValue: this.$help.is("active"),
+            });
+        }
     }
 
     /**
@@ -700,6 +756,16 @@ class Gamepad {
 
         // update debug value
         this.debug = !this.debug;
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "toggle-debug",
+                eventLabel: "Toggle Debug",
+                eventValue: this.debug,
+            });
+        }
 
         // remap current gamepad
         this.map(this.index);
