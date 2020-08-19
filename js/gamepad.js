@@ -832,6 +832,7 @@ class Gamepad {
                 .replace("?", "")
                 .split("&")
                 .map((param) => param.split("="))
+                .filter(([k, v]) => v !== null && v !== undefined)
         ), newSettings);
         const query = Object.entries(settings).map(([key, value]) => `${key}=${value}`).join('&');
         window.history.replaceState({}, document.title, `/?${query}`);
