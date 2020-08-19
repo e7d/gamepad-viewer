@@ -99,6 +99,7 @@ body {
     font-size: 0.9em;
     left: 50%;
     min-width: 400px;
+    width: 600px;
     padding: 20px;
     position: absolute;
     top: 50%;
@@ -148,21 +149,23 @@ body {
 }
 
 kbd {
-    display: inline;
-    display: inline-block;
-    min-width: 1em;
-    padding: .2em .3em;
-    margin: 0 .2em;
-    font: normal 1em monospace;
-    text-align: center;
-    text-decoration: none;
     -moz-border-radius: .3em;
+    -moz-user-select: none;
     -webkit-border-radius: .3em;
+    -webkit-user-select: none;
     border-radius: .3em;
     border: none;
     cursor: default;
-    -moz-user-select: none;
-    -webkit-user-select: none;
+    display: inline-block;
+    display: inline;
+    font: normal 1em monospace;
+    margin: 0 .2em;
+    min-width: 1em;
+    padding: .2em .6em;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
     user-select: none;
 }
 

@@ -64,6 +64,7 @@ class Gamepad {
         this.backgroundColorIndex = 0;
         this.colorIndex = null;
         this.colorName = null;
+        this.triggersMeter = false;
         this.zoomMode = "manual";
         this.zoomLevel = 1;
         this.mapping = {
@@ -231,6 +232,9 @@ class Gamepad {
                 break;
             case "KeyH":
                 this.toggleHelp();
+                break;
+            case "KeyT":
+                this.toggleTriggersMeter();
                 break;
             case "NumpadAdd":
             case "Equal":
@@ -742,23 +746,6 @@ class Gamepad {
     }
 
     /**
-     * Toggles the on-screen help message
-     */
-    toggleHelp() {
-        this.$help.toggleClass("active");
-
-        // save statistics
-        if (!!window.ga) {
-            ga("send", "event", {
-                eventCategory: "Gamepad",
-                eventAction: "toggle-help",
-                eventLabel: "Toggle Help",
-                eventValue: this.$help.is("active"),
-            });
-        }
-    }
-
-    /**
      * Toggles the debug template for the active gamepad, if any
      */
     toggleDebug() {
@@ -780,6 +767,31 @@ class Gamepad {
 
         // remap current gamepad
         this.map(this.index);
+    }
+
+    /**
+     * Toggles the on-screen help message
+     */
+    toggleHelp() {
+        this.$help.toggleClass("active");
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "toggle-help",
+                eventLabel: "Toggle Help",
+                eventValue: this.$help.is("active"),
+            });
+        }
+    }
+
+    /**
+     * Toggles the triggers meter display
+     */
+    toggleTriggersMeter() {
+        this.triggersMeter = !this.triggersMeter;
+        this.$gamepad[this.triggersMeter ? 'addClass' : 'removeClass']('triggers-meter');
     }
 }
 

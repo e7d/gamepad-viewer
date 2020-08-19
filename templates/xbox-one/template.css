@@ -136,7 +136,6 @@
     background: url(buttons.svg);
     width: 53px;
     height: 53px;
-    /* display: none; */
 }
 
 #gamepad .button[data-pressed="true"] {
