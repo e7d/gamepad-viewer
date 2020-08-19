@@ -34,12 +34,27 @@ class Gamepad {
                 colors: [],
             },
             ds4: {
-                id: /054c|0810|2563/, // 054c = Sony vendor code, 0810,2563 = PS-like controllers vendor codes
+                id: /054c|54c|046d|0810|2563/, // 054c = Sony vendor code, 046d,0810,2563 = PS-like controllers vendor codes
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
             },
+            // gamecube: {
+            //     id: /0079/, // 0079 = Nintendo GameCube vendor code
+            //     name: "GameCube Controller",
+            //     colors: ["black"],
+            // },
+            // "joy-con": {
+            //     id: /200e/, // 0079 = Joy-Con specific product code
+            //     name: "Joy-Con (L+R) Controllers",
+            //     colors: ["blue-red"],
+            // },
+            // stadia: {
+            //     id: /18d1/, // 18d1 = Google vendor code
+            //     name: "Stadia Controller",
+            //     colors: ["black"],
+            // },
             // "switch-pro": {
-            //     id: /057e/, // 057e = Nintendo vendor code
+            //     id: /057e|20d6/, // 057e = Nintendo Switch vendor code, 20d6 = Switch Pro-like vendor code
             //     name: "Switch Pro Controller",
             //     colors: ["black"],
             // },
@@ -71,6 +86,9 @@ class Gamepad {
             buttons: [],
             axes: [],
         };
+
+        // // read hash
+        // this.hash = this.readHash();
 
         // listen for gamepad related events
         this.haveEvents = "GamepadEvent" in window;
@@ -108,16 +126,17 @@ class Gamepad {
         if (this.params.background) {
             for (let i = 0; i < this.backgroundColors.length; i++) {
                 if (this.params.background === this.backgroundColors[i]) {
-                    this.index = i;
+                    this.backgroundColorIndex = i;
                     break;
                 }
             }
 
-            if (!this.index) {
-                return;
+            if (this.backgroundColorIndex) {
+                this.$body.css(
+                    "background",
+                    this.backgroundColors[this.backgroundColorIndex]
+                );
             }
-
-            this.$body.css("background", this.backgroundColors[this.index]);
         }
 
         // by default, enqueue a delayed display of the instructions animation
@@ -133,11 +152,9 @@ class Gamepad {
         let results = new RegExp("[?&]" + name + "(=([^&#]*))?").exec(
             window.location.search
         );
-        if (results === null) {
-            return null;
-        }
-
-        return decodeURIComponent(results[2] || true) || true;
+        return results === null
+            ? null
+            : decodeURIComponent(results[2] || true) || true;
     }
 
     /**
@@ -190,10 +207,10 @@ class Gamepad {
      */
     onGamepadDisconnect(e) {
         // on gamepad disconnection, remove it from the list
-        this.$gamepad.addClass('disconnected');
+        this.$gamepad.addClass("disconnected");
 
         window.setTimeout(() => {
-            this.$gamepad.removeClass('disconnected');
+            this.$gamepad.removeClass("disconnected");
 
             // remove gamepad from the list and start back scanning
             this.disconnect(e.gamepad.index);
@@ -455,6 +472,9 @@ class Gamepad {
             this.$gamepad.empty();
         }
 
+        // update navigation hash
+        this.updateSettings({ player: null });
+
         // enqueue a display of the instructions animation
         this.displayInstructions();
         this.debug = false;
@@ -617,6 +637,9 @@ class Gamepad {
             color: this.textColors[this.backgroundColorIndex],
         });
 
+        // update current settings
+        this.updateSettings({ background: this.backgroundColorName });
+
         // save statistics
         if (!!window.ga) {
             ga("send", "event", {
@@ -668,6 +691,9 @@ class Gamepad {
 
         // update the DOM with the color value
         this.$gamepad.attr("data-color", this.colorName);
+
+        // update current settings
+        this.updateSettings({ color: this.colorName });
 
         // save statistics
         if (!!window.ga) {
@@ -791,7 +817,24 @@ class Gamepad {
      */
     toggleTriggersMeter() {
         this.triggersMeter = !this.triggersMeter;
-        this.$gamepad[this.triggersMeter ? 'addClass' : 'removeClass']('triggers-meter');
+        this.$gamepad[this.triggersMeter ? "addClass" : "removeClass"](
+            "triggers-meter"
+        );
+    }
+
+    /**
+     * Update url hash with new settings
+     * @param {*} newSettings
+     */
+    updateSettings(newSettings) {
+        const settings = Object.assign(Object.fromEntries(
+            window.location.search
+                .replace("?", "")
+                .split("&")
+                .map((param) => param.split("="))
+        ), newSettings);
+        const query = Object.entries(settings).map(([key, value]) => `${key}=${value}`).join('&');
+        window.history.replaceState({}, document.title, `/?${query}`);
     }
 }
 
