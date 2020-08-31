@@ -11,8 +11,8 @@ class Gamepad {
         // cached DOM references
         this.$body = $("body");
         this.$gamepad = $("#gamepad");
-        this.$nogamepad = $(".no-gamepad");
-        this.$help = $("#help");
+        this.$instructions = $(".instructions");
+        this.$helpPopout = $("#help-popout");
         this.$gamepadList = $("#gamepad-list");
 
         this.backgroundColors = [
@@ -167,7 +167,7 @@ class Gamepad {
         // cancel the queued display of the instructions animation, if any
         window.clearTimeout(this.helpTimeout);
         // hide the instructions animation
-        this.$nogamepad.show();
+        this.$instructions.show();
 
         // enqueue a delayed display of the instructions animation
         this.hideInstructions();
@@ -181,12 +181,12 @@ class Gamepad {
     hideInstructions(hideNow = false) {
         // hide the message right away if needed
         if (hideNow) {
-            this.$nogamepad.hide();
+            this.$instructions.hide();
         }
 
         // hide instructions animation if no gamepad is active after X ms
         this.helpTimeout = window.setTimeout(() => {
-            this.$nogamepad.fadeOut();
+            this.$instructions.fadeOut();
         }, this.helpDelay);
     }
 
@@ -400,7 +400,7 @@ class Gamepad {
 
         // hide the help messages
         this.hideInstructions(true);
-        this.$help.removeClass("active");
+        this.$helpPopout.removeClass("active");
 
         // update local references
         this.index = index;
@@ -476,9 +476,6 @@ class Gamepad {
             this.$gamepad.empty();
         }
 
-        // update navigation hash
-        this.updateSettings({ player: null });
-
         // enqueue a display of the instructions animation
         this.displayInstructions();
         this.debug = false;
@@ -547,6 +544,8 @@ class Gamepad {
 
         this.updateButtons(activeGamepad);
         this.updateAxes(activeGamepad);
+
+        this.activeGamepad = activeGamepad;
     }
 
     /**
@@ -557,6 +556,10 @@ class Gamepad {
     updateButtons(gamepad) {
         // update the buttons
         for (let index = 0; index < gamepad.buttons.length; index++) {
+            if (this.activeGamepad && this.activeGamepad.buttons[index].value == gamepad.buttons[index].value) {
+                return;
+            }
+
             // find the DOM element
             const $button = this.mapping.buttons[index];
             if (!$button) {
@@ -586,6 +589,10 @@ class Gamepad {
     updateAxes(gamepad) {
         // update the axes
         for (let index = 0; index < gamepad.axes.length; index++) {
+            if (this.activeGamepad && this.activeGamepad.axes[index].value == gamepad.axes[index].value) {
+                return;
+            }
+
             // find the DOM element
             const $axis = this.mapping.axes[index];
             if (!$axis) {
@@ -803,7 +810,7 @@ class Gamepad {
      * Toggles the on-screen help message
      */
     toggleHelp() {
-        this.$help.toggleClass("active");
+        this.$helpPopout.toggleClass("active");
 
         // save statistics
         if (!!window.ga) {
@@ -811,7 +818,7 @@ class Gamepad {
                 eventCategory: "Gamepad",
                 eventAction: "toggle-help",
                 eventLabel: "Toggle Help",
-                eventValue: this.$help.is("active"),
+                eventValue: this.$helpPopout.is("active"),
             });
         }
     }
