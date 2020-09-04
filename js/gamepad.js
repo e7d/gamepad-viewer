@@ -88,7 +88,7 @@ class Gamepad {
         this.colorIndex = null;
         this.colorName = null;
         this.triggersMeter = false;
-        this.zoomMode = "manual";
+        this.zoomMode = "auto";
         this.zoomLevel = 1;
         this.mapping = {
             buttons: [],
@@ -121,26 +121,19 @@ class Gamepad {
         // bind a gamepads scan
         window.setInterval(this.scan.bind(this), this.scanDelay);
 
-        // read URI for display parameters to initalize
-        this.params = {
-            background: this.getUrlParam("background") || null,
-            color: this.getUrlParam("color") || null,
-            type: this.getUrlParam("type") || null,
-            demo: this.getUrlParam("demo") || null,
-            zoom: this.getUrlParam("zoom") || null,
-        };
-
         // change the background is specified
-        if (this.params.background) {
+        const background = this.getUrlParam("background");
+        if (background) {
             let backgroundStyleIndex;
             for (let i = 0; i < this.backgroundStyle.length; i++) {
-                if (this.params.background === this.backgroundStyle[i]) {
+                if (background === this.backgroundStyle[i]) {
                     backgroundStyleIndex = i;
                     break;
                 }
             }
 
-            if (backgroundStyleIndex) this.changeBackgroundStyle(backgroundStyleIndex);
+            if (backgroundStyleIndex)
+                this.changeBackgroundStyle(backgroundStyleIndex);
         }
 
         // by default, enqueue a delayed display of the instructions animation
@@ -251,6 +244,9 @@ class Gamepad {
             case "KeyD":
                 this.toggleDebug();
                 break;
+            case "KeyG":
+                this.toggleGamepadType();
+                break;
             case "KeyH":
                 this.toggleHelp();
                 break;
@@ -265,12 +261,13 @@ class Gamepad {
             case "Minus":
                 this.changeZoom("-");
                 break;
-            case "NumpadDecimal":
-                this.adjustZoom(1);
+            case "Numpad5":
+            case "Digit5":
+                this.changeZoom("auto");
                 break;
             case "Numpad0":
             case "Digit0":
-                this.changeZoom("0");
+                this.changeZoom(0);
                 break;
         }
     }
@@ -281,7 +278,7 @@ class Gamepad {
      * @param {WindowEvent} e
      */
     onResize(e) {
-        if (this.zoomMode === "auto") this.adjustZoom(1);
+        if (this.zoomMode === "auto") this.changeZoom("auto");
     }
 
     /**
@@ -342,22 +339,26 @@ class Gamepad {
      * @param {object} gamepad
      */
     getType(gamepad) {
+        const type = this.getUrlParam("type");
+
+        // if the debug option is active, use the associated template
+        if (type === "debug") this.debug = true;
         if (this.debug) {
-            // if the debug option is active, use the associated template
             return "debug";
         }
 
-        if (this.params.type) {
-            // if the gamepad type is set through params, apply it
-            return this.params.type;
+        // if the gamepad type is set through params, apply it
+        if (type) {
+            return type;
         }
 
-        // else, determine the template to use from the gamepad identifier
+        // else, determine the template to use from the gamepad identifier and update settings
         for (let gamepadType in this.identifiers) {
             if (this.identifiers[gamepadType].id.test(gamepad.id)) {
                 return gamepadType;
             }
         }
+
         return "xbox-one";
     }
 
@@ -421,16 +422,13 @@ class Gamepad {
             return;
         }
 
-        // determine gamepad type
+        // ensure a valid gamepad type is used
         this.type = this.getType(gamepad);
-
-        // ensure a valid gamepad type was discovered
         if (!this.type) return;
+        this.updateSettings({ type: this.type });
 
         // initial setup of the gamepad
         this.identifier = this.identifiers[this.type];
-        this.colorIndex = 0;
-        this.changeGamepadColor(this.identifier.colors[this.colorIndex]);
 
         // load the HTML template file
         this.loadTemplate(gamepad);
@@ -478,6 +476,7 @@ class Gamepad {
             this.colorName = null;
             this.zoomLevel = 1;
             this.$gamepad.empty();
+            this.updateSettings({ type: undefined, color: undefined });
         }
 
         // enqueue a display of the instructions animation
@@ -494,19 +493,20 @@ class Gamepad {
         $.ajax(`templates/${this.type}/template.html`).done((template) => {
             // inject the template HTML
             this.$gamepad.html(template);
-            window.setTimeout(() => {
-                this.adjustZoom(1);
-            });
 
             // read for parameters to apply:
             // - color
-            if (this.params.color) {
-                this.changeGamepadColor(this.params.color);
-            }
-            // - zoom
-            if (this.params.zoom) {
-                this.changeZoom(this.params.zoom);
-            }
+            this.changeGamepadColor(this.getUrlParam("color"));
+            // - triggers mode
+            this.toggleTriggersMeter(this.getUrlParam("triggers") === "meter");
+            // - zoom$
+            window.setTimeout(() =>
+                this.changeZoom(
+                    this.type === "debug"
+                        ? 0
+                        : this.getUrlParam("zoom") || "auto"
+                )
+            );
 
             // save the buttons mapping of this template
             this.mapping.buttons = [];
@@ -533,7 +533,7 @@ class Gamepad {
      */
     updateStatus() {
         // ensure that a gamepad is currently active
-        if (null === this.index) return;
+        if (this.index === null) return;
 
         // enqueue the next refresh right away
         window.requestAnimationFrame(this.updateStatus.bind(this));
@@ -666,7 +666,7 @@ class Gamepad {
      */
     changeGamepadColor(color) {
         // ensure that a gamepad is currently active
-        if (null === this.index) return;
+        if (this.index === null) return;
 
         if ("undefined" === typeof color) {
             // no color was specified, load the next one in list
@@ -674,28 +674,22 @@ class Gamepad {
             if (this.colorIndex > this.identifier.colors.length - 1) {
                 this.colorIndex = 0;
             }
-
-            this.colorName = this.identifier.colors[this.colorIndex];
         } else {
             if (!isNaN(parseInt(color))) {
                 // the color is a number, load it by its index
                 this.colorIndex = color;
-                this.colorName = this.identifier.colors[this.colorIndex];
             } else {
                 // the color is a string, load it by its name
-                this.colorName = color;
                 this.colorIndex = 0;
                 for (let gamepadColorIndex in this.identifier.colors) {
-                    if (
-                        this.colorName ===
-                        this.identifier.colors[gamepadColorIndex]
-                    ) {
+                    if (color === this.identifier.colors[gamepadColorIndex]) {
+                        this.colorIndex = gamepadColorIndex;
                         break;
                     }
-                    this.colorIndex++;
                 }
             }
         }
+        this.colorName = this.identifier.colors[this.colorIndex];
 
         // update the DOM with the color value
         this.$gamepad.attr("data-color", this.colorName);
@@ -715,45 +709,34 @@ class Gamepad {
     }
 
     /**
-     * Adjusts the zoom level to the available space
-     */
-    adjustZoom(maxZoom = null) {
-        // let the browser the time to paint
-        const smallerRatio = Math.min(
-            window.innerWidth / (this.$gamepad.width() / this.zoomLevel),
-            window.innerHeight / (this.$gamepad.height() / this.zoomLevel)
-        );
-        this.changeZoom(
-            maxZoom !== null && smallerRatio >= maxZoom
-                ? maxZoom
-                : Math.floor(smallerRatio * 100) / 100,
-            "auto"
-        );
-    }
-
-    /**
      * Changes the active gamepad zoom level
      *
      * @param {any} level
      */
-    changeZoom(level, mode = "manual") {
+    changeZoom(level) {
         // ensure that a gamepad is currently active
-        if (null === this.index) return;
+        if (this.index === null) return;
 
         // ensure we have some data to process
-        if ("undefined" === typeof level) return;
+        if (typeof level === "undefined") return;
 
-        this.zoomMode = mode;
+        this.zoomMode = level === "auto" ? "auto" : "manual";
 
-        if ("0" === level) {
-            // "0" means a zoom reset
+        if (level === "auto") {
+            // "auto" means a "contained" in frame zoom
+            this.zoomLevel = Math.min(
+                window.innerWidth / this.$gamepad.width(),
+                window.innerHeight / this.$gamepad.height()
+            );
+        } else if (level === 0) {
+            // 0 means a zoom reset
             this.zoomLevel = 1;
-        } else if ("+" === level && this.zoomLevel < 2) {
+        } else if (level === "+" && this.zoomLevel < 2) {
             // "+" means a zoom in if we still can
-            this.zoomLevel += 0.1;
-        } else if ("-" === level && this.zoomLevel > 0.2) {
+            this.zoomLevel *= 1.1;
+        } else if (level === "-" && this.zoomLevel > 0.2) {
             // "-" means a zoom out if we still can
-            this.zoomLevel -= 0.1;
+            this.zoomLevel /= 1.1;
         } else if (!isNaN((level = parseFloat(level)))) {
             // an integer value means a value-based zoom
             this.zoomLevel = level;
@@ -767,6 +750,11 @@ class Gamepad {
             "transform",
             `translate(-50%, -50%) scale(${this.zoomLevel}, ${this.zoomLevel})`
         );
+
+        // update current settings
+        this.updateSettings({
+            zoom: this.zoomMode === "auto" ? undefined : this.zoomLevel,
+        });
 
         // save statistics
         if (!!window.ga) {
@@ -782,9 +770,45 @@ class Gamepad {
     /**
      * Toggles the debug template for the active gamepad, if any
      */
+    toggleGamepadType() {
+        // ensure that a gamepad is currently active
+        if (this.index === null || this.type === null) return;
+
+        // toggle debug off
+        this.debug = false;
+
+        // compute next type
+        const types = Object.keys(this.identifiers).filter(
+            (i) => i !== "debug"
+        );
+        let typeIndex = types.reduce((typeIndex, type, index) => {
+            return type === this.type ? index : typeIndex;
+        }, 0);
+        this.type = types[++typeIndex >= types.length ? 0 : typeIndex];
+
+        // save statistics
+        if (!!window.ga) {
+            ga("send", "event", {
+                eventCategory: "Gamepad",
+                eventAction: "toggle-type",
+                eventLabel: "Toggle Type",
+                eventValue: this.type,
+            });
+        }
+
+        // update current settings
+        this.updateSettings({ type: this.type });
+
+        // remap current gamepad
+        this.map(this.index);
+    }
+
+    /**
+     * Toggles the debug template for the active gamepad, if any
+     */
     toggleDebug() {
         // ensure that a gamepad is currently active
-        if (null === this.index) return;
+        if (this.index === null) return;
 
         // update debug value
         this.debug = !this.debug;
@@ -798,6 +822,9 @@ class Gamepad {
                 eventValue: this.debug,
             });
         }
+
+        // update current settings
+        this.updateSettings({ type: this.debug ? "debug" : undefined });
 
         // remap current gamepad
         this.map(this.index);
@@ -823,11 +850,17 @@ class Gamepad {
     /**
      * Toggles the triggers meter display
      */
-    toggleTriggersMeter() {
-        this.triggersMeter = !this.triggersMeter;
+    toggleTriggersMeter(useMeter) {
+        this.triggersMeter =
+            useMeter !== undefined ? useMeter : !this.triggersMeter;
         this.$gamepad[this.triggersMeter ? "addClass" : "removeClass"](
             "triggers-meter"
         );
+
+        // update current settings
+        this.updateSettings({
+            triggers: this.triggersMeter ? "meter" : undefined,
+        });
     }
 
     /**
@@ -841,11 +874,11 @@ class Gamepad {
                     .replace("?", "")
                     .split("&")
                     .map((param) => param.split("="))
-                    .filter(([k, v]) => v !== null && v !== undefined)
             ),
             newSettings
         );
         const query = Object.entries(settings)
+            .filter(([, value]) => value !== undefined)
             .map(([key, value]) => `${key}=${value}`)
             .join("&");
         window.history.replaceState({}, document.title, `/?${query}`);

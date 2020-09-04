@@ -100,6 +100,8 @@ body {
     left: 50%;
     min-width: 400px;
     width: 600px;
+    max-height: 100vh;
+    overflow-y: auto;
     padding: 20px;
     position: absolute;
     top: 50%;
@@ -165,7 +167,7 @@ kbd {
     text-align: center;
     text-decoration: none;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     user-select: none;
 }
 
