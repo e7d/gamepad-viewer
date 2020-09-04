@@ -544,8 +544,6 @@ class Gamepad {
 
         this.updateButtons(activeGamepad);
         this.updateAxes(activeGamepad);
-
-        this.activeGamepad = activeGamepad;
     }
 
     /**
@@ -556,10 +554,6 @@ class Gamepad {
     updateButtons(gamepad) {
         // update the buttons
         for (let index = 0; index < gamepad.buttons.length; index++) {
-            if (this.activeGamepad && this.activeGamepad.buttons[index].value == gamepad.buttons[index].value) {
-                return;
-            }
-
             // find the DOM element
             const $button = this.mapping.buttons[index];
             if (!$button) {
@@ -589,10 +583,6 @@ class Gamepad {
     updateAxes(gamepad) {
         // update the axes
         for (let index = 0; index < gamepad.axes.length; index++) {
-            if (this.activeGamepad && this.activeGamepad.axes[index].value == gamepad.axes[index].value) {
-                return;
-            }
-
             // find the DOM element
             const $axis = this.mapping.axes[index];
             if (!$axis) {
