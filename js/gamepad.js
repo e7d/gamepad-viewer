@@ -15,14 +15,22 @@ class Gamepad {
         this.$helpPopout = $("#help-popout");
         this.$gamepadList = $("#gamepad-list");
 
-        this.backgroundColors = [
+        this.backgroundStyle = [
             "transparent",
+            "checkered",
             "dimgrey",
             "black",
             "lime",
             "magenta",
         ];
-        this.textColors = ["black", "black", "white", "black", "black"];
+        this.textColors = [
+            "black",
+            "black",
+            "black",
+            "white",
+            "black",
+            "black",
+        ];
 
         // gamepad collection default values
         this.gamepads = {};
@@ -76,7 +84,7 @@ class Gamepad {
         this.type = null;
         this.identifier = null;
         this.timestamp = null;
-        this.backgroundColorIndex = 0;
+        this.backgroundStyleIndex = 0;
         this.colorIndex = null;
         this.colorName = null;
         this.triggersMeter = false;
@@ -124,19 +132,15 @@ class Gamepad {
 
         // change the background is specified
         if (this.params.background) {
-            for (let i = 0; i < this.backgroundColors.length; i++) {
-                if (this.params.background === this.backgroundColors[i]) {
-                    this.backgroundColorIndex = i;
+            let backgroundStyleIndex;
+            for (let i = 0; i < this.backgroundStyle.length; i++) {
+                if (this.params.background === this.backgroundStyle[i]) {
+                    backgroundStyleIndex = i;
                     break;
                 }
             }
 
-            if (this.backgroundColorIndex) {
-                this.$body.css(
-                    "background",
-                    this.backgroundColors[this.backgroundColorIndex]
-                );
-            }
+            if (backgroundStyleIndex) this.changeBackgroundStyle(backgroundStyleIndex);
         }
 
         // by default, enqueue a delayed display of the instructions animation
@@ -239,7 +243,7 @@ class Gamepad {
                 this.disconnect(true);
                 break;
             case "KeyB":
-                this.changeBackgroundColor();
+                this.changeBackgroundStyle();
                 break;
             case "KeyC":
                 this.changeGamepadColor();
@@ -615,31 +619,34 @@ class Gamepad {
     }
 
     /**
-     * Changes the background color
+     * Changes the background style
      *
-     * @param {any} color
+     * @param {any} style
      */
-    changeBackgroundColor(color) {
-        if ("undefined" === typeof color) {
-            this.backgroundColorIndex++;
-            if (this.backgroundColorIndex > this.backgroundColors.length - 1) {
-                this.backgroundColorIndex = 0;
+    changeBackgroundStyle(style) {
+        if ("undefined" === typeof style) {
+            this.backgroundStyleIndex++;
+            if (this.backgroundStyleIndex > this.backgroundStyle.length - 1) {
+                this.backgroundStyleIndex = 0;
             }
         } else {
-            this.backgroundColorIndex = color;
-            this.backgroundColorName;
+            this.backgroundStyleIndex = style;
+            this.backgroundStyleName;
         }
-        this.backgroundColorName = this.backgroundColors[
-            this.backgroundColorIndex
+        this.backgroundStyleName = this.backgroundStyle[
+            this.backgroundStyleIndex
         ];
 
         this.$body.css({
-            background: this.backgroundColorName,
-            color: this.textColors[this.backgroundColorIndex],
+            background:
+                this.backgroundStyleName === "checkered"
+                    ? "url(css/transparent-bg.png)"
+                    : this.backgroundStyleName,
+            color: this.textColors[this.backgroundStyleIndex],
         });
 
         // update current settings
-        this.updateSettings({ background: this.backgroundColorName });
+        this.updateSettings({ background: this.backgroundStyleName });
 
         // save statistics
         if (!!window.ga) {
@@ -647,7 +654,7 @@ class Gamepad {
                 eventCategory: "Gamepad",
                 eventAction: "change-background-color",
                 eventLabel: "Change Background Color",
-                eventValue: this.backgroundColorName,
+                eventValue: this.backgroundStyleName,
             });
         }
     }
@@ -828,14 +835,19 @@ class Gamepad {
      * @param {*} newSettings
      */
     updateSettings(newSettings) {
-        const settings = Object.assign(Object.fromEntries(
-            window.location.search
-                .replace("?", "")
-                .split("&")
-                .map((param) => param.split("="))
-                .filter(([k, v]) => v !== null && v !== undefined)
-        ), newSettings);
-        const query = Object.entries(settings).map(([key, value]) => `${key}=${value}`).join('&');
+        const settings = Object.assign(
+            Object.fromEntries(
+                window.location.search
+                    .replace("?", "")
+                    .split("&")
+                    .map((param) => param.split("="))
+                    .filter(([k, v]) => v !== null && v !== undefined)
+            ),
+            newSettings
+        );
+        const query = Object.entries(settings)
+            .map(([key, value]) => `${key}=${value}`)
+            .join("&");
         window.history.replaceState({}, document.title, `/?${query}`);
     }
 }
