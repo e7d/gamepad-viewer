@@ -74,7 +74,7 @@ class Gamepad {
         };
 
         // gamepad help default values
-        this.helpTimeout = null;
+        this.instructionsTimeout = null;
         this.helpDelay = 12000;
 
         // active gamepad default values
@@ -83,7 +83,7 @@ class Gamepad {
         this.index = null;
         this.type = null;
         this.identifier = null;
-        this.timestamp = null;
+        this.lastTimestamp = null;
         this.backgroundStyleIndex = 0;
         this.colorIndex = null;
         this.colorName = null;
@@ -162,8 +162,8 @@ class Gamepad {
         if (null !== this.index) return;
 
         // cancel the queued display of the instructions animation, if any
-        window.clearTimeout(this.helpTimeout);
-        // hide the instructions animation
+        window.clearTimeout(this.instructionsTimeout);
+        // show the instructions
         this.$instructions.show();
 
         // enqueue a delayed display of the instructions animation
@@ -182,7 +182,7 @@ class Gamepad {
         }
 
         // hide instructions animation if no gamepad is active after X ms
-        this.helpTimeout = window.setTimeout(() => {
+        this.instructionsTimeout = window.setTimeout(() => {
             this.$instructions.fadeOut();
         }, this.helpDelay);
     }
@@ -195,6 +195,9 @@ class Gamepad {
     onGamepadConnect(e) {
         // on gamepad connection, refresh available gamepads list
         this.scan();
+
+        // refresh gamepad list on help, if displayed
+        if (this.helpVisible) this.buildHelpGamepadList();
     }
 
     /**
@@ -203,15 +206,17 @@ class Gamepad {
      * @param {GamepadEvent} e
      */
     onGamepadDisconnect(e) {
-        // on gamepad disconnection, remove it from the list
+        // display a disconnection indicator for 5 seconds
         this.$gamepad.addClass("disconnected");
-
         window.setTimeout(() => {
             this.$gamepad.removeClass("disconnected");
 
             // remove gamepad from the list and start back scanning
             this.disconnect(e.gamepad.index);
             this.scan();
+
+            // refresh gamepad list on help, if displayed
+            if (this.helpVisible) this.buildHelpGamepadList();
         }, 5000);
     }
 
@@ -295,19 +300,17 @@ class Gamepad {
     /**
      * Reloads gamepads data
      */
-    refresh() {
+    pollGamepads() {
         // get fresh information from DOM about gamepads
         const gamepads = this.getNavigatorGamepads();
-        if (gamepads !== this.gamepads) {
-            this.gamepads = gamepads;
-            this.buildHelpGamepadList();
-        }
+        if (gamepads !== this.gamepads) this.gamepads = gamepads;
     }
 
     /**
      * Builds the help gamepad list
      */
     buildHelpGamepadList() {
+        console.log("buildHelpGamepadList");
         const $tbody = [];
         for (let key = 0; key < this.gamepads.length; key++) {
             const gamepad = this.gamepads[key];
@@ -370,7 +373,7 @@ class Gamepad {
         if (null !== this.index) return;
 
         // refresh gamepad information
-        this.refresh();
+        this.pollGamepads();
 
         for (let index = 0; index < this.gamepads.length; index++) {
             const gamepad = this.gamepads[index];
@@ -470,6 +473,7 @@ class Gamepad {
         if (true === index || this.index === index) {
             // clear associated date
             this.index = null;
+            this.lastTimestamp = null;
             this.type = null;
             this.identifier = null;
             this.colorIndex = null;
@@ -523,29 +527,30 @@ class Gamepad {
             }
 
             // enqueue the initial display refresh
-            this.timestamp = null;
-            this.updateStatus();
+            this.pollStatus();
         });
     }
 
     /**
      * Updates the status of the active gamepad
      */
-    updateStatus() {
+    pollStatus() {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
-        // enqueue the next refresh right away
-        window.requestAnimationFrame(this.updateStatus.bind(this));
-        // window.setTimeout(this.updateStatus.bind(this), 1000 / 60);
+        // enqueue the next refresh
+        window.requestAnimationFrame(this.pollStatus.bind(this));
+        // window.setTimeout(this.pollStatus.bind(this), 1000 / 60);
 
         // load latest gamepad data
-        this.refresh();
+        this.pollGamepads();
         const activeGamepad = this.getActive();
 
-        if (activeGamepad.timestamp === this.timestamp) return;
-        this.timestamp = activeGamepad.timestamp;
+        // check for actual gamepad update
+        if (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp) return;
+        this.lastTimestamp = activeGamepad.timestamp;
 
+        // actually update the active gamepad graphically
         this.updateButtons(activeGamepad);
         this.updateAxes(activeGamepad);
     }
@@ -835,7 +840,12 @@ class Gamepad {
      * Toggles the on-screen help message
      */
     toggleHelp() {
+        // refresh gamepad lsit with latest data
+        this.buildHelpGamepadList();
+
+        // display the help popout
         this.$helpPopout.toggleClass("active");
+        this.helpVisible = this.$helpPopout.is(".active");
 
         // save statistics
         if (!!window.ga) {
