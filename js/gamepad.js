@@ -723,10 +723,11 @@ class Gamepad {
         this.zoomMode = level === "auto" ? "auto" : "manual";
 
         if (level === "auto") {
-            // "auto" means a "contained" in frame zoom
+            // "auto" means a "contained in window" zoom, with a max zoom of 1
             this.zoomLevel = Math.min(
                 window.innerWidth / this.$gamepad.width(),
-                window.innerHeight / this.$gamepad.height()
+                window.innerHeight / this.$gamepad.height(),
+                1
             );
         } else if (level === 0) {
             // 0 means a zoom reset
