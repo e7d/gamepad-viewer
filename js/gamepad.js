@@ -1,3 +1,10 @@
+$console = document.querySelector("#console");
+window.onerror = function (event, source, lineno, colno, error) {
+    var p = document.createElement("p");
+    p.innerHTML = `${source}:${lineno}:${colno}: ${error.message}<br>${error.stack}`;
+    $console.appendChild(p);
+};
+
 /**
  * The main Gamepad class
  *
@@ -547,7 +554,8 @@ class Gamepad {
         const activeGamepad = this.getActive();
 
         // check for actual gamepad update
-        if (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp) return;
+        if (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp)
+            return;
         this.lastTimestamp = activeGamepad.timestamp;
 
         // actually update the active gamepad graphically
@@ -875,19 +883,28 @@ class Gamepad {
     }
 
     /**
+     * Read url settings to produce a key/value object
+     */
+    getUrlSettings() {
+        const settingsArr = window.location.search
+            .replace("?", "")
+            .split("&")
+            .map((param) => param.split("="));
+        const settings = {};
+        Object.keys(settingsArr).forEach((key) => {
+            const [k, v] = settingsArr[key];
+            settings[k] = v;
+        });
+        return settings;
+    }
+
+    /**
      * Update url hash with new settings
+     *
      * @param {*} newSettings
      */
     updateSettings(newSettings) {
-        const settings = Object.assign(
-            Object.fromEntries(
-                window.location.search
-                    .replace("?", "")
-                    .split("&")
-                    .map((param) => param.split("="))
-            ),
-            newSettings
-        );
+        const settings = Object.assign(this.getUrlSettings(), newSettings);
         const query = Object.entries(settings)
             .filter(([, value]) => value !== undefined)
             .map(([key, value]) => `${key}=${value}`)

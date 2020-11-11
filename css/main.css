@@ -5,17 +5,6 @@ body {
     overflow: hidden;
 }
 
-#debug {
-    color: red;
-    display: none;
-    font-size: 60px;
-    line-height: 80px;
-    position: absolute;
-    text-align: center;
-    top: 0;
-    width: 100vw;
-}
-
 .instructions {
     height: 100vh;
     line-height: 2em;
