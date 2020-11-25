@@ -82,12 +82,13 @@ class Gamepad {
 
         // gamepad help default values
         this.instructionsTimeout = null;
-        this.helpDelay = 12000;
+        this.instructionsDelay = 12000;
 
         // active gamepad default values
         this.scanDelay = 200;
         this.debug = false;
         this.index = null;
+        this.disconnectedIndex = null;
         this.type = null;
         this.identifier = null;
         this.lastTimestamp = null;
@@ -191,7 +192,7 @@ class Gamepad {
         // hide instructions animation if no gamepad is active after X ms
         this.instructionsTimeout = window.setTimeout(() => {
             this.$instructions.fadeOut();
-        }, this.helpDelay);
+        }, this.instructionsDelay);
     }
 
     /**
@@ -200,9 +201,6 @@ class Gamepad {
      * @param {GamepadEvent} e
      */
     onGamepadConnect(e) {
-        // on gamepad connection, refresh available gamepads list
-        this.scan();
-
         // refresh gamepad list on help, if displayed
         if (this.helpVisible) this.buildHelpGamepadList();
     }
@@ -213,18 +211,14 @@ class Gamepad {
      * @param {GamepadEvent} e
      */
     onGamepadDisconnect(e) {
-        // display a disconnection indicator for 5 seconds
-        this.$gamepad.addClass("disconnected");
-        window.setTimeout(() => {
-            this.$gamepad.removeClass("disconnected");
-
-            // remove gamepad from the list and start back scanning
-            this.disconnect(e.gamepad.index);
-            this.scan();
+        if (e.gamepad.index === this.index) {
+            // display a disconnection indicator
+            this.$gamepad.addClass("disconnected");
+            this.disconnectedIndex = e.gamepad.index;
 
             // refresh gamepad list on help, if displayed
             if (this.helpVisible) this.buildHelpGamepadList();
-        }, 5000);
+        }
     }
 
     /**
@@ -245,7 +239,8 @@ class Gamepad {
         switch (e.code) {
             case "Delete":
             case "Escape":
-                this.disconnect(true);
+                this.clear();
+                this.displayInstructions();
                 break;
             case "KeyB":
                 this.changeBackgroundStyle();
@@ -317,7 +312,9 @@ class Gamepad {
      * Builds the help gamepad list
      */
     buildHelpGamepadList() {
-        console.log("buildHelpGamepadList");
+        // refresh gamepads information
+        this.pollGamepads();
+
         const $tbody = [];
         for (let key = 0; key < this.gamepads.length; key++) {
             const gamepad = this.gamepads[key];
@@ -377,12 +374,19 @@ class Gamepad {
      */
     scan() {
         // don't scan if we have an active gamepad
-        if (null !== this.index) return;
+        if (null !== this.index && null === this.disconnectedIndex)
+            return;
 
         // refresh gamepad information
         this.pollGamepads();
 
         for (let index = 0; index < this.gamepads.length; index++) {
+            if (
+                null !== this.disconnectedIndex &&
+                index !== this.disconnectedIndex
+            )
+                continue;
+
             const gamepad = this.gamepads[index];
             if (!gamepad) continue;
 
@@ -419,6 +423,8 @@ class Gamepad {
 
         // update local references
         this.index = index;
+        this.disconnectedIndex = null;
+        this.$gamepad.removeClass("disconnected");
         const gamepad = this.getActive();
 
         // ensure that a gamepad was actually found for this index
@@ -460,11 +466,25 @@ class Gamepad {
     /**
      * Disconnect the active gamepad
      *
-     * @param {object} gamepad
+     * @param {int} index
+     * @param {object} options
      */
-    disconnect(index) {
-        // ensure we have an index to remove
-        if ("undefined" === typeof index) return;
+    clear() {
+        // ensure we have something to disconnect
+        if (this.index === null) return;
+
+        // clear associated data
+        this.index = null;
+        this.disconnectedIndex = null;
+        this.debug = false;
+        this.lastTimestamp = null;
+        this.type = null;
+        this.identifier = null;
+        this.colorIndex = null;
+        this.colorName = null;
+        this.zoomLevel = 1;
+        this.$gamepad.empty();
+        this.clearSettings();
 
         // save statistics
         if (!!window.ga) {
@@ -475,24 +495,6 @@ class Gamepad {
                 eventValue: this.identifier,
             });
         }
-
-        // if this is the active gamepad
-        if (true === index || this.index === index) {
-            // clear associated date
-            this.index = null;
-            this.lastTimestamp = null;
-            this.type = null;
-            this.identifier = null;
-            this.colorIndex = null;
-            this.colorName = null;
-            this.zoomLevel = 1;
-            this.$gamepad.empty();
-            this.updateSettings({ type: undefined, color: undefined });
-        }
-
-        // enqueue a display of the instructions animation
-        this.displayInstructions();
-        this.debug = false;
     }
 
     /**
@@ -547,7 +549,6 @@ class Gamepad {
 
         // enqueue the next refresh
         window.requestAnimationFrame(this.pollStatus.bind(this));
-        // window.setTimeout(this.pollStatus.bind(this), 1000 / 60);
 
         // load latest gamepad data
         this.pollGamepads();
@@ -896,6 +897,19 @@ class Gamepad {
             settings[k] = v;
         });
         return settings;
+    }
+
+    /**
+     * Clear all url settings
+     */
+    clearSettings() {
+        this.updateSettings({
+            type: undefined,
+            color: undefined,
+            debug: undefined,
+            triggers: undefined,
+            zoom: undefined,
+        });
     }
 
     /**
