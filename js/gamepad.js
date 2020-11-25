@@ -1,10 +1,3 @@
-$console = document.querySelector("#console");
-window.onerror = function (event, source, lineno, colno, error) {
-    var p = document.createElement("p");
-    p.innerHTML = `${source}:${lineno}:${colno}: ${error.message}<br>${error.stack}`;
-    $console.appendChild(p);
-};
-
 /**
  * The main Gamepad class
  *
@@ -18,7 +11,7 @@ class Gamepad {
         // cached DOM references
         this.$body = $("body");
         this.$gamepad = $("#gamepad");
-        this.$instructions = $(".instructions");
+        this.$instructions = $("#instructions");
         this.$helpPopout = $("#help-popout");
         this.$gamepadList = $("#gamepad-list");
 
@@ -38,6 +31,9 @@ class Gamepad {
             "black",
             "black",
         ];
+
+        // ensure the GamePad API is available on this browser
+        this.assertGamepadAPI();
 
         // gamepad collection default values
         this.gamepads = {};
@@ -146,6 +142,19 @@ class Gamepad {
 
         // by default, enqueue a delayed display of the instructions animation
         this.displayInstructions();
+    }
+
+    assertGamepadAPI() {
+        const getGamepadsFn = navigator.getGamepads
+            ? () => navigator.getGamepads()
+            : navigator.webkitGetGamepads
+            ? () => navigator.webkitGetGamepads()
+            : null;
+        if (!getGamepadsFn) {
+            this.$body.addClass('unsupported');
+            throw new Error("Unsupported gamepad API");
+        }
+        this.getNavigatorGamepads = getGamepadsFn;
     }
 
     /**
@@ -289,17 +298,6 @@ class Gamepad {
     }
 
     /**
-     * Get navigator gamepads collection
-     */
-    getNavigatorGamepads() {
-        return navigator.getGamepads
-            ? navigator.getGamepads()
-            : navigator.webkitGetGamepads
-            ? navigator.webkitGetGamepads()
-            : [];
-    }
-
-    /**
      * Reloads gamepads data
      */
     pollGamepads() {
@@ -374,8 +372,7 @@ class Gamepad {
      */
     scan() {
         // don't scan if we have an active gamepad
-        if (null !== this.index && null === this.disconnectedIndex)
-            return;
+        if (null !== this.index && null === this.disconnectedIndex) return;
 
         // refresh gamepad information
         this.pollGamepads();
