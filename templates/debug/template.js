@@ -3,6 +3,7 @@
     $timestamp = $("#info-timestamp .value");
     $index = $("#info-index .value");
     $mapping = $("#info-mapping .value");
+    $rumble = $("#info-rumble .value");
     $axes = $(".axes .container");
     $buttons = $(".buttons .container");
 
@@ -14,9 +15,14 @@
     }
 
     $id.html(activeGamepad.id);
-    $timestamp.html(activeGamepad.timestamp);
+    updateTimestamp();
     $index.html(activeGamepad.index);
     $mapping.html(activeGamepad.mapping);
+    $rumble.html(
+        activeGamepad.vibrationActuator
+            ? activeGamepad.vibrationActuator.type
+            : "N/A"
+    );
 
     for (
         let axisIndex = 0;
@@ -26,7 +32,7 @@
         $axes.append(`
             <div class="box medium">
                <div class="content">
-                   <div class="label">AXIS ${axisIndex}</div>
+                   <div class="label">Axis ${axisIndex}</div>
                    <div class="value" data-axis="${axisIndex}"></div>
                </div>
             </div>
@@ -48,20 +54,20 @@
         `);
     }
 
-    gamepad.updateButton = function($button) {
+    gamepad.updateButton = function ($button) {
         updateElem($button);
     };
 
-    gamepad.updateAxis = function($axis) {
+    gamepad.updateAxis = function ($axis) {
         updateElem($axis, 6);
     };
 
     function updateElem($elem, precision = 2) {
         updateTimestamp();
 
-        var value = parseFloat($elem.attr("data-value"), 10).toFixed(precision);
+        let value = parseFloat($elem.attr("data-value"), 10).toFixed(precision);
         $elem.html(value);
-        var color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
+        let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
         $elem.css({ color: `rgb(${color}, ${color}, ${color})` });
     }
 
@@ -70,6 +76,6 @@
         if (!activeGamepad) {
             return;
         }
-        $timestamp.html(activeGamepad.timestamp);
+        $timestamp.html(parseFloat(activeGamepad.timestamp).toFixed(3));
     }
 })();
