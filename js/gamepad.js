@@ -399,6 +399,20 @@ class Gamepad {
                 // if one of its button is pressed, activate this gamepad
                 if (button.pressed) {
                     this.map(gamepad.index);
+
+                    // confirm mapping with a vibration when available
+                    if (gamepad.vibrationActuator) {
+                        gamepad.vibrationActuator.playEffect(
+                            gamepad.vibrationActuator.type,
+                            {
+                                duration: 100,
+                                strongMagnitude: 0.2,
+                                weakMagnitude: 1,
+                                startDelay: 0,
+                            }
+                        );
+                    }
+
                     return;
                 }
             }
