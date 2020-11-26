@@ -151,24 +151,10 @@ class Gamepad {
             ? () => navigator.webkitGetGamepads()
             : null;
         if (!getGamepadsFn) {
-            this.$body.addClass('unsupported');
+            this.$body.addClass("unsupported");
             throw new Error("Unsupported gamepad API");
         }
         this.getNavigatorGamepads = getGamepadsFn;
-    }
-
-    /**
-     * Reads an URL search parameter
-     *
-     * @param {*} name
-     */
-    getUrlParam(name) {
-        let results = new RegExp("[?&]" + name + "(=([^&#]*))?").exec(
-            window.location.search
-        );
-        return results === null
-            ? null
-            : decodeURIComponent(results[2] || true) || true;
     }
 
     /**
@@ -452,7 +438,7 @@ class Gamepad {
         // ensure a valid gamepad type is used
         this.type = this.getType(gamepad);
         if (!this.type) return;
-        this.updateSettings({ type: this.type });
+        this.updateUrlParams({ type: this.type });
 
         // initial setup of the gamepad
         this.identifier = this.identifiers[this.type];
@@ -495,7 +481,7 @@ class Gamepad {
         this.colorName = null;
         this.zoomLevel = 1;
         this.$gamepad.empty();
-        this.clearSettings();
+        this.clearUrlParams();
 
         // save statistics
         if (!!window.ga) {
@@ -547,14 +533,14 @@ class Gamepad {
             }
 
             // enqueue the initial display refresh
-            this.pollStatus();
+            this.pollStatus(true);
         });
     }
 
     /**
      * Updates the status of the active gamepad
      */
-    pollStatus() {
+    pollStatus(force = false) {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
@@ -566,7 +552,10 @@ class Gamepad {
         const activeGamepad = this.getActive();
 
         // check for actual gamepad update
-        if (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp)
+        if (
+            !force &&
+            (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp)
+        )
             return;
         this.lastTimestamp = activeGamepad.timestamp;
 
@@ -671,7 +660,7 @@ class Gamepad {
         });
 
         // update current settings
-        this.updateSettings({ background: this.backgroundStyleName });
+        this.updateUrlParams({ background: this.backgroundStyleName });
 
         // save statistics
         if (!!window.ga) {
@@ -720,7 +709,7 @@ class Gamepad {
         this.$gamepad.attr("data-color", this.colorName);
 
         // update current settings
-        this.updateSettings({ color: this.colorName });
+        this.updateUrlParams({ color: this.colorName });
 
         // save statistics
         if (!!window.ga) {
@@ -778,7 +767,7 @@ class Gamepad {
         );
 
         // update current settings
-        this.updateSettings({
+        this.updateUrlParams({
             zoom: this.zoomMode === "auto" ? undefined : this.zoomLevel,
         });
 
@@ -823,7 +812,7 @@ class Gamepad {
         }
 
         // update current settings
-        this.updateSettings({ type: this.type });
+        this.updateUrlParams({ type: this.type });
 
         // remap current gamepad
         this.map(this.index);
@@ -850,7 +839,7 @@ class Gamepad {
         }
 
         // update current settings
-        this.updateSettings({ type: this.debug ? "debug" : undefined });
+        this.updateUrlParams({ type: this.debug ? "debug" : undefined });
 
         // remap current gamepad
         this.map(this.index);
@@ -889,15 +878,27 @@ class Gamepad {
         );
 
         // update current settings
-        this.updateSettings({
+        this.updateUrlParams({
             triggers: this.triggersMeter ? "meter" : undefined,
         });
     }
 
     /**
+     * Reads an URL search parameter
+     *
+     * @param {*} name
+     */
+    getUrlParam(name) {
+        let matches = new RegExp("[?&]" + name + "(=([^&#]*))?").exec(
+            window.location.search
+        );
+        return matches ? decodeURIComponent(matches[2] || true) || true : null;
+    }
+
+    /**
      * Read url settings to produce a key/value object
      */
-    getUrlSettings() {
+    getUrlParams() {
         const settingsArr = window.location.search
             .replace("?", "")
             .split("&")
@@ -913,8 +914,8 @@ class Gamepad {
     /**
      * Clear all url settings
      */
-    clearSettings() {
-        this.updateSettings({
+    clearUrlParams() {
+        this.updateUrlParams({
             type: undefined,
             color: undefined,
             debug: undefined,
@@ -926,11 +927,11 @@ class Gamepad {
     /**
      * Update url hash with new settings
      *
-     * @param {*} newSettings
+     * @param {*} newParams
      */
-    updateSettings(newSettings) {
-        const settings = Object.assign(this.getUrlSettings(), newSettings);
-        const query = Object.entries(settings)
+    updateUrlParams(newParams) {
+        const params = Object.assign(this.getUrlParams(), newParams);
+        const query = Object.entries(params)
             .filter(([, value]) => value !== undefined)
             .map(([key, value]) => `${key}=${value}`)
             .join("&");
