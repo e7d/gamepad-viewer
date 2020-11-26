@@ -45,7 +45,7 @@ class Gamepad {
                 colors: [],
             },
             ds4: {
-                id: /054c|54c|046d|0810|2563/, // 054c = Sony vendor code, 046d,0810,2563 = PS-like controllers vendor codes
+                id: /054c|54c|09cc|046d|0810|2563/, // 054c = Sony vendor code, 046d,0810,2563 = PS-like controllers vendor codes
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
             },
