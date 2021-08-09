@@ -7,11 +7,13 @@ Displays live status about gamepads connected to your computer
 ## Shortcuts
 - `+`: Zoom gamepad in  
 - `-`: Zoom gamepad out  
-- `0`: Reset gamepad zoom  
-- `B`: Change background color  
+- `0`: Reset zoom to 100%  
+- `5`: Adjust zoom automatically to window  
+- `B`: Change background style  
 - `C`: Change active gamepad color  
 - `D`: Toggle debug mode for active gamepad  
-- `H`: Display help  
+- `H`: Toggle help menu  
+- `T`: Toggle triggers meter mode  
 - `Delete` or `Esc`: Clear active gamepad
 
 ## Supported Gamepads
