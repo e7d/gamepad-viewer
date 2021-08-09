@@ -2,7 +2,7 @@
 Displays live status about gamepads connected to your computer
 
 ## Demo
-[gamepad.e7d.io](http://gamepad.e7d.io)
+[gamepad.e7d.io](https://gamepad.e7d.io/)
 
 ## Shortcuts
 - `+`: Zoom in  
@@ -23,5 +23,17 @@ Displays live status about gamepads connected to your computer
 - Microsoft Xbox 360 Controller
 - Nintendo Switch Pro Controller*
 - Xinput compatible gamepads
+
+## How to use on OBS Studio
+- Go to [gamepad.e7d.io](https://gamepad.e7d.io/)
+- Activate the controller you want to use on OBS by long pressing one of its buttons
+- Configure it as desired: adjust zoom, change color...
+- Copy the resulting web page URL (i.e.: https://gamepad.e7d.io/?type=ds4&color=white)
+- Go back to OBS Studio
+- Add a Browser source: Right click in "Sources" > "Add" > "Browser"
+    - Name it as you want (i.e.: "Gamepad")
+    - Paste the previously copied URL on the URL field
+    - Press OK
+- Adjust position and size of the source as you will
 
 *: These gamepads work both wired and wireless via Bluetooth
