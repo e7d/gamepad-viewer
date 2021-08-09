@@ -25,6 +25,7 @@ Displays live status about gamepads connected to your computer
 - Xinput compatible gamepads
 
 ## How to use on OBS Studio
+Please read below or use this video tutorial: https://youtu.be/vHzf_ESseTc
 - Go to [gamepad.e7d.io](https://gamepad.e7d.io/)
 - Activate the controller you want to use on OBS by long pressing one of its buttons
 - Configure it as desired: adjust zoom, change color...
