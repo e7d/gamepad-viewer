@@ -5,8 +5,8 @@ Displays live status about gamepads connected to your computer
 [gamepad.e7d.io](http://gamepad.e7d.io)
 
 ## Shortcuts
-- `+`: Zoom gamepad in  
-- `-`: Zoom gamepad out  
+- `+`: Zoom in  
+- `-`: Zoom out  
 - `0`: Reset zoom to 100%  
 - `5`: Adjust zoom automatically to window  
 - `B`: Change background style  
