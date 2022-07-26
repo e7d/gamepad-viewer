@@ -11,6 +11,7 @@ class Gamepad {
         // cached DOM references
         this.$body = $("body");
         this.$instructions = $("#instructions");
+        this.$placeholder = $("#placeholder");
         this.$gamepad = $("#gamepad");
         this.$overlay = $("#overlay");
         this.$skinSelect = $("select[name=skin]");
@@ -93,6 +94,8 @@ class Gamepad {
         // gamepad help default values
         this.instructionsTimeout = null;
         this.instructionsDelay = 5000;
+        this.placeholderTimeout = null;
+        this.placeholderDelay = 12000;
         this.overlayTimeout = null;
         this.overlayDelay = 5000;
 
@@ -162,8 +165,8 @@ class Gamepad {
                 this.changeBackgroundStyle(backgroundStyleIndex);
         }
 
-        // by default, enqueue a delayed display of the instructions animation
-        this.displayInstructions();
+        // by default, enqueue a delayed display of the placeholder animation
+        this.displayPlaceholder();
     }
 
     /**
@@ -201,7 +204,7 @@ class Gamepad {
     }
 
     /**
-     * Displays the instructions animation on screen
+     * Displays the instructions
      */
     displayInstructions() {
         // do not display help if we have an active gamepad
@@ -231,6 +234,39 @@ class Gamepad {
         this.instructionsTimeout = window.setTimeout(() => {
             this.$instructions.fadeOut();
         }, this.instructionsDelay);
+    }
+
+    /**
+     * Displays the placeholder animation on screen
+     */
+    displayPlaceholder() {
+        // do not display help if we have an active gamepad
+        if (null !== this.index) return;
+
+        // cancel the queued display of the placeholder animation, if any
+        window.clearTimeout(this.placeholderTimeout);
+        // show the placeholder
+        this.$placeholder.show();
+
+        // enqueue a delayed display of the placeholder animation
+        this.hidePlaceholder();
+    }
+
+    /**
+     * Hides the placeholder animation
+     *
+     * @param {boolean} [hideNow=false]
+     */
+    hidePlaceholder(hideNow = false) {
+        // hide the animation right away if needed
+        if (hideNow) {
+            this.$placeholder.hide();
+        }
+
+        // hide placeholder animation if no gamepad is active after X ms
+        this.placeholderTimeout = window.setTimeout(() => {
+            this.$placeholder.fadeOut();
+        }, this.placeholderDelay);
     }
 
     /**
@@ -330,12 +366,13 @@ class Gamepad {
     }
 
     /**
-     * Handles the mouse "mouslmove" event
+     * Handles the mouse "mousemove" event
      *
      * @param {MouseEvent} e
      */
     onMouseMove() {
         this.displayInstructions();
+        this.displayPlaceholder();
         this.displayOverlay();
     }
 
@@ -349,7 +386,7 @@ class Gamepad {
             case "Delete":
             case "Escape":
                 this.clear();
-                this.displayInstructions();
+                this.displayPlaceholder();
                 break;
             case "KeyB":
                 this.changeBackgroundStyle();
@@ -531,6 +568,7 @@ class Gamepad {
         // hide the help messages
         this.hideInstructions(true);
         this.$helpPopout.removeClass("active");
+        this.hidePlaceholder(true);
 
         // update local references
         this.index = index;
@@ -543,8 +581,8 @@ class Gamepad {
             // this mapping request was probably a mistake :
             // - remove the active gamepad index and reference
             this.index = null;
-            // - enqueue a display of the instructions animation right away
-            this.displayInstructions(true);
+            // - enqueue a display of the placeholder animation right away
+            this.displayPlaceholder(true);
 
             return;
         }
@@ -565,6 +603,7 @@ class Gamepad {
 
         // hide the help before displaying the template
         this.hideInstructions();
+        this.hidePlaceholder();
 
         // save statistics
         if (!!window.ga) {

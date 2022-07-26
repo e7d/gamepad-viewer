@@ -17,12 +17,16 @@ body.unsupported #unsupported {
 }
 
 body.unsupported #instructions,
+body.unsupported #placeholder,
 body.unsupported #gamepad {
     display: none;
 }
 
 #instructions {
-    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: auto;
     line-height: 2em;
     text-align: center;
     width: 100vw;
@@ -70,7 +74,7 @@ body.unsupported #gamepad {
     }
 }
 
-#instructions svg {
+#placeholder svg {
     height: 90%;
     left: 50%;
     max-width: 600px;
@@ -80,7 +84,7 @@ body.unsupported #gamepad {
     width: 90%;
 }
 
-#instructions #a-button path {
+#placeholder #a-button path {
     animation: press-button 5s linear infinite;
 }
 

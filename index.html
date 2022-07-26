@@ -16,8 +16,10 @@
 <body>
 	<div id="unsupported">Sorry, but your browser does not support the <a target="_blank"
 			href="https://developer.mozilla.org/docs/Web/API/Gamepad_API">Gamepad API</a>.</div>
-	<div id="instructions">
+	<div id="instructions" style="display: none;">
 		<p>Press <kbd>H</kbd> to read instructions.</p>
+	</div>
+	<div id="placeholder">
 		<svg version="1.1" viewBox="0 0 549.3125 367.98749" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 				<clipPath id="a">
@@ -81,7 +83,7 @@
 		</svg>
 	</div>
 	<div id="gamepad"></div>
-	<div id="overlay">
+	<div id="overlay" style="display: none;">
 		<span id="skin">
 			<label for="skin">Skin</label>
 			<select name="skin">
