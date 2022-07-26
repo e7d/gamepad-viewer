@@ -14,11 +14,11 @@
 </head>
 
 <body>
-	<div id="unsupported">Sorry, but your browser does not support the <a target="_blank" href="https://developer.mozilla.org/docs/Web/API/Gamepad_API">Gamepad API</a>.</div>
+	<div id="unsupported">Sorry, but your browser does not support the <a target="_blank"
+			href="https://developer.mozilla.org/docs/Web/API/Gamepad_API">Gamepad API</a>.</div>
 	<div id="instructions">
 		<p>Press <kbd>H</kbd> to read instructions.</p>
-		<svg version="1.1" viewBox="0 0 549.3125 367.98749" xml:space="preserve"
-			xmlns="http://www.w3.org/2000/svg">
+		<svg version="1.1" viewBox="0 0 549.3125 367.98749" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 				<clipPath id="a">
 					<path d="m0 294.39h439.45v-294.39h-439.45v294.39z"></path>
@@ -81,11 +81,48 @@
 		</svg>
 	</div>
 	<div id="gamepad"></div>
+	<div id="overlay">
+		<span id="skin">
+			<label for="skin">Skin</label>
+			<select name="skin">
+				<option value="auto">Auto</option>
+				<option value="ds4">DualShock 4</option>
+				<option value="xbox-one">Xbox One</option>
+				<option value="debug">Debug</option>
+			</select>
+		</span>
+		<span id="background">
+			<label for="background">Background</label>
+			<select name="background">
+				<option value="transparent">Transparent</option>
+				<option value="checkered">Checkered</option>
+				<option value="dimgrey">Grey</option>
+				<option value="black">Black</option>
+				<option value="white">White</option>
+				<option value="lime">Lime</option>
+				<option value="magenta">Magenta</option>
+			</select>
+		</span>
+		<span id="color">
+			<label for="color">Color</label>
+			<select name="color">
+				<option value="">Default</option>
+			</select>
+		</span>
+		<span id="triggers">
+			<label for="triggers">Triggers</label>
+			<select name="triggers">
+				<option value="opacity">Opacity</option>
+				<option value="meter">Meter</option>
+			</select>
+		</span>
+	</div>
 	<div id="help-popout">
 		<h2>Help</h2>
 
 		<h3>Instructions</h3>
-		<p>Press and hold any of your gamepad buttons for at least 1 second. If your gamepad is supported, it shows up.</p>
+		<p>Press and hold any of your gamepad buttons for at least 1 second. If your gamepad is supported, it shows up.
+		</p>
 
 		<h3>Detected Controllers</h3>
 		<table>
@@ -155,7 +192,8 @@
 		</table>
 
 		<h3>Credits</h3>
-		<p>All information and source code can be found on GitHub at <a target="_blank" href="https://github.com/e7d/gamepad-viewer">e7d/gamepad-viewer</a>.</p>
+		<p>All information and source code can be found on GitHub at <a target="_blank"
+				href="https://github.com/e7d/gamepad-viewer">e7d/gamepad-viewer</a>.</p>
 	</div>
 
 	<script src="js/jquery.min.js"></script>

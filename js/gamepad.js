@@ -10,8 +10,17 @@ class Gamepad {
     constructor() {
         // cached DOM references
         this.$body = $("body");
-        this.$gamepad = $("#gamepad");
         this.$instructions = $("#instructions");
+        this.$gamepad = $("#gamepad");
+        this.$overlay = $("#overlay");
+        this.$skinSelect = $("select[name=skin]");
+        this.$backgroundSelect = $("select[name=background]");
+        this.$colorOverlay = this.$overlay.find("#color");
+        this.$colorSelect = this.$colorOverlay.find("select[name=color]");
+        this.$triggersOverlay = this.$overlay.find("#triggers");
+        this.$triggersSelect = this.$triggersOverlay.find(
+            "select[name=triggers]"
+        );
         this.$helpPopout = $("#help-popout");
         this.$gamepadList = $("#gamepad-list");
 
@@ -20,6 +29,7 @@ class Gamepad {
             "checkered",
             "dimgrey",
             "black",
+            "white",
             "lime",
             "magenta",
         ];
@@ -30,10 +40,13 @@ class Gamepad {
             "white",
             "black",
             "black",
+            "black",
         ];
 
         // ensure the GamePad API is available on this browser
         this.assertGamepadAPI();
+
+        this.initOverlaySelectors();
 
         // gamepad collection default values
         this.gamepads = {};
@@ -42,22 +55,22 @@ class Gamepad {
             debug: {
                 id: /debug/,
                 name: "Debug",
-                colors: [],
             },
             ds4: {
                 id: /054c|54c|09cc|046d|0810|2563/, // 054c = Sony vendor code, 046d,0810,2563 = PS-like controllers vendor codes
                 name: "DualShock 4",
                 colors: ["black", "white", "red", "blue"],
+                triggers: true,
             },
             // gamecube: {
             //     id: /0079/, // 0079 = Nintendo GameCube vendor code
             //     name: "GameCube Controller",
-            //     colors: ["black"],
+            //     colors: ["black", "purple"],
             // },
             // "joy-con": {
             //     id: /200e/, // 0079 = Joy-Con specific product code
             //     name: "Joy-Con (L+R) Controllers",
-            //     colors: ["blue-red"],
+            //     colors: ["blue-red", "grey-grey"],
             // },
             // stadia: {
             //     id: /18d1/, // 18d1 = Google vendor code
@@ -73,12 +86,15 @@ class Gamepad {
                 id: /045e|xinput|XInput/, // 045e = Microsoft vendor code, xinput = standard Windows controller
                 name: "Xbox One",
                 colors: ["black", "white"],
+                triggers: true,
             },
         };
 
         // gamepad help default values
         this.instructionsTimeout = null;
-        this.instructionsDelay = 12000;
+        this.instructionsDelay = 5000;
+        this.overlayTimeout = null;
+        this.overlayDelay = 5000;
 
         // active gamepad default values
         this.scanDelay = 200;
@@ -125,7 +141,13 @@ class Gamepad {
         // bind a gamepads scan
         window.setInterval(this.scan.bind(this), this.scanDelay);
 
-        // change the background is specified
+        // change the type if specified
+        const skin = this.getUrlParam("type");
+        if (skin) {
+            this.changeSkin(skin);
+        }
+
+        // change the background if specified
         const background = this.getUrlParam("background");
         if (background) {
             let backgroundStyleIndex;
@@ -144,6 +166,9 @@ class Gamepad {
         this.displayInstructions();
     }
 
+    /**
+     * Ensures the availability of the Gamepad API in the current navigator
+     */
     assertGamepadAPI() {
         const getGamepadsFn = navigator.getGamepads
             ? () => navigator.getGamepads()
@@ -155,6 +180,24 @@ class Gamepad {
             throw new Error("Unsupported gamepad API");
         }
         this.getNavigatorGamepads = getGamepadsFn;
+    }
+
+    /**
+     * Initialises the overlay selectors
+     */
+    initOverlaySelectors() {
+        this.$skinSelect.on("change", () =>
+            this.changeSkin(this.$skinSelect.val())
+        );
+        this.$backgroundSelect.on("change", () =>
+            this.changeBackgroundStyle(this.$backgroundSelect.val())
+        );
+        this.$colorSelect.on("change", () =>
+            this.changeGamepadColor(this.$colorSelect.val())
+        );
+        this.$triggersSelect.on("change", () =>
+            this.toggleTriggersMeter(this.$triggersSelect.val() === "meter")
+        );
     }
 
     /**
@@ -191,6 +234,76 @@ class Gamepad {
     }
 
     /**
+     * Displays the overlay animation on screen
+     */
+    displayOverlay() {
+        // cancel the queued display of the overlay animation, if any
+        window.clearTimeout(this.overlayTimeout);
+        // show the overlay
+        this.$overlay.show();
+
+        // enqueue a delayed display of the overlay animation
+        this.hideOverlay();
+    }
+
+    /**
+     * Hides the overlay animation
+     *
+     * @param {boolean} [hideNow=false]
+     */
+    hideOverlay(hideNow = false) {
+        // hide the message right away if needed
+        if (hideNow) {
+            this.$overlay.hide();
+        }
+
+        // hide overlay animation if no gamepad is active after X ms
+        this.overlayTimeout = window.setTimeout(() => {
+            this.$overlay.fadeOut();
+        }, this.overlayDelay);
+    }
+
+    /**
+     * Update colors following the active/inactive gamepad
+     */
+    updateColors() {
+        if (!this.type) {
+            this.$colorOverlay.hide();
+            return;
+        }
+
+        const colors = this.identifiers[this.type].colors;
+        if (!colors) {
+            this.$colorOverlay.hide();
+            return;
+        }
+
+        const colorOptions = colors.map(
+            (color) => `<option value="${color}">${color}</option>`
+        );
+        this.$colorSelect.html(colorOptions);
+        this.$colorOverlay.fadeIn();
+    }
+
+    /**
+     * Update triggers following the active/inactive gamepad
+     */
+    updateTriggers() {
+        if (!this.type) {
+            this.$triggersOverlay.hide();
+            return;
+        }
+
+        const triggers = this.identifiers[this.type].triggers;
+        if (!triggers) {
+            this.$triggersOverlay.hide();
+            return;
+        }
+
+        this.$triggersOverlay.fadeIn();
+    }
+
+    /**
      * Handles the gamepad connection event
      *
      * @param {GamepadEvent} e
@@ -223,6 +336,7 @@ class Gamepad {
      */
     onMouseMove() {
         this.displayInstructions();
+        this.displayOverlay();
     }
 
     /**
@@ -438,10 +552,13 @@ class Gamepad {
         // ensure a valid gamepad type is used
         this.type = this.getType(gamepad);
         if (!this.type) return;
-        this.updateUrlParams({ type: this.type });
 
         // initial setup of the gamepad
         this.identifier = this.identifiers[this.type];
+
+        // update gamepad color and triggers selectors on overlay
+        this.updateColors();
+        this.updateTriggers();
 
         // load the HTML template file
         this.loadTemplate(gamepad);
@@ -481,6 +598,8 @@ class Gamepad {
         this.colorName = null;
         this.zoomLevel = 1;
         this.$gamepad.empty();
+        this.updateColors();
+        this.updateTriggers();
         this.clearUrlParams();
 
         // save statistics
@@ -500,6 +619,9 @@ class Gamepad {
      * @param {*} gamepad
      */
     loadTemplate(gamepad) {
+        // hide the gamepad while we prepare it
+        this.$gamepad.hide();
+
         $.ajax(`templates/${this.type}/template.html`).done((template) => {
             // inject the template HTML
             this.$gamepad.html(template);
@@ -513,7 +635,7 @@ class Gamepad {
             window.setTimeout(() =>
                 this.changeZoom(
                     this.type === "debug"
-                        ? 0
+                        ? "auto"
                         : this.getUrlParam("zoom") || "auto"
                 )
             );
@@ -534,6 +656,9 @@ class Gamepad {
 
             // enqueue the initial display refresh
             this.pollStatus(true);
+
+            // once fully loaded, display the gamepad
+            this.$gamepad.fadeIn();
         });
     }
 
@@ -633,6 +758,21 @@ class Gamepad {
     }
 
     /**
+     * Changes the skin
+     *
+     * @param {any} skin
+     */
+    changeSkin(skin) {
+        // update the visual skin selector
+        this.$skinSelect.val(skin);
+
+        // set the selected skin
+        this.debug = skin === 'debug';
+        this.updateUrlParams({ type: skin !== "auto" ? skin : undefined });
+        this.map(this.index);
+    }
+
+    /**
      * Changes the background style
      *
      * @param {any} style
@@ -643,13 +783,15 @@ class Gamepad {
             if (this.backgroundStyleIndex > this.backgroundStyle.length - 1) {
                 this.backgroundStyleIndex = 0;
             }
+        } else if ("string" === typeof style) {
+            this.backgroundStyleIndex = this.backgroundStyle.findIndex(
+                (s) => s === style
+            );
         } else {
             this.backgroundStyleIndex = style;
-            this.backgroundStyleName;
         }
-        this.backgroundStyleName = this.backgroundStyle[
-            this.backgroundStyleIndex
-        ];
+        this.backgroundStyleName =
+            this.backgroundStyle[this.backgroundStyleIndex];
 
         this.$body.css({
             background:
@@ -661,6 +803,7 @@ class Gamepad {
 
         // update current settings
         this.updateUrlParams({ background: this.backgroundStyleName });
+        this.$backgroundSelect.val(this.backgroundStyleName);
 
         // save statistics
         if (!!window.ga) {
@@ -688,6 +831,10 @@ class Gamepad {
             if (this.colorIndex > this.identifier.colors.length - 1) {
                 this.colorIndex = 0;
             }
+        } else if ("string" === typeof style) {
+            this.colorIndex = this.identifier.colors.findIndex(
+                (c) => c === color
+            );
         } else {
             if (!isNaN(parseInt(color))) {
                 // the color is a number, load it by its index
@@ -703,13 +850,16 @@ class Gamepad {
                 }
             }
         }
-        this.colorName = this.identifier.colors[this.colorIndex];
+        this.colorName = this.identifier.colors
+            ? this.identifier.colors[this.colorIndex]
+            : null;
 
         // update the DOM with the color value
         this.$gamepad.attr("data-color", this.colorName);
 
         // update current settings
         this.updateUrlParams({ color: this.colorName });
+        this.$colorSelect.val(this.colorName);
 
         // save statistics
         if (!!window.ga) {
@@ -736,7 +886,7 @@ class Gamepad {
 
         this.zoomMode = level === "auto" ? "auto" : "manual";
 
-        if (level === "auto") {
+        if (this.zoomMode === "auto") {
             // "auto" means a "contained in window" zoom, with a max zoom of 1
             this.zoomLevel = Math.min(
                 window.innerWidth / this.$gamepad.width(),
@@ -748,10 +898,10 @@ class Gamepad {
             this.zoomLevel = 1;
         } else if (level === "+" && this.zoomLevel < 2) {
             // "+" means a zoom in if we still can
-            this.zoomLevel *= 1.1;
-        } else if (level === "-" && this.zoomLevel > 0.2) {
+            this.zoomLevel += 0.1;
+        } else if (level === "-" && this.zoomLevel > 0.1) {
             // "-" means a zoom out if we still can
-            this.zoomLevel /= 1.1;
+            this.zoomLevel -= 0.1;
         } else if (!isNaN((level = parseFloat(level)))) {
             // an integer value means a value-based zoom
             this.zoomLevel = level;
@@ -821,12 +971,12 @@ class Gamepad {
     /**
      * Toggles the debug template for the active gamepad, if any
      */
-    toggleDebug() {
+    toggleDebug(debug = null) {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
         // update debug value
-        this.debug = !this.debug;
+        this.debug = debug !== null ? debug : !this.debug;
 
         // save statistics
         if (!!window.ga) {
@@ -839,10 +989,7 @@ class Gamepad {
         }
 
         // update current settings
-        this.updateUrlParams({ type: this.debug ? "debug" : undefined });
-
-        // remap current gamepad
-        this.map(this.index);
+        this.changeSkin(this.debug ? 'debug' : 'auto')
     }
 
     /**
@@ -871,6 +1018,9 @@ class Gamepad {
      * Toggles the triggers meter display
      */
     toggleTriggersMeter(useMeter) {
+        // ensure that a gamepad is currently active
+        if (this.index === null) return;
+
         this.triggersMeter =
             useMeter !== undefined ? useMeter : !this.triggersMeter;
         this.$gamepad[this.triggersMeter ? "addClass" : "removeClass"](
@@ -878,9 +1028,9 @@ class Gamepad {
         );
 
         // update current settings
-        this.updateUrlParams({
-            triggers: this.triggersMeter ? "meter" : undefined,
-        });
+        const triggers = this.triggersMeter ? "meter" : "opacity";
+        this.updateUrlParams({ triggers });
+        this.$triggersSelect.val(triggers);
     }
 
     /**
@@ -932,7 +1082,7 @@ class Gamepad {
     updateUrlParams(newParams) {
         const params = Object.assign(this.getUrlParams(), newParams);
         const query = Object.entries(params)
-            .filter(([, value]) => value !== undefined)
+            .filter(([, value]) => value !== undefined && value !== null)
             .map(([key, value]) => `${key}=${value}`)
             .join("&");
         window.history.replaceState({}, document.title, `/?${query}`);

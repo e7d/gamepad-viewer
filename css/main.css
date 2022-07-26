@@ -94,6 +94,34 @@ body.unsupported #gamepad {
     transform: translate(-50%, -50%);
 }
 
+#overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    padding: 8px 0;
+    display: flex;
+    justify-content: center;
+    align-self: center;
+}
+
+#overlay > span {
+    padding: 0 8px;
+}
+
+#overlay #color,
+#overlay #triggers {
+    display: none;
+}
+
+#overlay select {
+    padding: 4px 0;
+    border-radius: 4px;
+    background: whitesmoke;
+    border: none;
+}
+
 #help-popout {
     background: whitesmoke;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -149,26 +177,26 @@ body.unsupported #gamepad {
     vertical-align: top;
 }
 
-#help-popout table>thead>tr>th {
+#help-popout table > thead > tr > th {
     border-bottom: 2px solid #ddd;
     border-top: 0;
     vertical-align: bottom;
 }
 
 kbd {
-    -moz-border-radius: .3em;
+    -moz-border-radius: 0.3em;
     -moz-user-select: none;
-    -webkit-border-radius: .3em;
+    -webkit-border-radius: 0.3em;
     -webkit-user-select: none;
-    border-radius: .3em;
+    border-radius: 0.3em;
     border: none;
     cursor: default;
     display: inline-block;
     display: inline;
     font: normal 1em monospace;
-    margin: 0 .2em;
+    margin: 0 0.2em;
     min-width: 1em;
-    padding: .2em .6em;
+    padding: 0.2em 0.6em;
     text-align: center;
     text-decoration: none;
     font-weight: bold;
@@ -183,23 +211,51 @@ kbd[title],
 
 kbd,
 kbd.dark {
-    -moz-box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
-    -webkit-box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
+    -moz-box-shadow: inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+        0 0.1em 0.1em rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+        0 0.1em 0.1em rgba(0, 0, 0, 0.3);
     background: -moz-linear-gradient(top, rgb(60, 60, 60), rgb(80, 80, 80));
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(60, 60, 60)), to(rgb(80, 80, 80)));
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgb(60, 60, 60)),
+        to(rgb(80, 80, 80))
+    );
     background: rgb(80, 80, 80);
-    box-shadow: inset 0 0 1px rgb(150, 150, 150), inset 0 -.05em .4em rgb(80, 80, 80), 0 .1em 0 rgb(30, 30, 30), 0 .1em .1em rgba(0, 0, 0, .3);
+    box-shadow: inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+        0 0.1em 0.1em rgba(0, 0, 0, 0.3);
     color: rgb(250, 250, 250);
     text-shadow: -1px -1px 0 rgb(70, 70, 70);
 }
 
 kbd.light {
-    -moz-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
-    -webkit-box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
-    background: -moz-linear-gradient(top, rgb(210, 210, 210), rgb(255, 255, 255));
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(210, 210, 210)), to(rgb(255, 255, 255)));
+    -moz-box-shadow: inset 0 0 1px rgb(255, 255, 255),
+        inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
+        0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
+    -webkit-box-shadow: inset 0 0 1px rgb(255, 255, 255),
+        inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
+        0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
+    background: -moz-linear-gradient(
+        top,
+        rgb(210, 210, 210),
+        rgb(255, 255, 255)
+    );
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgb(210, 210, 210)),
+        to(rgb(255, 255, 255))
+    );
     background: rgb(250, 250, 250);
-    box-shadow: inset 0 0 1px rgb(255, 255, 255), inset 0 0 .4em rgb(200, 200, 200), 0 .1em 0 rgb(130, 130, 130), 0 .11em 0 rgba(0, 0, 0, .4), 0 .1em .11em rgba(0, 0, 0, .9);
+    box-shadow: inset 0 0 1px rgb(255, 255, 255),
+        inset 0 0 0.4em rgb(200, 200, 200), 0 0.1em 0 rgb(130, 130, 130),
+        0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
     color: rgb(50, 50, 50);
     text-shadow: 0 0 2px rgb(255, 255, 255);
 }
