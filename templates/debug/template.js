@@ -17,7 +17,7 @@
     $id.html(activeGamepad.id);
     updateTimestamp();
     $index.html(activeGamepad.index);
-    $mapping.html(activeGamepad.mapping);
+    $mapping.html(activeGamepad.mapping || 'N/A');
     $rumble.html(
         activeGamepad.vibrationActuator
             ? activeGamepad.vibrationActuator.type

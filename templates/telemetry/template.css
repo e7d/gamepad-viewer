@@ -1,0 +1,116 @@
+#gamepad #telemetry {
+    background: var(--main-bg-color);
+    display: flex;
+    width: 650px;
+    height: 120px;
+    border-top-right-radius: 60px;
+    border-bottom-right-radius: 60px;
+
+    --black-color: black;
+    --white-color: white;
+    --grey-color: grey;
+    --main-bg-color: #444;
+    --main-component-color: grey;
+    --meter-idle-color: var(--grey-color);
+    --clutch-color: blue;
+    --brake-color: red;
+    --throttle-color: lime;
+}
+
+#gamepad #telemetry #chart {
+    flex: 1;
+    margin: 4px;
+    background-color: var(--main-component-color);
+    border: 1px solid var(--black-color);
+}
+
+#gamepad #telemetry #meters {
+    display: flex;
+    justify-content: space-around;
+    width: 90px;
+}
+
+#gamepad #telemetry #meters .meter {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 4px 2px;
+}
+
+#gamepad #telemetry #meters .meter .value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 10pt;
+    color: var(--white-color);
+}
+
+#gamepad #telemetry #meters .meter .bar {
+    display: flex;
+    align-items: flex-end;
+    flex: 1;
+    background-color: var(--main-component-color);
+    border: 1px solid var(--black-color);
+}
+#gamepad #telemetry #meters .meter .bar .filler {
+    width: 100%;
+    height: 0%;
+    transition: height 100ms;
+}
+#gamepad #telemetry #meters #clutch.meter .bar .filler {
+    background-color: var(--clutch-color);
+}
+#gamepad #telemetry #meters #brake.meter .bar .filler {
+    background-color: var(--brake-color);
+}
+#gamepad #telemetry #meters #throttle.meter .bar .filler {
+    background-color: var(--throttle-color);
+}
+
+#gamepad #telemetry #direction {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    border-radius: 50%;
+}
+
+#gamepad #telemetry #direction #wheel {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    background-color: var(--black-color);
+}
+
+#gamepad #telemetry #direction #wheel #wheel--center {
+    display: block;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background-color: var(--main-bg-color);
+}
+
+#gamepad #telemetry #direction #wheel #wheel--indicator {
+    display: block;
+    width: 7%;
+    height: 50%;
+    background-color: var(--white-color);
+    transform-origin: bottom;
+    transform: rotate(0deg);
+    transition: transform 100ms;
+}
+
+#gamepad #telemetry #direction {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    border-radius: 50%;
+}

@@ -134,6 +134,7 @@ body.unsupported #gamepad {
     border-radius: 4px;
     background: whitesmoke;
     border: none;
+    max-width: 200px;
 }
 
 #help-popout {

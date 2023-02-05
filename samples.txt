@@ -1,0 +1,5 @@
+Sample: T818
+http://localhost:8081/?gamepad=Thrustmaster%20Thrustmaster%20Advance%20Racer%20(Vendor:%20044f%20Product:%20b696)&triggers=opacity&clutchIndex=6&clutchMin=1&clutchMax=-1&brakeIndex=1&brakeMin=1&brakeMax=-1&throttleIndex=5&throttleMin=1&throttleMax=-1&directionIndex=0&directionDegrees=900&type=telemetry
+
+Sample: Xbox Controller
+http://localhost:8081/?gamepad=Microsoft%20Controller%20(STANDARD%20GAMEPAD%20Vendor:%20045e%20Product:%200b00)&triggers=opacity&brakeType=button&brakeIndex=6&brakeMin=0&brakeMax=1&throttleType=button&throttleIndex=7&throttleMin=0&throttleMax=1&directionIndex=0&directionDegrees=180&type=telemetry
