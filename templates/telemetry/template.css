@@ -3,18 +3,22 @@
     display: flex;
     width: 650px;
     height: 120px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
     border-top-right-radius: 60px;
     border-bottom-right-radius: 60px;
 
     --black-color: black;
     --white-color: white;
-    --grey-color: grey;
-    --main-bg-color: #444;
-    --main-component-color: grey;
-    --meter-idle-color: var(--grey-color);
-    --clutch-color: blue;
-    --brake-color: red;
-    --throttle-color: lime;
+    --main-bg-color: black;
+    --main-component-color: #333;
+    --clutch-color: #2D64B9;
+    --brake-color: #A52725;
+    --throttle-color: #0CA818;
+}
+
+#gamepad #telemetry * {
+    box-sizing: border-box;
 }
 
 #gamepad #telemetry #chart {
@@ -22,6 +26,7 @@
     margin: 4px;
     background-color: var(--main-component-color);
     border: 1px solid var(--black-color);
+    border-radius: 4px;
 }
 
 #gamepad #telemetry #meters {
@@ -31,86 +36,68 @@
 }
 
 #gamepad #telemetry #meters .meter {
-    display: flex;
-    flex-direction: column;
+    position: relative;
     flex: 1;
     margin: 4px 2px;
+    background-color: var(--main-component-color);
+    border: 1px solid var(--black-color);
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 #gamepad #telemetry #meters .meter .value {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: absolute;
+    bottom: 2px;
+    width: 100%;
+    text-align: center;
     font-weight: bold;
     font-size: 10pt;
     color: var(--white-color);
 }
 
 #gamepad #telemetry #meters .meter .bar {
-    display: flex;
-    align-items: flex-end;
-    flex: 1;
-    background-color: var(--main-component-color);
-    border: 1px solid var(--black-color);
-}
-#gamepad #telemetry #meters .meter .bar .filler {
+    position: absolute;
+    bottom: 0;
     width: 100%;
     height: 0%;
     transition: height 100ms;
 }
-#gamepad #telemetry #meters #clutch.meter .bar .filler {
+#gamepad #telemetry #meters #clutch.meter .bar {
     background-color: var(--clutch-color);
 }
-#gamepad #telemetry #meters #brake.meter .bar .filler {
+#gamepad #telemetry #meters #brake.meter .bar {
     background-color: var(--brake-color);
 }
-#gamepad #telemetry #meters #throttle.meter .bar .filler {
+#gamepad #telemetry #meters #throttle.meter .bar {
     background-color: var(--throttle-color);
 }
 
 #gamepad #telemetry #direction {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 120px;
-    border-radius: 50%;
-}
-
-#gamepad #telemetry #direction #wheel {
     position: relative;
     display: flex;
     justify-content: center;
-    width: 90%;
-    height: 90%;
-    border-radius: 50%;
-    background-color: var(--black-color);
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    border-radius: 50px;
+    background-color: var(--main-component-color);
 }
 
-#gamepad #telemetry #direction #wheel #wheel--center {
-    display: block;
+#gamepad #telemetry #direction .center {
     position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
     border-radius: 50%;
     background-color: var(--main-bg-color);
 }
 
-#gamepad #telemetry #direction #wheel #wheel--indicator {
+#gamepad #telemetry #direction .indicator {
     display: block;
-    width: 7%;
+    width: 5%;
     height: 50%;
     background-color: var(--white-color);
     transform-origin: bottom;
-    transform: rotate(0deg);
     transition: transform 100ms;
-}
-
-#gamepad #telemetry #direction {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 120px;
-    border-radius: 50%;
 }

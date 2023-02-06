@@ -38,3 +38,6 @@ Please read below or use this video tutorial: https://youtu.be/vHzf_ESseTc
 - Adjust position and size of the source as you will
 
 *: These gamepads work both wired and wireless via Bluetooth
+
+## Credits
+DualShock 4 and Xbox One skins from [gamepadviewer.com](https://gamepadviewer.com/)

@@ -1,81 +1,83 @@
-(() => {
-    $id = $("#info-id .value");
-    $timestamp = $("#info-timestamp .value");
-    $index = $("#info-index .value");
-    $mapping = $("#info-mapping .value");
-    $rumble = $("#info-rumble .value");
-    $axes = $(".axes .container");
-    $buttons = $(".buttons .container");
+function DebugTemplate(gamepad) {
+    return {
+        $name: $('#info-name .value'),
+        $vendor: $('#info-vendor .value'),
+        $product: $('#info-product .value'),
+        $timestamp: $('#info-timestamp .value'),
+        $index: $('#info-index .value'),
+        $mapping: $('#info-mapping .value'),
+        $rumble: $('#info-rumble .value'),
+        $axes: $('.axes .container'),
+        $buttons: $('.buttons .container'),
+        activeGamepad: gamepad.getActive(),
+        init: function () {
+            if (!this.activeGamepad) {
+                return;
+            }
+            const { name, vendor, product } = gamepad.toGamepadInfo(this.activeGamepad.id);
+            this.$name.html(name).attr('title', name);
+            this.$vendor.html(vendor);
+            this.$product.html(product);
+            this.updateTimestamp();
+            this.$index.html(this.activeGamepad.index);
+            this.$mapping.html(this.activeGamepad.mapping || 'N/A');
+            this.$rumble.html(
+                this.activeGamepad.vibrationActuator
+                    ? this.activeGamepad.vibrationActuator.type
+                    : 'N/A'
+            );
+            this.initAxes();
+            this.initButtons();
+            gamepad.updateButton = ($button) => this.updateElem($button);
+            gamepad.updateAxis = ($axis) => this.updateElem($axis, 6);
+        },
+        initAxes: function () {
+            for (
+                let axisIndex = 0;
+                axisIndex < this.activeGamepad.axes.length;
+                axisIndex++
+            ) {
+                this.$axes.append(`
+                    <div class="box medium">
+                    <div class="content">
+                        <div class="label">Axis ${axisIndex}</div>
+                        <div class="value" data-axis="${axisIndex}"></div>
+                    </div>
+                    </div>
+                `);
+            }
+        },
+        initButtons: function () {
+            for (
+                let buttonIndex = 0;
+                buttonIndex < this.activeGamepad.buttons.length;
+                buttonIndex++
+            ) {
+                this.$buttons.append(`
+                    <div class="box small">
+                    <div class="content">
+                        <div class="label">B${buttonIndex}</div>
+                        <div class="value" data-button="${buttonIndex}"></div>
+                    </div>
+                    </div>
+                `);
+            }
+        },
+        updateElem: function ($elem, precision = 2) {
+            this.updateTimestamp();
+            let value = parseFloat($elem.attr('data-value'), 10).toFixed(precision);
+            $elem.html(value);
+            let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
+            $elem.css({ color: `rgb(${color}, ${color}, ${color})` });
+        },
+        updateTimestamp: function () {
+            this.activeGamepad = gamepad.getActive();
+            if (!this.activeGamepad) {
+                return;
+            }
+            this.$timestamp.html(parseFloat(this.activeGamepad.timestamp).toFixed(3));
+        },
+    }.init();
+};
 
-    gamepad = window.gamepad;
-    activeGamepad = gamepad.getActive();
-
-    if (!activeGamepad) {
-        return;
-    }
-
-    $id.html(activeGamepad.id);
-    updateTimestamp();
-    $index.html(activeGamepad.index);
-    $mapping.html(activeGamepad.mapping || 'N/A');
-    $rumble.html(
-        activeGamepad.vibrationActuator
-            ? activeGamepad.vibrationActuator.type
-            : "N/A"
-    );
-
-    for (
-        let axisIndex = 0;
-        axisIndex < activeGamepad.axes.length;
-        axisIndex++
-    ) {
-        $axes.append(`
-            <div class="box medium">
-               <div class="content">
-                   <div class="label">Axis ${axisIndex}</div>
-                   <div class="value" data-axis="${axisIndex}"></div>
-               </div>
-            </div>
-        `);
-    }
-
-    for (
-        let buttonIndex = 0;
-        buttonIndex < activeGamepad.buttons.length;
-        buttonIndex++
-    ) {
-        $buttons.append(`
-            <div class="box small">
-               <div class="content">
-                   <div class="label">B${buttonIndex}</div>
-                   <div class="value" data-button="${buttonIndex}"></div>
-               </div>
-            </div>
-        `);
-    }
-
-    gamepad.updateButton = function ($button) {
-        updateElem($button);
-    };
-
-    gamepad.updateAxis = function ($axis) {
-        updateElem($axis, 6);
-    };
-
-    function updateElem($elem, precision = 2) {
-        updateTimestamp();
-
-        let value = parseFloat($elem.attr("data-value"), 10).toFixed(precision);
-        $elem.html(value);
-        let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
-        $elem.css({ color: `rgb(${color}, ${color}, ${color})` });
-    }
-
-    function updateTimestamp() {
-        activeGamepad = gamepad.getActive();
-        if (!activeGamepad) {
-            return;
-        }
-        $timestamp.html(parseFloat(activeGamepad.timestamp).toFixed(3));
-    }
-})();
+new DebugTemplate(window.gamepad);
