@@ -57,9 +57,16 @@ class Gamepad {
                 name: 'Debug',
             },
             ds4: {
-                id: /054c|54c|7545|09cc|0104|0ce6|046d|0810|2563/, // 054c,7545 = Sony vendor code, 09cc,0104 = DS4 controllers product codes, 0ce6 = DualSense controller product code, 046d,0810,2563 = PS-like controllers vendor codes
+                id: /05c4|09cc|0104|046d|0810|2563/, // 05c4,09cc,0104 = DS4 controllers product codes, 046d,0810,2563 = PS-like controllers vendor codes
                 name: 'DualShock 4',
                 colors: ['black', 'white', 'red', 'blue'],
+                triggers: true,
+                zoom: true,
+            },
+            dualsense: {
+                id: /0ce6/, // 0ce6 = DualSense controller product code
+                name: 'DualSense',
+                colors: ['white', 'black'],
                 triggers: true,
                 zoom: true,
             },
@@ -313,7 +320,7 @@ class Gamepad {
      * @returns {object}
      */
     toGamepadInfo(id) {
-        return /(?<name>.*) \(.*Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})\)/.exec(id).groups;
+        return /(?<name>.*?) \((Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})|(?<id>.*?))\)/.exec(id).groups;
     }
 
     /**
@@ -327,9 +334,9 @@ class Gamepad {
             if (!gamepad) {
                 continue;
             }
-            const { name, vendor, product } = this.toGamepadInfo(gamepad.id);
+            const { name } = this.toGamepadInfo(gamepad.id);
             $options.push(
-                `<option class='entry' value='${vendor}-${product}'>${name}</option>`
+                `<option class='entry' value='${gamepad.id}'>${name}</option>`
             );
         }
         this.$gamepadSelect.append($options.join(''));
@@ -659,8 +666,7 @@ class Gamepad {
         this.identifier = this.identifiers[this.type];
 
         // update the overlay selectors
-        const { vendor, product } = this.toGamepadInfo(gamepad.id);
-        this.$gamepadSelect.val(`${vendor}-${product}`);
+        this.$gamepadSelect.val(`${gamepad.id}`);
         this.updateColors();
         this.updateTriggers();
 
