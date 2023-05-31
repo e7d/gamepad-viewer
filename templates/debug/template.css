@@ -52,3 +52,9 @@
     white-space: nowrap;
     color: white;
 }
+
+#info-vendor,
+#info-product,
+#info-id {
+    display: none;
+}

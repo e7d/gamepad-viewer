@@ -1,8 +1,9 @@
 function DebugTemplate(gamepad) {
     return {
         $name: $('#info-name .value'),
-        $vendor: $('#info-vendor .value'),
-        $product: $('#info-product .value'),
+        $vendor: $('#info-vendor'),
+        $product: $('#info-product'),
+        $id: $('#info-id'),
         $timestamp: $('#info-timestamp .value'),
         $index: $('#info-index .value'),
         $mapping: $('#info-mapping .value'),
@@ -14,10 +15,14 @@ function DebugTemplate(gamepad) {
             if (!this.activeGamepad) {
                 return;
             }
-            const { name, vendor, product } = gamepad.toGamepadInfo(this.activeGamepad.id);
+            const { name, vendor, product, id } = gamepad.toGamepadInfo(this.activeGamepad.id);
             this.$name.html(name).attr('title', name);
-            this.$vendor.html(vendor);
-            this.$product.html(product);
+            if (vendor && product) {
+                this.$vendor.css({display: 'block'}).find('.value').html(vendor);
+                this.$product.css({display: 'block'}).find('.value').html(product);
+            } else {
+                this.$id.css({display: 'block'}).find('.value').html(id);
+            }
             this.updateTimestamp();
             this.$index.html(this.activeGamepad.index);
             this.$mapping.html(this.activeGamepad.mapping || 'N/A');

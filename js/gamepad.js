@@ -324,7 +324,7 @@ class Gamepad {
      * @returns {object}
      */
     toGamepadInfo(id) {
-        return /(?<name>.*?) \((Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})|(?<id>.*?))\)/.exec(id).groups;
+        return /(?<name>.*?) \((?:.*?Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})|(?<id>.*?))\)/.exec(id).groups;
     }
 
     /**
