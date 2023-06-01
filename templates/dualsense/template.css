@@ -158,8 +158,16 @@
     background: url(buttons.png);
 }
 
+#gamepad[data-color="black"] .button {
+    background-position-y: 55px;
+}
+
 #gamepad .button[data-pressed="true"] {
     background-position-y: 55px;
+}
+
+#gamepad[data-color="black"] .button[data-pressed="true"] {
+    background-position-y: 0;
 }
 
 #gamepad .a {
@@ -267,8 +275,16 @@
     background-position: 52px 0;
 }
 
+#gamepad[data-color="black"] .face {
+    background-position-y: 52px;
+}
+
 #gamepad .face[data-pressed="true"] {
     background-position-y: 52px;
+}
+
+#gamepad[data-color="black"] .face[data-pressed="true"] {
+    background-position-y: 0;
 }
 
 #gamepad.half {
