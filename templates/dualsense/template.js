@@ -1,37 +1,34 @@
-function DualShock4Template(gamepad) {
-    return {
-        init: function () {
-            gamepad.updateButton = function ($button) {
-                const value = parseFloat($button.attr('data-value'), 10);
-                if ($button.is('.trigger')) {
-                    $button.css(
-                        gamepad.triggersMeter
-                            ? {
-                                opacity: 1,
-                                'clip-path': `inset(${(1 - value) * 100}% 0px 0px 0pc)`,
-                            }
-                            : {
-                                opacity: `${value * 100}%`,
-                                'clip-path': 'none',
-                            }
-                    );
-                }
-            };
-            gamepad.updateAxis = function ($axis) {
-                const axisX = $axis.attr('data-value-x');
-                const axisY = $axis.attr('data-value-y');
-                if ($axis.is('.stick')) {
-                    $axis.css({
-                        'margin-top': axisY * 25,
-                        'margin-left': axisX * 25,
-                        transform: `rotateX(${-parseFloat(
-                            axisY * 30,
-                            8
-                        )}deg) rotateY(${parseFloat(axisX * 30, 8)}deg)`,
-                    });
-                }
-            };
-        },
-    }.init();
+window.gamepad.template = class DualSenseTemplate {
+    /**
+     * Instanciates a new DualSense controller template
+     */
+    constructor() {
+        this.gamepad = window.gamepad;
+        this.gamepad.updateButton = ($button) => this.updateButton($button);
+        this.gamepad.updateAxis = ($axis) => this.updateAxis($axis);
+    }
+
+    /**
+     * Destroys the template
+     */
+    destructor() {
+        delete this.gamepad.updateButton;
+        delete this.gamepad.updateAxis;
+    }
+
+    updateButton($button) {
+        if (!$button.matches('.trigger')) return;
+        const value = parseFloat($button.getAttribute('data-value'), 10);
+        $button.style.setProperty('opacity', this.gamepad.triggersMeter ? 1 : `${value * 100}%`);
+        $button.style.setProperty('clip-path', this.gamepad.triggersMeter ? `inset(${100 - value * 100}% 0px 0px 0pc)` : 'none');
+    }
+
+    updateAxis($axis) {
+        if (!$axis.matches('.stick')) return;
+        const axisX = $axis.getAttribute('data-value-x');
+        const axisY = $axis.getAttribute('data-value-y');
+        $axis.style.setProperty('margin-top', `${axisY * 25}px`);
+        $axis.style.setProperty('margin-left', `${axisX * 25}px`);
+        $axis.style.setProperty('transform', `rotateX(${-parseFloat(axisY * 30, 8)}deg) rotateY(${parseFloat(axisX * 30, 8)}deg)`);
+    }
 };
-new DualShock4Template(window.gamepad);
