@@ -21,7 +21,8 @@ class Gamepad {
         this.$colorSelect = this.$colorOverlay.find('select[name=color]');
         this.$triggersOverlay = this.$overlay.find('#triggers');
         this.$triggersSelect = this.$triggersOverlay.find('select[name=triggers]');
-        this.$helpPopout = $('#help-popout');
+        this.$helpPopout = $('#help.popout');
+        this.$helpPopoutClose = this.$helpPopout.find('.close');
         this.$gamepadList = $('#gamepad-list');
 
         // ensure the GamePad API is available on this browser
@@ -178,6 +179,9 @@ class Gamepad {
 
         // by default, enqueue a delayed display of the placeholder animation
         this.displayPlaceholder();
+
+        // listen for keyboard events
+        this.$helpPopoutClose.on('click', this.toggleHelp.bind(this));
     }
 
     /**
@@ -1080,7 +1084,7 @@ class Gamepad {
      * Toggles the on-screen help message
      */
     toggleHelp() {
-        // refresh gamepad lsit with latest data
+        // refresh gamepad list with latest data
         this.pollGamepads();
         this.buildHelpGamepadList();
 
