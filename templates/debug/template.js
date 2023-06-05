@@ -5,8 +5,8 @@ window.gamepad.template = class DebugTemplate {
     constructor() {
         this.gamepad = window.gamepad;
         this.init();
-        this.gamepad.updateButton = ($button) => this.updateElem($button);
-        this.gamepad.updateAxis = ($axis) => this.updateElem($axis, 6);
+        this.gamepad.updateButton = ($button, { value }) => this.updateElem($button, value);
+        this.gamepad.updateAxis = ($axis, _, axis) => this.updateElem($axis, axis, 6);
     }
 
     /**
@@ -100,10 +100,9 @@ window.gamepad.template = class DebugTemplate {
      * @param {Element} $elem
      * @param {Number} precision
      */
-    updateElem($elem, precision = 2) {
+    updateElem($elem, value, precision = 2) {
         this.updateTimestamp();
-        let value = parseFloat($elem.attributes['data-value'].value, 10).toFixed(precision);
-        $elem.innerHTML = value;
+        $elem.innerHTML = value.toFixed(precision);
         let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
         $elem.style.setProperty('color', `rgb(${color}, ${color}, ${color})`);
     }

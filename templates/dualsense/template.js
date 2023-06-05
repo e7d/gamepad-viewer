@@ -4,8 +4,10 @@ window.gamepad.template = class DualSenseTemplate {
      */
     constructor() {
         this.gamepad = window.gamepad;
-        this.gamepad.updateButton = ($button) => this.updateButton($button);
-        this.gamepad.updateAxis = ($axis) => this.updateAxis($axis);
+        this.gamepad.updateButton = this.updateButton.bind(this);
+        this.gamepad.updateAxis = this.updateAxis.bind(this);
+        this.rotateX = 0;
+        this.rotateY = 0;
     }
 
     /**
@@ -16,19 +18,27 @@ window.gamepad.template = class DualSenseTemplate {
         delete this.gamepad.updateAxis;
     }
 
-    updateButton($button) {
-        if (!$button.matches('.trigger')) return;
-        const value = parseFloat($button.getAttribute('data-value'), 10);
-        $button.style.setProperty('opacity', this.gamepad.triggersMeter ? 1 : `${value * 100}%`);
-        $button.style.setProperty('clip-path', this.gamepad.triggersMeter ? `inset(${100 - value * 100}% 0px 0px 0pc)` : 'none');
+    updateButton($button, button) {
+        if (!$button.matches('.trigger') || !button) return;
+        $button.style.setProperty('opacity', this.gamepad.triggersMeter ? 1 : `${button.value * 100}%`);
+        $button.style.setProperty('clip-path', this.gamepad.triggersMeter ? `inset(${100 - button.value * 100}% 0px 0px 0pc)` : 'none');
     }
 
-    updateAxis($axis) {
+    updateAxis($axis, attribute, axis) {
         if (!$axis.matches('.stick')) return;
-        const axisX = $axis.getAttribute('data-value-x');
-        const axisY = $axis.getAttribute('data-value-y');
-        $axis.style.setProperty('margin-top', `${axisY * 25}px`);
-        $axis.style.setProperty('margin-left', `${axisX * 25}px`);
-        $axis.style.setProperty('transform', `rotateX(${-parseFloat(axisY * 30, 8)}deg) rotateY(${parseFloat(axisX * 30, 8)}deg)`);
+        if (attribute === 'data-axis-x') {
+            $axis.style.setProperty('margin-left', `${axis * 25}px`);
+            this.rotateY = parseFloat(axis * 30, 8);
+            this.updateRotate($axis);
+        }
+        if (attribute === 'data-axis-y') {
+            $axis.style.setProperty('margin-top', `${axis * 25}px`);
+            this.rotateX = -parseFloat(axis * 30, 8);
+            this.updateRotate($axis);
+        }
+    }
+
+    updateRotate($axis) {
+        $axis.style.setProperty('transform', `rotateX(${this.rotateX}deg) rotateY(${this.rotateY}deg)`);
     }
 };

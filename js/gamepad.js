@@ -843,22 +843,20 @@ class Gamepad {
         const activeGamepad = this.getActive();
 
         // save the buttons mapping of this template
-        this.mapping.buttons = [];
-        for (let index = 0; index < activeGamepad.buttons.length; index++) {
+        this.mapping.buttons = activeGamepad.buttons.map((_, index) => {
             const $button = document.querySelector(`[data-button='${index}']`);
-            if (!$button) break;
-            this.mapping.buttons[index] = $button;
-        }
+            return { $button, button: { pressed: null, value: null } };
+        });
 
         // save the axes mapping of this template
-        this.mapping.axes = [];
-        for (let index = 0; index < activeGamepad.axes.length; index++) {
-            const $axis = document.querySelector(
-                `[data-axis='${index}'], [data-axis-x='${index}'], [data-axis-y='${index}'], [data-axis-z='${index}']`
-            );
-            if (!$axis) break;
-            this.mapping.axes[index] = $axis;
-        }
+        this.mapping.axes = activeGamepad.axes.map((_, index) => {
+            const { $axis, attribute } = ['data-axis', 'data-axis-x', 'data-axis-y'].reduce((acc, attribute) => {
+                if (acc.$axis) return acc;
+                const $axis = document.querySelector(`[${attribute}='${index}']`);
+                return $axis ? { $axis, attribute, axis: null } : acc;
+            }, {});
+            return { $axis, attribute };
+        });
 
         // enqueue the initial display refresh
         this.pollStatus(true);
@@ -908,28 +906,24 @@ class Gamepad {
      * @param {*} gamepad
      */
     updateButtons(gamepad) {
-        // ensure we have a button updater callback
-        if ('function' !== typeof this.updateButton) return;
-
         // update the buttons
-        for (let index = 0; index < gamepad.buttons.length; index++) {
-            // find the DOM element
-            const $button = this.mapping.buttons[index];
-            if (!$button || $button.length === 0) {
-                // nothing to do for this button if no DOM element exists
-                continue;
-            }
-
-            // read the button data
-            const button = gamepad.buttons[index];
+        gamepad.buttons.forEach((updatedButton, index) => {
+            // get the button information
+            const { $button, button } = this.mapping.buttons[index];
+            if (!$button) return;
 
             // update the display values
-            $button.setAttribute('data-pressed', button.pressed);
-            $button.setAttribute('data-value', button.value);
+            if (updatedButton.pressed !== button.pressed || updatedButton.value !== button.value) {
+                $button.setAttribute('data-pressed', updatedButton.pressed);
+                $button.setAttribute('data-value', updatedButton.value);
 
-            // hook the template defined button update method
-            this.updateButton($button);
-        }
+                // ensure we have a button updater callback and hook the template defined button update method
+                if ('function' === typeof this.updateButton) this.updateButton($button, updatedButton);
+            }
+
+            // save the updated button
+            this.mapping.buttons[index].button = updatedButton;
+        });
     }
 
     /**
@@ -938,38 +932,23 @@ class Gamepad {
      * @param {*} gamepad
      */
     updateAxes(gamepad) {
-        // ensure we have an axis updater callback
-        if ('function' !== typeof this.updateAxis) return;
-
         // update the axes
-        for (let index = 0; index < gamepad.axes.length; index++) {
-            // find the DOM element
-            const $axis = this.mapping.axes[index];
-            if (!$axis || $axis.length === 0) {
-                // nothing to do for this axis if no DOM element exists
-                continue;
+        gamepad.axes.forEach((updatedAxis, index) => {
+            // get the axis information
+            const { $axis, attribute, axis } = this.mapping.axes[index];
+            if (!$axis) return;
+
+            // update the display value
+            if (updatedAxis !== axis) {
+                $axis.setAttribute(attribute.replace('-axis', '-value'), updatedAxis);
+
+                // ensure we have an axis updater callback and hook the template defined axis update method
+                if ('function' === typeof this.updateAxis) this.updateAxis($axis, attribute, updatedAxis);
             }
 
-            // read the axis data
-            const axis = gamepad.axes[index];
-
-            // update the display values
-            if ($axis.matches(`[data-axis='${index}']`)) {
-                $axis.setAttribute('data-value', axis);
-            }
-            if ($axis.matches(`[data-axis-x='${index}']`)) {
-                $axis.setAttribute('data-value-x', axis);
-            }
-            if ($axis.matches(`[data-axis-y='${index}']`)) {
-                $axis.setAttribute('data-value-y', axis);
-            }
-            if ($axis.matches(`[data-axis-z='${index}']`)) {
-                $axis.setAttribute('data-value-z', axis);
-            }
-
-            // hook the template defined axis update method
-            this.updateAxis($axis);
-        }
+            // save the updated button
+            this.mapping.axes[index].axis = updatedAxis;
+        });
     }
 
     /**
