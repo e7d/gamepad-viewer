@@ -1109,7 +1109,7 @@ class Gamepad {
         } else if (level === 0) {
             // 0 means a zoom reset
             this.zoomLevel = 1;
-        } else if (level === '+' && this.zoomLevel < 2) {
+        } else if (level === '+' && this.zoomLevel < 4) {
             // '+' means a zoom in if we still can
             this.zoomLevel += 0.1;
         } else if (level === '-' && this.zoomLevel > 0.1) {
