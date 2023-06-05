@@ -4,6 +4,12 @@
  * @class Gamepad
  */
 class Gamepad {
+    REGEX = {
+        CHROME: /^(?<name>.*) \((?:.*?Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})|(?<id>.*))\)$/i,
+        FIREFOX: /^((?<vendor>[0-9a-f]{4})-(?<product>[0-9a-f]{4})-(?<name>.*))$/i,
+        OTHER: /^(?<name>.*)$/i,
+    }
+
     /**
      * Creates an instance of Gamepad.
      */
@@ -375,7 +381,13 @@ class Gamepad {
      * @returns {object}
      */
     toGamepadInfo(id) {
-        return /(?<name>.*?) \((?:.*?Vendor: (?<vendor>[0-9a-f]{4}) Product: (?<product>[0-9a-f]{4})|(?<id>.*?))\)/.exec(id).groups;
+        const chromeResults = this.REGEX.CHROME.exec(id);
+        if (chromeResults) return chromeResults.groups;
+        const firefoxResults = this.REGEX.FIREFOX.exec(id);
+        if (firefoxResults) return firefoxResults.groups;
+        const otherResults = this.REGEX.OTHER.exec(id);
+        if (otherResults) return otherResults.groups;
+        return { name: id, vendor: '', product: '' };
     }
 
     /**
@@ -887,12 +899,10 @@ class Gamepad {
         // load latest gamepad data
         this.pollGamepads();
         const activeGamepad = this.getActive();
+        if (!activeGamepad) return;
 
         // check for actual gamepad update
-        if (
-            !force &&
-            (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp)
-        ) return;
+        if (!force && activeGamepad.timestamp === this.lastTimestamp) return;
         this.lastTimestamp = activeGamepad.timestamp;
 
         // actually update the active gamepad graphically
