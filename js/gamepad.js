@@ -35,23 +35,14 @@ class Gamepad {
         this.assertGamepadAPI();
 
         // overlay selectors
-        this.backgroundStyle = [
-            'transparent',
-            'checkered',
-            'dimgrey',
-            'black',
-            'white',
-            'lime',
-            'magenta',
-        ];
-        this.textColors = [
-            'black',
-            'black',
-            'black',
-            'white',
-            'black',
-            'black',
-            'black',
+        this.backgrounds = [
+            { name: 'transparent', backgroundColor: 'transparent', textColor: 'black' },
+            { name: 'checkered', backgroundColor: 'url(css/transparent-bg.png)', textColor: 'black' },
+            { name: 'dimgrey', backgroundColor: 'dimgrey', textColor: 'black' },
+            { name: 'black', backgroundColor: 'black', textColor: 'white' },
+            { name: 'white', backgroundColor: 'white', textColor: 'black' },
+            { name: 'lime', backgroundColor: 'lime', textColor: 'black' },
+            { name: 'magenta', backgroundColor: 'magenta', textColor: 'black' },
         ];
         this.initOverlaySelectors();
 
@@ -128,10 +119,10 @@ class Gamepad {
         this.type = null;
         this.identifier = null;
         this.lastTimestamp = null;
-        this.backgroundStyleIndex = 0;
+        this.backgroundIndex = 0;
         this.colorIndex = null;
         this.colorName = null;
-        this.triggersMeter = false;
+        this.useMeterTriggers = false;
         this.zoomMode = 'auto';
         this.zoomLevel = 1;
         this.mapping = {
@@ -170,18 +161,7 @@ class Gamepad {
 
         // change the background if specified
         const background = this.getUrlParam('background');
-        if (background) {
-            let backgroundStyleIndex;
-            for (let i = 0; i < this.backgroundStyle.length; i++) {
-                if (background === this.backgroundStyle[i]) {
-                    backgroundStyleIndex = i;
-                    break;
-                }
-            }
-            if (backgroundStyleIndex) {
-                this.changeBackgroundStyle(backgroundStyleIndex);
-            }
-        }
+        if (background) this.changeBackground(background);
 
         // by default, enqueue a delayed display of the placeholder animation
         this.displayPlaceholder();
@@ -217,13 +197,13 @@ class Gamepad {
             this.changeSkin(this.$skinSelect.value)
         );
         this.$backgroundSelect.addEventListener('change', () =>
-            this.changeBackgroundStyle(this.$backgroundSelect.value)
+            this.changeBackground(this.$backgroundSelect.value)
         );
         this.$colorSelect.addEventListener('change', () =>
             this.changeGamepadColor(this.$colorSelect.value)
         );
         this.$triggersSelect.addEventListener('change', () =>
-            this.toggleTriggersMeter(this.$triggersSelect.value === 'meter')
+            this.toggleTriggers(this.$triggersSelect.value === 'meter')
         );
     }
 
@@ -487,8 +467,6 @@ class Gamepad {
 
     /**
      * Handles the mouse 'mousemove' event
-     *
-     * @param {MouseEvent} e
      */
     onMouseMove() {
         this.displayInstructions();
@@ -509,7 +487,7 @@ class Gamepad {
                 this.displayPlaceholder();
                 break;
             case 'KeyB':
-                this.changeBackgroundStyle();
+                this.changeBackground();
                 break;
             case 'KeyC':
                 this.changeGamepadColor();
@@ -524,7 +502,7 @@ class Gamepad {
                 this.toggleHelp();
                 break;
             case 'KeyT':
-                this.toggleTriggersMeter();
+                this.toggleTriggers();
                 break;
             case 'NumpadAdd':
             case 'Equal':
@@ -547,10 +525,8 @@ class Gamepad {
 
     /**
      * Handles the keyboard 'keydown' event
-     *
-     * @param {WindowEvent} e
      */
-    onResize(e) {
+    onResize() {
         if (this.zoomMode === 'auto') this.changeZoom('auto');
     }
 
@@ -588,7 +564,7 @@ class Gamepad {
     /**
      * Return the connected gamepad
      *
-     * @returns {object}
+     * @returns {Gamepad}
      */
     getActive() {
         return this.gamepads[this.index];
@@ -597,7 +573,7 @@ class Gamepad {
     /**
      * Return the gamepad type for the connected gamepad
      *
-     * @param {object} gamepad
+     * @param {Gamepad} gamepad
      * @returns {string}
      */
     getType(gamepad) {
@@ -748,9 +724,6 @@ class Gamepad {
 
     /**
      * Disconnect the active gamepad
-     *
-     * @param {int} index
-     * @param {object} options
      */
     clear() {
         // ensure we have something to disconnect
@@ -823,7 +796,7 @@ class Gamepad {
                 }
                 // - triggers mode
                 if (identifier.triggers) {
-                    this.toggleTriggersMeter(this.getUrlParam('triggers') === 'meter');
+                    this.toggleTriggers(this.getUrlParam('triggers') === 'meter');
                 } else {
                     this.updateUrlParams({ triggers: undefined });
                 }
@@ -888,6 +861,8 @@ class Gamepad {
 
     /**
      * Updates the status of the active gamepad
+     *
+     * @param {boolean} [force=false]
      */
     pollStatus(force = false) {
         // ensure that a gamepad is currently active
@@ -913,7 +888,7 @@ class Gamepad {
     /**
      * Updates the buttons status of the active gamepad
      *
-     * @param {*} gamepad
+     * @param {Gamepad} gamepad
      */
     updateButtons(gamepad) {
         // update the buttons
@@ -923,8 +898,13 @@ class Gamepad {
             if (!$button) return;
 
             // update the display values
-            if (updatedButton.pressed !== button.pressed || updatedButton.value !== button.value) {
+            if (
+                updatedButton.pressed !== button.pressed ||
+                updatedButton.touched !== button.touched ||
+                updatedButton.value !== button.value
+            ) {
                 $button.setAttribute('data-pressed', updatedButton.pressed);
+                $button.setAttribute('data-touched', updatedButton.touched);
                 $button.setAttribute('data-value', updatedButton.value);
 
                 // ensure we have a button updater callback and hook the template defined button update method
@@ -939,7 +919,7 @@ class Gamepad {
     /**
      * Updates the axes status of the active gamepad
      *
-     * @param {*} gamepad
+     * @param {Gamepad} gamepad
      */
     updateAxes(gamepad) {
         // update the axes
@@ -964,21 +944,21 @@ class Gamepad {
     /**
      * Changes the active gamepad
      *
-     * @param {string} gamepadId
+     * @param {string} id
      */
-    changeGamepad(gamepadId) {
+    changeGamepad(id) {
         // get the index corresponding to the identifier of the gamepad
-        const index = this.gamepads.findIndex(g => g && gamepadId === g.id);
+        const index = this.gamepads.findIndex(g => g && id === g.id);
 
         // set the selected gamepad
-        this.updateUrlParams({ gamepad: gamepadId !== 'auto' ? gamepadId : undefined });
+        this.updateUrlParams({ gamepad: id !== 'auto' ? id : undefined });
         index === -1 ? this.clear() : this.map(index);
     }
 
     /**
      * Changes the skin
      *
-     * @param {any} skin
+     * @param {string} skin
      */
     changeSkin(skin) {
         // clear the current template
@@ -996,41 +976,33 @@ class Gamepad {
     /**
      * Changes the background style
      *
-     * @param {any} style
+     * @param {string|number|undefined} indexOrName
      */
-    changeBackgroundStyle(style) {
-        if ('undefined' === typeof style) {
-            this.backgroundStyleIndex++;
-            if (this.backgroundStyleIndex > this.backgroundStyle.length - 1) {
-                this.backgroundStyleIndex = 0;
+    changeBackground(indexOrName) {
+        if ('undefined' === typeof indexOrName) {
+            this.backgroundIndex++;
+            if (this.backgroundIndex > this.backgrounds.length - 1) {
+                this.backgroundIndex = 0;
             }
-        } else if ('string' === typeof style) {
-            this.backgroundStyleIndex = this.backgroundStyle.findIndex(
-                (s) => s === style
-            );
+        } else if ('string' === typeof indexOrName) {
+            this.backgroundIndex = this.backgrounds.findIndex(({ name }) => name === indexOrName);
         } else {
-            this.backgroundStyleIndex = style;
+            this.backgroundIndex = indexOrName;
         }
-        this.backgroundStyleName =
-            this.backgroundStyle[this.backgroundStyleIndex];
+        const { name, backgroundColor, textColor } = this.backgrounds[this.backgroundIndex];
 
-        this.$body.style.setProperty(
-            'background',
-            this.backgroundStyleName === 'checkered'
-                ? 'url(css/transparent-bg.png)'
-                : this.backgroundStyleName
-        );
-        this.$body.style.setProperty('color', this.textColors[this.backgroundStyleIndex]);
+        this.$body.style.setProperty('background', backgroundColor);
+        this.$body.style.setProperty('color', textColor);
 
         // update current settings
-        this.updateUrlParams({ background: this.backgroundStyleName });
-        this.$backgroundSelect.value = this.backgroundStyleName;
+        this.updateUrlParams({ background: name });
+        this.$backgroundSelect.value = name;
     }
 
     /**
      * Changes the active gamepad color
      *
-     * @param {any} color
+     * @param {string|number|undefined} color
      */
     changeGamepadColor(color) {
         // ensure that a gamepad is currently active
@@ -1076,7 +1048,7 @@ class Gamepad {
     /**
      * Changes the active gamepad zoom level
      *
-     * @param {any} level
+     * @param {number|string|undefined} level
      */
     changeZoom(level) {
         // ensure that a gamepad is currently active
@@ -1152,13 +1124,15 @@ class Gamepad {
 
     /**
      * Toggles the debug template for the active gamepad, if any
+     *
+     * @param {boolean|undefined} debug
      */
     toggleDebug(debug = null) {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
         // update debug value
-        this.debug = debug !== null ? debug : !this.debug;
+        this.debug = debug !== undefined ? debug : !this.debug;
 
         // update current settings
         this.changeSkin(this.debug ? 'debug' : 'auto')
@@ -1174,20 +1148,18 @@ class Gamepad {
     }
 
     /**
-     * Toggles the triggers meter display
+     * Toggles the triggers display mode
+     *
+     * @param {boolean|undefined} useMeter
      */
-    toggleTriggersMeter(useMeter) {
+    toggleTriggers(useMeter) {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
-        this.triggersMeter =
-            useMeter !== undefined ? useMeter : !this.triggersMeter;
-        this.$gamepad.classList[this.triggersMeter ? 'add' : 'remove'](
-            'triggers-meter'
-        );
-
         // update current settings
-        const triggers = this.triggersMeter ? 'meter' : 'opacity';
+        this.useMeterTriggers = useMeter !== undefined ? useMeter : !this.useMeterTriggers;
+        this.$gamepad.classList[this.useMeterTriggers ? 'add' : 'remove']('triggers-meter');
+        const triggers = this.useMeterTriggers ? 'meter' : 'opacity';
         this.updateUrlParams({ triggers });
         this.$triggersSelect.value = triggers;
     }
