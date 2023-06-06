@@ -1,4 +1,4 @@
-window.gamepad.template = class DebugTemplate {
+window.gamepad.templateClass = class DebugTemplate {
     /**
      * Instanciates a new debug template
      */
@@ -98,7 +98,7 @@ window.gamepad.template = class DebugTemplate {
      * Updates the value of an element
      *
      * @param {Element} $elem
-     * @param {Number} precision
+     * @param {number} precision
      */
     updateElem($elem, value, precision = 2) {
         this.updateTimestamp();

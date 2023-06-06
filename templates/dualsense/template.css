@@ -1,17 +1,17 @@
-#gamepad {
+.controller {
     height: 700px;
     width: 1200px;
 }
 
-#gamepad[data-color="black"] {
+#gamepad[data-color="black"] .controller {
     background-image: url(base-black.png);
 }
 
-#gamepad[data-color="white"] {
+#gamepad[data-color="white"] .controller {
     background-image: url(base-white.png);
 }
 
-#gamepad.disconnected div {
+#gamepad.disconnected .controller {
     display: none;
 }
 

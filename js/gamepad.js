@@ -759,7 +759,7 @@ class Gamepad {
         script.src = `templates/${this.type}/template.js`;
         script.onload = () => {
             // initialize the template
-            new this.template();
+            this.template = new this.templateClass();
 
             // enqueue the initial display refresh
             this.startTemplate();
@@ -1087,7 +1087,7 @@ class Gamepad {
         // update the DOM with the zoom value
         this.$gamepad.style.setProperty(
             'transform',
-            `translate(-50%, -50%) scale(${this.zoomLevel}, ${this.zoomLevel})`
+            `scale(${this.zoomLevel}, ${this.zoomLevel})`
         );
 
         // update current settings
@@ -1127,7 +1127,7 @@ class Gamepad {
      *
      * @param {boolean|undefined} debug
      */
-    toggleDebug(debug = null) {
+    toggleDebug(debug) {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
