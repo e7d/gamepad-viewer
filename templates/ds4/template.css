@@ -1,67 +1,67 @@
-#gamepad {
+.controller {
     width: 806px;
     height: 598px;
 }
 
-#gamepad[data-color="black"] {
+#gamepad[data-color="black"] .controller {
     background-image: url(base-black.svg);
 }
 
-#gamepad[data-color="white"] {
+#gamepad[data-color="white"] .controller {
     background-image: url(base-white.svg);
 }
 
-#gamepad[data-color="red"] {
+#gamepad[data-color="red"] .controller {
     background-image: url(base-red.svg);
 }
 
-#gamepad[data-color="blue"] {
+#gamepad[data-color="blue"] .controller {
     background-image: url(base-blue.svg);
 }
 
-#gamepad.disconnected {
+#gamepad.disconnected .controller {
     background-image: url(disconnected.svg);
 }
 
-#gamepad.disconnected div {
+#gamepad.disconnected .controller div {
     display: none;
 }
 
-#gamepad .triggers {
+.controller .triggers {
     width: 588px;
     height: 90px;
     position: absolute;
     left: 109px;
 }
 
-#gamepad .trigger {
+.controller .trigger {
     width: 99px;
     height: 100%;
     background: url(triggers.svg);
     clip-path: inset(100% 0px 0px 0pc);
 }
 
-#gamepad .trigger[data-value="0"] {
+.controller .trigger[data-value="0"] {
     opacity: 0;
 }
 
-#gamepad .trigger.left {
+.controller .trigger.left {
     float: left;
 }
 
-#gamepad .trigger.right {
+.controller .trigger.right {
     float: right;
     background-position-x: 99px;
 }
 
-#gamepad .bumper {
+.controller .bumper {
     width: 99px;
     height: 23px;
     background: url(bumper.svg) no-repeat;
     opacity: 0;
 }
 
-#gamepad .bumpers {
+.controller .bumpers {
     position: absolute;
     width: 588px;
     height: 23px;
@@ -69,22 +69,22 @@
     top: 94px;
 }
 
-#gamepad .bumper[data-pressed="true"] {
+.controller .bumper[data-pressed="true"] {
     opacity: 1;
 }
 
-#gamepad .bumper.left {
+.controller .bumper.left {
     /* -webkit-transform: rotateY(180deg); */
     /* transform: rotateY(180deg); */
     float: left;
 }
 
-#gamepad .bumper.right {
+.controller .bumper.right {
     float: right;
     transform: rotateY(180deg);
 }
 
-#gamepad .touchpad {
+.controller .touchpad {
     width: 262px;
     height: 151px;
     position: absolute;
@@ -92,11 +92,11 @@
     top: 122px;
 }
 
-#gamepad .touchpad[data-pressed="true"] {
+.controller .touchpad[data-pressed="true"] {
     background: url(touchpad.svg) no-repeat center;
 }
 
-#gamepad .meta {
+.controller .meta {
     width: 42px;
     height: 42px;
     position: absolute;
@@ -104,11 +104,11 @@
     bottom: 216px;
 }
 
-#gamepad .meta[data-pressed="true"] {
+.controller .meta[data-pressed="true"] {
     background: url(meta.svg) no-repeat center;
 }
 
-#gamepad .arrows {
+.controller .arrows {
     position: absolute;
     width: 352px;
     height: 46px;
@@ -116,29 +116,29 @@
     left: 227px;
 }
 
-#gamepad .select,
-#gamepad .start {
+.controller .select,
+.controller .start {
     background: url(start.svg);
     width: 28px;
     height: 46px;
     opacity: 0;
 }
 
-#gamepad .select[data-pressed="true"],
-#gamepad .start[data-pressed="true"] {
+.controller .select[data-pressed="true"],
+.controller .start[data-pressed="true"] {
     opacity: 1;
 }
 
-#gamepad .select {
+.controller .select {
     float: left;
 }
 
-#gamepad .start {
+.controller .start {
     float: right;
     background-position: 28px 0;
 }
 
-#gamepad .buttons {
+.controller .buttons {
     position: absolute;
     width: 170px;
     height: 170px;
@@ -146,40 +146,40 @@
     left: 567px;
 }
 
-#gamepad .button {
+.controller .button {
     position: absolute;
     width: 56px;
     height: 56px;
     background: url(buttons.svg);
 }
 
-#gamepad .button[data-pressed="true"] {
+.controller .button[data-pressed="true"] {
     background-position-y: 56px;
 }
 
-#gamepad .a {
+.controller .a {
     background-position: 0 0;
     bottom: 0px;
     left: 56px;
 }
 
-#gamepad .b {
+.controller .b {
     background-position: -56px 0;
     top: 56px;
     right: 0px;
 }
 
-#gamepad .x {
+.controller .x {
     background-position: 112px 0;
     top: 56px;
 }
 
-#gamepad .y {
+.controller .y {
     background-position: 56px 0;
     left: 56px;
 }
 
-#gamepad .sticks {
+.controller .sticks {
     position: absolute;
     width: 361px;
     height: 105px;
@@ -187,32 +187,32 @@
     left: 228px;
 }
 
-#gamepad .stick {
+.controller .stick {
     position: absolute;
     background: url(sticks.svg);
     height: 94px;
     width: 94px;
 }
 
-#gamepad .stick[data-pressed="true"].left {
+.controller .stick[data-pressed="true"].left {
     background-position-x: -96px;
 }
 
-#gamepad .stick[data-pressed="true"].right {
+.controller .stick[data-pressed="true"].right {
     background-position-x: -192px;
 }
 
-#gamepad .stick.left {
+.controller .stick.left {
     top: 0;
     left: 0;
 }
 
-#gamepad .stick.right {
+.controller .stick.right {
     top: calc(100% - 105px);
     left: calc(100% - 105px);
 }
 
-#gamepad .dpad {
+.controller .dpad {
     position: absolute;
     width: 125px;
     height: 126px;
@@ -220,52 +220,52 @@
     left: 92px;
 }
 
-#gamepad .face {
+.controller .face {
     background: url(dpad.svg);
     position: absolute;
 }
 
-#gamepad .face.up,
-#gamepad .face.down {
+.controller .face.up,
+.controller .face.down {
     width: 36px;
     height: 52px;
 }
 
-#gamepad .face.left,
-#gamepad .face.right {
+.controller .face.left,
+.controller .face.right {
     width: 52px;
     height: 36px;
 }
 
-#gamepad .face.up {
+.controller .face.up {
     left: 44px;
     top: 0;
     background-position: -37px 0px;
 }
 
-#gamepad .face.down {
+.controller .face.down {
     left: 44px;
     bottom: 0;
     background-position: 0px 0;
 }
 
-#gamepad .face.left {
+.controller .face.left {
     top: 44px;
     left: 0;
     background-position: 104px 0;
 }
 
-#gamepad .face.right {
+.controller .face.right {
     top: 44px;
     right: 0px;
     background-position: 52px 0;
 }
 
-#gamepad .face[data-pressed="true"] {
+.controller .face[data-pressed="true"] {
     /* margin-top: 5px; */
     background-position-y: 52px;
 }
 
-#gamepad.half {
+.controller.half {
     margin-top: -300px;
 }
