@@ -1,4 +1,4 @@
-window.gamepad.templateClass = class DebugTemplate {
+window.gamepad.TemplateClass = class DebugTemplate {
     /**
      * Instanciates a new debug template
      */

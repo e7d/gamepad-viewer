@@ -1,4 +1,4 @@
-window.gamepad.templateClass = class XboxOneTemplate {
+window.gamepad.TemplateClass = class XboxOneTemplate {
     /**
      * Instanciates a new Xbox One controller template
      */

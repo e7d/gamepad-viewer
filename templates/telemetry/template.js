@@ -1,4 +1,4 @@
-gamepad.templateClass = class TelemetryTemplate {
+window.gamepad.TemplateClass = class TelemetryTemplate {
     /**
      * Instanciates a new telemetry template
      */
@@ -7,7 +7,7 @@ gamepad.templateClass = class TelemetryTemplate {
         this.gamepad = window.gamepad;
 
         this.loadSelectors();
-        this.loadUrlParams();
+        this.loadParams();
 
         if (!this.AXES.some((axis) => this[axis].index)) {
             this.wizard();
@@ -71,6 +71,7 @@ gamepad.templateClass = class TelemetryTemplate {
     loadSelectors() {
         this.$telemetry = document.querySelector('#telemetry');
         this.$chart = this.$telemetry.querySelector('#chart');
+        this.chartContext = this.$chart.getContext('2d');
         this.$meters = this.$telemetry.querySelector('#meters');
         this.$clutch = this.$telemetry.querySelector('#clutch');
         this.$clutchBar = this.$clutch.querySelector('.bar');
@@ -90,17 +91,18 @@ gamepad.templateClass = class TelemetryTemplate {
     /**
      * Loads the params from the URL
      */
-    loadUrlParams() {
+    loadParams() {
         this.withChart = gamepad.getUrlParam('chart') !== 'false';
-        this.historyLength = gamepad.getUrlParam('history') || 5000;
-
+        this.chartColors = {
+            clutch: '#2D64B9',
+            brake: '#A52725',
+            throttle: '#0CA818',
+        }
+        this.historyLength = +(gamepad.getUrlParam('history') || 5000);
         this.withMeters = gamepad.getUrlParam('meters') !== 'false';
-
         this.withSteering = gamepad.getUrlParam('steeringIndex') !== null;
         this.angle = gamepad.getUrlParam('angle') || 360;
-
         this.frequency = gamepad.getUrlParam('fps') || 60;
-
         this.AXES.forEach((axis) => {
             this[axis] = {
                 type: (gamepad.getUrlParam(`${axis}Type`) || 'axis').replace('axis', 'axe'),
@@ -129,95 +131,46 @@ gamepad.templateClass = class TelemetryTemplate {
         }
     }
 
-    async setupChart() {
-        if (!this.withChart) return;
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = `https://www.gstatic.com/charts/loader.js`;
-            script.onload = () => {
-                if (!google || !google.visualization) {
-                    this.loadGoogleCharts(resolve);
-                    return;
-                }
-                this.drawChart(resolve);
-            };
-            this.gamepad.$gamepad.appendChild(script);
-        });
-    }
-
     /**
-     * Initializes the live chart
+     * Set the canvas size to the actual pixel size with pixel ratio * 2
      */
-    async init() {
-        this.interval = 1000 / this.frequency;
-        this.length = this.historyLength / this.interval;
-
-        this.setupTemplate();
-        await this.setupChart();
-
-        this.running = true;
-        this.update();
-    }
-
-    /**
-     * Loads the Google Charts library
-     */
-    loadGoogleCharts(resolve) {
-        google.charts.load('current', { packages: ['corechart', 'line'], });
-        google.charts.setOnLoadCallback(this.drawChart.bind(this, resolve));
+    scaleChart() {
+        const { width, height } = this.$chart.getBoundingClientRect();
+        const pixelRatio = window.devicePixelRatio;
+        console.log(pixelRatio);
+        this.$chart.width = width * pixelRatio * 2;
+        this.$chart.height = height * pixelRatio * 2;
+        this.chartContext.scale(pixelRatio, pixelRatio);
+        this.$chart.style.width = `${width}px`;
+        this.$chart.style.height = `${height}px`;
     }
 
     /**
      * Draws the live chart with the initial data and starts the draw update loop
      */
-    drawChart(resolve) {
+    setupChart() {
+        if (!this.withChart) return;
+
+        this.scaleChart();
         const now = Date.now();
-        const initialData = [['time', 'clutch', 'brake', 'throttle']];
-        for (let index = now - this.historyLength; index < now; index += this.interval) {
-            initialData.push([index, 0, 0, 0]);
+        this.chartData = [];
+        for (let timestamp = now - this.historyLength; timestamp < now; timestamp += this.interval) {
+            this.chartData.push({ timestamp, clutch: 0, brake: 0, throttle: 0 });
         }
-        this.data = google.visualization.arrayToDataTable(initialData);
-        this.options = {
-            backgroundColor: 'transparent',
-            chartArea: {
-                left: 0,
-                top: 0,
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'transparent',
-            },
-            hAxis: {
-                textPosition: 'none',
-                gridlines: {
-                    color: 'transparent',
-                },
-                viewWindow: {
-                    min: now - this.historyLength,
-                    max: now
-                }
-            },
-            vAxis: {
-                textPosition: 'none',
-                gridlines: {
-                    color: 'transparent',
-                },
-                minValue: 0,
-                maxValue: 100,
-                viewWindow: {
-                    min: 2,
-                    max: 102,
-                }
-            },
-            colors: ['#2D64B9', '#A52725', '#0CA818'],
-            legend: 'none',
-            tooltip: {
-                trigger: 'none'
-            }
-        };
-        this.chart = new google.visualization.LineChart(document.querySelector('#chart'));
-        this.chart.draw(this.data, this.options);
-        resolve();
+    }
+
+    /**
+     * Initializes the live chart
+     */
+    init() {
+        this.interval = 1000 / this.frequency;
+        this.length = this.historyLength / this.interval;
+
+        this.setupTemplate();
+        this.setupChart();
+
+        this.running = true;
+        this.update();
     }
 
     /**
@@ -228,29 +181,58 @@ gamepad.templateClass = class TelemetryTemplate {
 
         const gamepad = this.gamepad.getActive();
         const [clutch, brake, throttle, steering] = this.AXES.map((axis) => this.toAxisValue(gamepad, axis));
-        if (this.withChart) this.updateChart(clutch, brake, throttle);
+        if (this.withChart) this.drawChart(clutch, brake, throttle);
         if (this.withMeters) this.updateMeters(clutch, brake, throttle);
         if (this.withSteering) this.updateSteering(steering);
 
-        window.setTimeout(this.update.bind(this), this.interval);
+        window.setTimeout(() => this.update(), this.interval);
     }
 
     /**
-     * Updates the live chart with the latest data
+     * Updates the data used to draw the cart
+     *
+     * @param {number} now
+     * @param {number} clutch
+     * @param {number} brake
+     * @param {number} throttle
+     */
+    updateChartData(now, clutch, brake, throttle) {
+        let remove = 0;
+        for (let index = 0; index < this.chartData.length - 1; index++) {
+            if (this.chartData[index].timestamp < now - this.historyLength) {
+                remove++;
+            } else {
+                break;
+            }
+        }
+        this.chartData.splice(0, remove);
+        this.chartData.push({ timestamp: now, clutch, brake, throttle });
+    }
+
+    /**
+     * Draws the whole chart wuth the latest data
      *
      * @param {number} clutch
      * @param {number} brake
      * @param {number} throttle
      */
-    updateChart(clutch, brake, throttle) {
+    drawChart(clutch, brake, throttle) {
         const now = Date.now();
-        this.data.removeRows(0, this.data.getFilteredRows([{ column: 0, maxValue: now - this.historyLength }]).length);
-        this.data.addRow([now, clutch, brake, throttle]);
-        this.options.hAxis.viewWindow = {
-            min: now - this.historyLength,
-            max: now
-        };
-        this.chart.draw(this.data, this.options);
+        this.updateChartData(now, clutch, brake, throttle);
+
+        this.chartContext.clearRect(0, 0, this.$chart.width, this.$chart.height);
+        this.AXES.forEach((axis) => {
+            if (axis === 'steering') return;
+            this.chartContext.beginPath();
+            this.chartData.forEach((entry, index) => {
+                const x = (entry.timestamp + this.historyLength - now) / this.historyLength * this.$chart.width;
+                const y = (101 - (entry[axis] || 0)) * this.$chart.height / 100;
+                this.chartContext[index === 0 ? 'moveTo' : 'lineTo'](x, y);
+            });
+            this.chartContext.lineWidth = 4;
+            this.chartContext.strokeStyle = this.chartColors[axis];
+            this.chartContext.stroke();
+        });
     }
 
     /**

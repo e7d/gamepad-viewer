@@ -1,4 +1,4 @@
-window.gamepad.templateClass = class DualSenseTemplate {
+window.gamepad.TemplateClass = class DualSenseTemplate {
     /**
      * Instanciates a new DualSense controller template
      */

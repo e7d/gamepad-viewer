@@ -754,22 +754,22 @@ class Gamepad {
      * Loads the template script and stylesheet
      */
     loadTemplateAssets() {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = `templates/${this.type}/template.css`;
+        this.$gamepad.appendChild(link);
+
         const script = document.createElement('script');
         script.async = true;
         script.src = `templates/${this.type}/template.js`;
         script.onload = () => {
             // initialize the template
-            this.template = new this.templateClass();
+            this.template = new this.TemplateClass();
 
             // enqueue the initial display refresh
             this.startTemplate();
         }
         this.$gamepad.appendChild(script);
-
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = `templates/${this.type}/template.css`;
-        this.$gamepad.appendChild(link);
     }
 
     /**

@@ -1,4 +1,4 @@
-window.gamepad.templateClass = class DualShock4Template {
+window.gamepad.TemplateClass = class DualShock4Template {
     /**
      * Instanciates a new DualShock 4 controller template
      */
