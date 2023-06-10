@@ -137,10 +137,10 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
     scaleChart() {
         const { width, height } = this.$chart.getBoundingClientRect();
         const pixelRatio = window.devicePixelRatio;
-        console.log(pixelRatio);
         this.$chart.width = width * pixelRatio * 2;
         this.$chart.height = height * pixelRatio * 2;
         this.chartContext.scale(pixelRatio, pixelRatio);
+        this.chartContext.lineWidth = pixelRatio * 4;
         this.$chart.style.width = `${width}px`;
         this.$chart.style.height = `${height}px`;
     }
@@ -197,15 +197,12 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      * @param {number} throttle
      */
     updateChartData(now, clutch, brake, throttle) {
+        const threshold = now - this.historyLength;
         let remove = 0;
-        for (let index = 0; index < this.chartData.length - 1; index++) {
-            if (this.chartData[index].timestamp < now - this.historyLength) {
-                remove++;
-            } else {
-                break;
-            }
+        while (this.chartData[remove].timestamp <= threshold) {
+            remove++;
         }
-        this.chartData.splice(0, remove);
+        this.chartData = this.chartData.slice(remove);
         this.chartData.push({ timestamp: now, clutch, brake, throttle });
     }
 
@@ -220,18 +217,24 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
         const now = Date.now();
         this.updateChartData(now, clutch, brake, throttle);
 
-        this.chartContext.clearRect(0, 0, this.$chart.width, this.$chart.height);
+        const chartContext = this.chartContext;
+        const { width, height } = this.$chart;
+        chartContext.clearRect(0, 0, width, height);
+
         this.AXES.forEach((axis) => {
             if (axis === 'steering') return;
-            this.chartContext.beginPath();
-            this.chartData.forEach((entry, index) => {
-                const x = (entry.timestamp + this.historyLength - now) / this.historyLength * this.$chart.width;
-                const y = (101 - (entry[axis] || 0)) * this.$chart.height / 100;
-                this.chartContext[index === 0 ? 'moveTo' : 'lineTo'](x, y);
-            });
-            this.chartContext.lineWidth = 4;
-            this.chartContext.strokeStyle = this.chartColors[axis];
-            this.chartContext.stroke();
+
+            chartContext.beginPath();
+
+            for (let index = 0; index < this.chartData.length; index++) {
+                const entry = this.chartData[index];
+                const x = (entry.timestamp + this.historyLength - now) / this.historyLength * width;
+                const y = (101 - (entry[axis] || 0)) * height / 100;
+                chartContext[index === 0 ? 'moveTo' : 'lineTo'](x, y);
+            }
+
+            chartContext.strokeStyle = this.chartColors[axis];
+            chartContext.stroke();
         });
     }
 
@@ -244,12 +247,12 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      * @param {number} steering
      */
     updateMeters(clutch, brake, throttle) {
-        Object.entries({ clutch, brake, throttle }).forEach(([axis, value]) => {
+        for (const [axis, value] of Object.entries({ clutch, brake, throttle })) {
             if (value === null) return;
             this[`$${axis}Value`].innerHTML = value;
             this[`$${axis}Value`].style.opacity = `${Math.round(33 + (value / 1.5))}%`;
             this[`$${axis}Bar`].style.height = `${value}%`;
-        });
+        }
     }
 
     /**
@@ -307,8 +310,8 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      * Waits for an axis to be pushed out, and of the reference value, if any
      *
      * @param {number} index
-     * @param {number} [referenceValue]
-     * @param {number} [duration]
+     * @param {number|undefined} [referenceValue = undefined]
+     * @param {number} [duration = 1000]
      * @returns {Promise}
      */
     async getAxisPush(index, referenceValue = undefined, duration = 1000) {
@@ -323,6 +326,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
                     return;
                 }
                 if (referenceValue !== undefined && Math.abs(gamepad.axes[index] - referenceValue) < 0.5) {
+                    return;
                 }
                 if (Math.abs(gamepad.axes[index] - value) > 0.05) {
                     start = undefined;
@@ -476,7 +480,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
         }
 
         this.$wizardInstructions.innerHTML = `
-            <p>Press and hold the <strong>${name}</strong> axis.</p>
+            <p>Hold down the <strong>${name}</strong> axis.</p>
         `;
         const pressedValue = await this.getAxisPush(index);
 
