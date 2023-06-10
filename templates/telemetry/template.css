@@ -1,6 +1,8 @@
 #gamepad #telemetry {
     background: var(--main-bg-color);
     display: flex;
+    width: fit-content;
+    margin: auto;
     height: 120px;
     padding: 4px;
     border-radius: 6px;
@@ -14,7 +16,7 @@
     --throttle-color: #0CA818;
 }
 
-#gamepad #telemetry.with-steering {
+#gamepad #telemetry:has(#steering:not([style*="display: none"])) {
     border-top-right-radius: 60px;
     border-bottom-right-radius: 60px;
 }
@@ -115,14 +117,22 @@
     transition: transform 100ms;
 }
 
-#wizard #wizard-instructions h4,
+#wizard h4 {
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+
+#wizard #wizard-instructions #wizard-preview .controller {
+    position: relative;
+    transform: none;
+    top: auto;
+    left: auto;
+}
+
 #wizard #wizard-instructions p {
     text-align: center;
 }
 
-#wizard #wizard-instructions h4 {
-    margin-bottom: 0.5em;
-}
 
 #wizard .wizard-options {
     display: flex;

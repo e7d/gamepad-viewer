@@ -33,9 +33,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      * @returns {number}
      */
     toPercentage(value, min, max) {
-        return value !== undefined
-            ? Math.max(0, Math.min(100, Math.round((value - min) * (100 / (max - min)))))
-            : 0;
+        return Math.max(0, Math.min(100, Math.round((value - min) * (100 / (max - min)))));
     }
 
     /**
@@ -61,8 +59,12 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
     toAxisValue(gamepad, axis) {
         const { type, index, min, max } = this[axis];
         if (!type || !index) return null;
-        const value = type === 'button' ? gamepad.buttons[index].value : gamepad.axes[index];
-        return axis === 'steering' ? this.toDegrees(value, min, max) : this.toPercentage(value, min, max);
+        const value = type === 'button'
+            ? gamepad.buttons[index].value
+            : gamepad.axes[index];
+        return axis === 'steering'
+            ? this.toDegrees(value, min, max)
+            : this.toPercentage(value, min, max);
     }
 
     /**
@@ -85,6 +87,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
         this.$steering = this.$telemetry.querySelector('#steering');
         this.$steeringIndicator = this.$steering.querySelector('.indicator');
         this.$wizard = document.querySelector('#wizard');
+        this.$wizardPreview = this.$wizard.querySelector('#wizard-preview');
         this.$wizardInstructions = this.$wizard.querySelector('#wizard-instructions');
     }
 
@@ -147,15 +150,19 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
 
     /**
      * Draws the live chart with the initial data and starts the draw update loop
+     *
+     * @param {boolean} [demo=false]
      */
-    setupChart() {
+    setupChart(demo = false) {
         if (!this.withChart) return;
 
         this.scaleChart();
         const now = Date.now();
         this.chartData = [];
-        for (let timestamp = now - this.historyLength; timestamp < now; timestamp += this.interval) {
-            this.chartData.push({ timestamp, clutch: 0, brake: 0, throttle: 0 });
+        for (let index = 0; index < this.historyLength / this.interval; index++) {
+            const timestamp = now - (this.historyLength - index * this.interval);
+            const data = demo ? this.getDemoData() : { clutch: 0, brake: 0, throttle: 0 };
+            this.chartData.push({ timestamp, ...data });
         }
     }
 
@@ -164,7 +171,6 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      */
     init() {
         this.interval = 1000 / this.frequency;
-        this.length = this.historyLength / this.interval;
 
         this.setupTemplate();
         this.setupChart();
@@ -186,6 +192,33 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
         if (this.withSteering) this.updateSteering(steering);
 
         window.setTimeout(() => this.update(), this.interval);
+    }
+
+    /**
+     * @todo: produce realistic data
+     * Generate alternative wave of demo data from 0 to 100 for throttle, brake and clutch
+     *
+     * @returns {object}
+     */
+    getDemoData() {
+        const clutch = this.withClutch ? Math.max(0, Math.round(Math.sin(this.demoIndex / (1000 / this.interval)) * 100)) : 0;
+        const brake = this.withBrake ? Math.max(0, Math.round(Math.sin(this.demoIndex / (1000 / this.interval) + 1.5) * 100)) : 0;
+        const throttle = this.withThrottle ? Math.max(0, Math.round(Math.sin(this.demoIndex / (1000 / this.interval) + 3) * 100)) : 0;
+        const steering = this.withSteering ? Math.round(Math.sin(this.demoIndex / (1000 / this.interval) + 3) * this.angle) : 0;
+        if (this.demoIndex++ > 10000) this.demoIndex = 0;
+        return { clutch, brake, throttle, steering };
+    }
+
+    /**
+     * Updates the live chart and the meters for the demo mode
+     */
+    updateDemo() {
+        const { clutch, brake, throttle, steering } = this.getDemoData();
+        if (this.withChart) this.drawChart(clutch, brake, throttle);
+        if (this.withMeters) this.updateMeters(clutch, brake, throttle);
+        if (this.withSteering) this.updateSteering(steering);
+
+        window.setTimeout(() => this.updateDemo(), this.interval);
     }
 
     /**
@@ -223,7 +256,6 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
 
         this.AXES.forEach((axis) => {
             if (axis === 'steering') return;
-
             chartContext.beginPath();
 
             for (let index = 0; index < this.chartData.length; index++) {
@@ -248,7 +280,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      */
     updateMeters(clutch, brake, throttle) {
         for (const [axis, value] of Object.entries({ clutch, brake, throttle })) {
-            if (value === null) return;
+            if (value === null) continue;
             this[`$${axis}Value`].innerHTML = value;
             this[`$${axis}Value`].style.opacity = `${Math.round(33 + (value / 1.5))}%`;
             this[`$${axis}Bar`].style.height = `${value}%`;
@@ -262,6 +294,105 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      */
     updateSteering(steering) {
         this.$steeringIndicator.style.transform = `rotate(${steering}deg)`;
+    }
+
+    /**
+     * Set ups the wizard with the widget demo mode
+     */
+    setupWizard() {
+        this.interval = 1000 / 60;
+        this.$wizardInstructions.querySelector('#wizard-preview').appendChild(this.$telemetry);
+
+        this.withChart = true;
+        this.withMeters = true;
+        this.withClutch = true;
+        this.withBrake = true;
+        this.withThrottle = true;
+        this.withSteering = true;
+        this.angle = 360;
+        this.demoIndex = 0;
+        this.setupChart(true);
+        this.updateDemo();
+
+        const $inputs = {
+            $clutchOption: this.$wizardInstructions.querySelector('#clutch-option'),
+            $brakeOption: this.$wizardInstructions.querySelector('#brake-option'),
+            $throttleOption: this.$wizardInstructions.querySelector('#throttle-option'),
+            $steeringOption: this.$wizardInstructions.querySelector('#steering-option')
+        };
+        const $chartOption = this.$wizardInstructions.querySelector('#chart-option');
+        const $historyOption = this.$wizardInstructions.querySelector('#history-option');
+        const $metersOption = this.$wizardInstructions.querySelector('#meters-option');
+        const $steeringAngleOption = this.$wizardInstructions.querySelector('#steering-angle-option');
+        const $fpsOption = this.$wizardInstructions.querySelector('[name=fps-option]');
+
+        $inputs.$clutchOption.addEventListener('change', () => {
+            this.withClutch = $inputs.$clutchOption.checked;
+            if (this.withClutch) {
+                this.$clutch.style.display = '';
+            } else {
+                this.$clutch.style.display = 'none';
+                this.chartData.forEach((data) => data.clutch = 0);
+            }
+        });
+        $inputs.$brakeOption.addEventListener('change', () => {
+            this.withBrake = $inputs.$brakeOption.checked;
+            if (this.withBrake) {
+                this.$brake.style.display = '';
+            } else {
+                this.$brake.style.display = 'none';
+                this.chartData.forEach((data) => data.brake = 0);
+            }
+        });
+        $inputs.$throttleOption.addEventListener('change', () => {
+            this.withThrottle = $inputs.$throttleOption.checked;
+            if (this.withThrottle) {
+                this.$throttle.style.display = '';
+            } else {
+                this.$throttle.style.display = 'none';
+                this.chartData.forEach((data) => data.throttle = 0);
+            }
+        });
+        $inputs.$steeringOption.addEventListener('change', () => {
+            this.withSteering = $inputs.$steeringOption.checked;
+            if (this.withSteering) {
+                this.$steering.style.display = '';
+            } else {
+                this.$steering.style.display = 'none';
+            }
+        });
+        $chartOption.addEventListener('change', () => {
+            this.withChart = $chartOption.checked;
+            if (this.withChart) {
+                this.$chart.style.display = '';
+            } else {
+                this.$chart.style.display = 'none';
+            }
+            this.setupChart(true);
+        });
+        $historyOption.addEventListener('change', () => {
+            this.historyLength = parseInt($historyOption.value) * 1000;
+            this.setupChart(true);
+        });
+        $metersOption.addEventListener('change', () => {
+            this.withMeters = $metersOption.checked;
+            if (this.withMeters) {
+                this.$meters.style.display = '';
+            } else {
+                this.$meters.style.display = 'none';
+            }
+            this.setupChart(true);
+        });
+        $steeringAngleOption.addEventListener('change', () => {
+            this.angle = $steeringAngleOption.value;
+        });
+        $fpsOption.addEventListener('change', () => {
+            this.interval = 1000 / parseInt($fpsOption.value);
+            console.log(this.interval);
+            this.setupChart(true);
+        });
+
+        return { $inputs, $chartOption, $historyOption, $metersOption, $steeringAngleOption, $fpsOption };
     }
 
     /**
@@ -360,6 +491,8 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      */
     async askForOptions() {
         this.$wizardInstructions.innerHTML = `
+            <h4>Preview</h4>
+            <div id="wizard-preview"></div>
             <h4>Inputs</h4>
             <div class="wizard-options">
                 <div>
@@ -416,19 +549,27 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
             <p>Then, press any button to continue.</p>
         `;
 
+        const {
+            $inputs,
+            $chartOption,
+            $historyOption,
+            $metersOption,
+            $steeringAngleOption,
+            $fpsOption
+        } = this.setupWizard();
         await this.waitButtonRelease();
         await this.waitButtonClick();
 
         return {
-            ...this.AXES.reduce((options, axis) => {
-                options[`with${this.capitalize(axis)}`] = document.querySelector(`[name=${axis}-option]`).checked;
-                return options;
-            }, {}),
-            chart: document.querySelector('[name=chart-option]').checked,
-            history: parseInt(document.querySelector('[name=history-option]').value) * 1000,
-            meters: document.querySelector('[name=meters-option]').checked,
-            angle: this.$wizardInstructions.querySelector('input[name="steering-angle-option"]').value,
-            fps: parseInt(document.querySelector('[name=fps-option]').value)
+            ...this.AXES.reduce((options, axis) => ({
+                ...options,
+                [`with${this.capitalize(axis)}`]: $inputs[`$${axis}Option`].checked
+            }), {}),
+            chart: $chartOption.checked,
+            history: parseInt($historyOption.value) * 1000,
+            meters: $metersOption.checked,
+            angle: $steeringAngleOption.value,
+            fps: parseInt($fpsOption.value)
         };
     }
 
