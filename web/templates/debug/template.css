@@ -4,7 +4,6 @@
     list-style: none;
     display: flex;
     flex-flow: row wrap;
-    max-width: 600px;
 }
 
 .box {
@@ -15,22 +14,18 @@
 
 .box.small {
     width: 12.5%;
-    min-width: 50px;
 }
 
 .box.medium {
     width: 25%;
-    min-width: 100px;
 }
 
 .box.large {
     width: 50%;
-    min-width: 200px;
 }
 
 .box.extra-large {
     width: 75%;
-    min-width: 400px;
 }
 
 .box .content {

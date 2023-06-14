@@ -74,8 +74,6 @@
 }
 
 .controller .bumper.left {
-    /* -webkit-transform: rotateY(180deg); */
-    /* transform: rotateY(180deg); */
     float: left;
 }
 
@@ -262,10 +260,5 @@
 }
 
 .controller .face[data-pressed="true"] {
-    /* margin-top: 5px; */
     background-position-y: 52px;
-}
-
-.controller.half {
-    margin-top: -300px;
 }

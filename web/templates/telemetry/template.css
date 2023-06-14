@@ -1,4 +1,4 @@
-#gamepad #telemetry {
+#telemetry {
     background: var(--main-bg-color);
     display: flex;
     width: fit-content;
@@ -16,21 +16,21 @@
     --throttle-color: #0CA818;
 }
 
-#gamepad #telemetry:has(#steering:not([style*="display: none"])) {
+#telemetry:has(#steering:not([style*="display: none"])) {
     border-top-right-radius: 60px;
     border-bottom-right-radius: 60px;
 }
 
-#gamepad #telemetry,
-#gamepad #telemetry * {
+#telemetry,
+#telemetry * {
     box-sizing: border-box;
 }
 
-#gamepad #telemetry>*+* {
+#telemetry>*+* {
     margin-left: 2px;
 }
 
-#gamepad #telemetry #chart {
+#telemetry #chart {
     flex: 1;
     width: 400px;
     background-color: var(--main-component-color);
@@ -38,12 +38,12 @@
     border-radius: 4px;
 }
 
-#gamepad #telemetry #meters {
+#telemetry #meters {
     display: flex;
     justify-content: space-around;
 }
 
-#gamepad #telemetry #meters .meter {
+#telemetry #meters .meter {
     position: relative;
     flex: 1;
     background-color: var(--main-component-color);
@@ -53,11 +53,11 @@
     width: 30px;
 }
 
-#gamepad #telemetry #meters .meter+.meter {
+#telemetry #meters .meter+.meter {
     margin-left: 2px;
 }
 
-#gamepad #telemetry #meters .meter .value {
+#telemetry #meters .meter .value {
     position: absolute;
     bottom: 2px;
     width: 100%;
@@ -67,7 +67,7 @@
     color: var(--white-color);
 }
 
-#gamepad #telemetry #meters .meter .bar {
+#telemetry #meters .meter .bar {
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -75,19 +75,19 @@
     transition: height 100ms;
 }
 
-#gamepad #telemetry #meters #clutch.meter .bar {
+#telemetry #meters #clutch.meter .bar {
     background-color: var(--clutch-color);
 }
 
-#gamepad #telemetry #meters #brake.meter .bar {
+#telemetry #meters #brake.meter .bar {
     background-color: var(--brake-color);
 }
 
-#gamepad #telemetry #meters #throttle.meter .bar {
+#telemetry #meters #throttle.meter .bar {
     background-color: var(--throttle-color);
 }
 
-#gamepad #telemetry #steering {
+#telemetry #steering {
     position: relative;
     display: flex;
     justify-content: center;
@@ -98,7 +98,7 @@
     background-color: var(--main-component-color);
 }
 
-#gamepad #telemetry #steering .center {
+#telemetry #steering .center {
     position: absolute;
     top: 20%;
     left: 20%;
@@ -108,7 +108,7 @@
     background-color: var(--main-bg-color);
 }
 
-#gamepad #telemetry #steering .indicator {
+#telemetry #steering .indicator {
     display: block;
     width: 5%;
     height: 50%;

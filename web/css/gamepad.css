@@ -22,6 +22,10 @@ body.unsupported #gamepad {
     display: none;
 }
 
+body.electron.hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
 #instructions {
     position: fixed;
     top: 0;
@@ -84,6 +88,16 @@ body.unsupported #gamepad {
     }
 }
 
+body.electron #placeholder svg,
+body.electron #gamepad .controller {
+    -webkit-app-region: drag;
+}
+
+#placeholder {
+    width: 600px;
+    height: 400px;
+}
+
 #placeholder svg {
     height: 90%;
     left: 50%;
@@ -99,11 +113,6 @@ body.unsupported #gamepad {
 }
 
 #gamepad {
-    width: 100vw;
-    height: 100vh;
-}
-
-#gamepad .controller {
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
@@ -141,9 +150,6 @@ body.unsupported #gamepad {
     background: rgba(0, 0, 0, 0.5);
     display: none;
     height: 100vh;
-    left: 0;
-    position: fixed;
-    top: 0;
     width: 100vw;
 }
 

@@ -176,6 +176,7 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
         this.setupChart();
 
         this.running = true;
+        this.gamepad.updateUrlParams({ start: Date.now() });
         this.update();
     }
 
@@ -230,11 +231,8 @@ window.gamepad.TemplateClass = class TelemetryTemplate {
      * @param {number} throttle
      */
     updateChartData(now, clutch, brake, throttle) {
-        const threshold = now - this.historyLength;
         let remove = 0;
-        while (this.chartData[remove].timestamp <= threshold) {
-            remove++;
-        }
+        while (this.chartData[remove].timestamp <= now - this.historyLength) remove++;
         this.chartData = this.chartData.slice(remove);
         this.chartData.push({ timestamp: now, clutch, brake, throttle });
     }

@@ -34,6 +34,10 @@ class Gamepad {
         // ensure the GamePad API is available on this browser
         this.assertGamepadAPI();
 
+        // adjust for Electron
+        this.electron = this.isElectron();
+        if (this.electron) this.setupElectron();
+
         // overlay selectors
         this.backgrounds = [
             { name: 'transparent', backgroundColor: 'transparent', textColor: 'black' },
@@ -171,6 +175,27 @@ class Gamepad {
     }
 
     /**
+     * Detects id the current navigator is Electron
+     *
+     * @returns
+     */
+    isElectron() {
+        return typeof navigator === 'object'
+            && typeof navigator.userAgent === 'string'
+            && navigator.userAgent.indexOf('Electron') >= 0;
+    }
+
+    setupElectron() {
+        this.$body.classList.add('electron');
+        // this.$body.addEventListener('mouseover', () => {
+        //     this.$body.classList.add('hover');
+        // });
+        // this.$body.addEventListener('mouseleave', () => {
+        //     this.$body.classList.remove('hover');
+        // });
+    }
+
+    /**
      * Ensures the availability of the Gamepad API in the current navigator
      */
     assertGamepadAPI() {
@@ -296,7 +321,7 @@ class Gamepad {
         this.fadeIn(this.$placeholder);
 
         // enqueue a delayed display of the placeholder animation
-        this.hidePlaceholder();
+        if (!this.electron) this.hidePlaceholder();
     }
 
     /**
@@ -469,6 +494,7 @@ class Gamepad {
      * Handles the mouse 'mousemove' event
      */
     onMouseMove() {
+        if (this.electron) return;
         this.displayInstructions();
         this.displayPlaceholder();
         this.displayOverlay();
@@ -506,18 +532,22 @@ class Gamepad {
                 break;
             case 'NumpadAdd':
             case 'Equal':
+                if (this.electron) return;
                 this.changeZoom('+');
                 break;
             case 'NumpadSubtract':
             case 'Minus':
+                if (this.electron) return;
                 this.changeZoom('-');
                 break;
             case 'Numpad5':
             case 'Digit5':
+                if (this.electron) return;
                 this.changeZoom('auto');
                 break;
             case 'Numpad0':
             case 'Digit0':
+                if (this.electron) return;
                 this.changeZoom(0);
                 break;
         }
@@ -527,6 +557,7 @@ class Gamepad {
      * Handles the keyboard 'keydown' event
      */
     onResize() {
+        if (this.electron) this.changeZoom('contain');
         if (this.zoomMode === 'auto') this.changeZoom('auto');
     }
 
@@ -702,7 +733,9 @@ class Gamepad {
         this.identifier = this.identifiers[this.type];
 
         // update the overlay selectors
-        this.$gamepadSelect.value = gamepad.id;
+        if (this.getUrlParam('gamepad') === gamepad.id) {
+            this.$gamepadSelect.value = gamepad.id;
+        }
         this.updateColors();
         this.updateTriggers();
 
@@ -745,6 +778,7 @@ class Gamepad {
         this.$gamepad.innerHTML = '';
         this.$gamepad.classList.remove('fadeIn');
         this.$gamepadSelect.value = 'auto';
+        this.$skinSelect.value = 'auto';
         this.updateColors();
         this.updateTriggers();
         this.clearUrlParams();
@@ -800,18 +834,6 @@ class Gamepad {
                 } else {
                     this.updateUrlParams({ triggers: undefined });
                 }
-                // - zoom
-                if (identifier.zoom) {
-                    window.setTimeout(() =>
-                        this.changeZoom(
-                            this.type === 'debug'
-                                ? 'auto'
-                                : this.getUrlParam('zoom') || 'auto'
-                        )
-                    );
-                } else {
-                    this.updateUrlParams({ zoom: undefined });
-                }
 
                 // once fully loaded, display the gamepad
                 this.$gamepad.style.removeProperty('display');
@@ -824,6 +846,22 @@ class Gamepad {
      * Starts the template
      */
     startTemplate() {
+        // adjust zoom level
+        if (this.electron) {
+            this.changeZoom('contain');
+        }
+        else if (this.identifiers[this.type].zoom) {
+            window.setTimeout(() =>
+                this.changeZoom(
+                    this.type === 'debug'
+                        ? 'auto'
+                        : this.getUrlParam('zoom') || 'auto'
+                )
+            );
+        } else {
+            this.updateUrlParams({ zoom: undefined });
+        }
+
         // get the active gamepad
         const activeGamepad = this.getActive();
 
@@ -1057,7 +1095,16 @@ class Gamepad {
         // ensure we have some data to process
         if (typeof level === 'undefined') return;
 
-        this.zoomMode = level === 'auto' ? 'auto' : 'manual';
+        // fix debug related zoom issues
+        if (this.debug && level === 'auto') level = 0;
+
+        if (level === 'auto') {
+            this.zoomMode = 'auto';
+        } else if (level === 'contain') {
+            this.zoomMode = 'contain';
+        } else {
+            this.zoomMode = 'manual';
+        }
 
         if (this.zoomMode === 'auto') {
             // 'auto' means a 'contained in window' zoom, with a max zoom of 1
@@ -1067,8 +1114,16 @@ class Gamepad {
                 window.innerHeight / height,
                 1
             );
+        } else if (this.zoomMode === 'contain') {
+            // 'auto' means a 'contained in window' zoom, with a max zoom of 1
+            const { width, height } = this.$gamepad.getBoundingClientRect();
+            this.zoomLevel = Math.min(
+                window.innerWidth / width,
+                window.innerHeight / height
+            );
         } else if (level === 0) {
             // 0 means a zoom reset
+            this.zoomMode = 'auto';
             this.zoomLevel = 1;
         } else if (level === '+' && this.zoomLevel < 4) {
             // '+' means a zoom in if we still can
@@ -1085,14 +1140,14 @@ class Gamepad {
         this.zoomLevel = +this.zoomLevel.toFixed(2);
 
         // update the DOM with the zoom value
-        this.$gamepad.style.setProperty(
+        this.$gamepad.querySelector('.controller').style.setProperty(
             'transform',
-            `scale(${this.zoomLevel}, ${this.zoomLevel})`
+            `scale(${this.zoomLevel}, ${this.zoomLevel}) `
         );
 
         // update current settings
         this.updateUrlParams({
-            zoom: this.zoomMode === 'auto' ? undefined : this.zoomLevel,
+            zoom: this.zoomMode === 'manual' ? this.zoomLevel : undefined,
         });
     }
 
@@ -1203,6 +1258,27 @@ class Gamepad {
             gamepad: undefined,
             type: undefined,
             color: undefined,
+            chart: undefined,
+            history: undefined,
+            meters: undefined,
+            start: undefined,
+            angle: undefined,
+            fps: undefined,
+            clutchType: undefined,
+            clutchIndex: undefined,
+            clutchMin: undefined,
+            clutchMax: undefined,
+            brakeType: undefined,
+            brakeIndex: undefined,
+            brakeMin: undefined,
+            brakeMax: undefined,
+            throttleType: undefined,
+            throttleIndex: undefined,
+            throttleMin: undefined,
+            throttleMax: undefined,
+            steeringIndex: undefined,
+            steeringMin: undefined,
+            steeringMax: undefined,
             debug: undefined,
             triggers: undefined,
             zoom: undefined,
@@ -1220,7 +1296,7 @@ class Gamepad {
             .filter(([, value]) => value !== undefined && value !== null)
             .map(([key, value]) => `${key}=${value}`)
             .join('&');
-        window.history.replaceState({}, document.title, `/?${query}`);
+        window.history.replaceState({}, document.title, `?${query}`);
     }
 }
 
