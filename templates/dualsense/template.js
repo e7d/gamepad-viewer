@@ -28,17 +28,17 @@ window.gamepad.TemplateClass = class DualSenseTemplate {
         if (!$axis.matches('.stick')) return;
         if (attribute === 'data-axis-x') {
             $axis.style.setProperty('margin-left', `${axis * 25}px`);
-            this.rotateY = parseFloat(axis * 30, 8);
             this.updateRotate($axis);
         }
         if (attribute === 'data-axis-y') {
             $axis.style.setProperty('margin-top', `${axis * 25}px`);
-            this.rotateX = -parseFloat(axis * 30, 8);
             this.updateRotate($axis);
         }
     }
 
     updateRotate($axis) {
-        $axis.style.setProperty('transform', `rotateX(${this.rotateX}deg) rotateY(${this.rotateY}deg)`);
+        const rotateX = parseFloat($axis.getAttribute('data-value-y') * 30);
+        const rotateY = -parseFloat($axis.getAttribute('data-value-x') * 30);
+        $axis.style.setProperty('transform', `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
     }
 };

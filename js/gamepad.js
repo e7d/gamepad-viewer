@@ -926,15 +926,13 @@ class Gamepad {
         gamepad.axes.forEach((updatedAxis, index) => {
             // get the axis information
             const { $axis, attribute, axis } = this.mapping.axes[index];
-            if (!$axis) return;
+            if (!$axis || updatedAxis === axis) return;
 
             // update the display value
-            if (updatedAxis !== axis) {
-                $axis.setAttribute(attribute.replace('-axis', '-value'), updatedAxis);
+            $axis.setAttribute(attribute.replace('-axis', '-value'), updatedAxis);
 
-                // ensure we have an axis updater callback and hook the template defined axis update method
-                if ('function' === typeof this.updateAxis) this.updateAxis($axis, attribute, updatedAxis);
-            }
+            // ensure we have an axis updater callback and hook the template defined axis update method
+            if ('function' === typeof this.updateAxis) this.updateAxis($axis, attribute, updatedAxis);
 
             // save the updated button
             this.mapping.axes[index].axis = updatedAxis;
