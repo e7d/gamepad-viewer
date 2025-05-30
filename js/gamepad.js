@@ -706,7 +706,11 @@ class Gamepad {
         this.identifier = this.identifiers[this.type];
 
         // update the overlay selectors
-        this.$gamepadSelect.value = gamepad.id;
+        for (const $option of this.$gamepadSelect.options) {
+            if ($option.value === this.getUrlParam('gamepad')) {
+                $option.selected = true;
+            }
+        }
         this.updateColors();
         this.updateTriggers();
 
