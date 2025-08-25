@@ -173,6 +173,17 @@ class Gamepad {
     }
 
     /**
+     * Uses User-Agent to detect if the current browser is a broadcast software:
+     * - OBS: `OBS`
+     * - StreamLabs OBS: `OBS` and `SLD`
+     * - Xsplit Broadcaster: `XSplitBroadcaster`
+     * - TikTok Live Studio: `TikTokLiveStudio`
+     */
+    isBroadcastSoftware() {
+        return /OBS|XSplitBroadcaster|TikTokLiveStudio/.test(navigator.userAgent);
+    }
+
+    /**
      * Ensures the availability of the Gamepad API in the current navigator
      */
     assertGamepadAPI() {
@@ -288,11 +299,41 @@ class Gamepad {
     }
 
     /**
+     * Toggels the placeholder animation on parameters and on screen
+     */
+    togglePlaceholder() {
+        let placeholder = this.getUrlParam('placeholder');
+        switch (placeholder) {
+            case "yes":
+                placeholder = "no";
+                break;
+            case "no":
+                placeholder = undefined;
+                break;
+            default:
+                placeholder = "yes";
+                break;
+        }
+        this.updateUrlParams({placeholder});
+        placeholder === "no" ? this.hidePlaceholder(true) : this.displayPlaceholder();
+    }
+
+    /**
      * Displays the placeholder animation on screen
      */
     displayPlaceholder() {
-        // do not display help if we have an active gamepad
+        // do not display the placeholder if we have an active gamepad
         if (null !== this.index) return;
+
+        // do not display the placeholder
+        // - if explicitely refused
+        // - if we come from a broadcast software without explicit request
+        const placeholder = this.getUrlParam("placeholder");
+        if (placeholder === "no") return;
+        if (this.isBroadcastSoftware() && placeholder !== "yes") return;
+
+        // cancel the queued display of the placeholder animation, if any
+        window.clearTimeout(this.placeholderTimeout);
 
         // show the placeholder
         this.fadeIn(this.$placeholder);
@@ -505,7 +546,10 @@ class Gamepad {
             case 'KeyH':
                 this.toggleHelp();
                 break;
-            case 'KeyT':
+            case "KeyP":
+                this.togglePlaceholder();
+                break;
+            case "KeyT":
                 this.toggleTriggers();
                 break;
             case 'NumpadAdd':
@@ -885,7 +929,7 @@ class Gamepad {
         if (!activeGamepad) return;
 
         // check for actual gamepad update
-        if (!force && activeGamepad.timestamp === this.lastTimestamp) return;
+        if (activeGamepad === undefined || (!force && activeGamepad.timestamp === this.lastTimestamp)) return;
         this.lastTimestamp = activeGamepad.timestamp;
 
         // actually update the active gamepad graphically

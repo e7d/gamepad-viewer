@@ -23,7 +23,7 @@
 <body>
 	<div id="unsupported">Sorry, but your browser does not support the <a target="_blank"
 			href="https://developer.mozilla.org/docs/Web/API/Gamepad_API">Gamepad API</a>.</div>
-	<div id="placeholder">
+	<div id="placeholder" style="display: none;">
 		<svg version="1.1" viewBox="0 0 549.3125 367.98749" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
 			<defs>
 				<clipPath id="a">
@@ -85,7 +85,7 @@
 				</g>
 			</g>
 		</svg>
-		<div id="placeholder-instructions">Press and hold any button to start.</div>
+		<div id="placeholder-instructions"><strong>Press</strong> and <strong>hold</strong> any button to start.</div>
 	</div>
 	<div id="gamepad"></div>
 	<div id="instructions" style="display: none;">
@@ -201,6 +201,10 @@
 					<tr>
 						<th><kbd>H</kbd></th>
 						<td>Toggle this help menu</td>
+					</tr>
+					<tr>
+						<th><kbd>P</kbd></th>
+						<td>Toggle the animation palceholder</td>
 					</tr>
 					<tr>
 						<th><kbd>T</kbd></th>
