@@ -85,6 +85,9 @@ class Gamepad {
 
         // active gamepad default values
         this.scanDelay = 200;
+        this.holdDelay = 1000;
+        this.pressedIndex = null;
+        this.pressedSince = null;
         this.debug = false;
         this.index = null;
         this.disconnectedIndex = null;
@@ -632,36 +635,52 @@ class Gamepad {
             const gamepad = this.gamepads[index];
             if (!gamepad) continue;
 
-            // read the gamepad buttons
-            let button;
+            // look for any pressed button on this gamepad
+            let pressed = false;
             for (
                 let buttonIndex = 0;
                 buttonIndex < gamepad.buttons.length;
                 buttonIndex++
             ) {
-                button = gamepad.buttons[buttonIndex];
-
-                // if one of its button is pressed, activate this gamepad
-                if (button.pressed) {
-                    this.map(gamepad.index);
-
-                    // confirm mapping with a vibration when available
-                    if (gamepad.vibrationActuator) {
-                        gamepad.vibrationActuator.playEffect(
-                            gamepad.vibrationActuator.type,
-                            {
-                                duration: 100,
-                                strongMagnitude: 0.2,
-                                weakMagnitude: 1,
-                                startDelay: 0,
-                            },
-                        );
-                    }
-
-                    return;
+                if (gamepad.buttons[buttonIndex].pressed) {
+                    pressed = true;
+                    break;
                 }
             }
+            if (!pressed) continue;
+
+            // a reconnecting gamepad resumes right away; a fresh one must have a
+            // button held for at least holdDelay before it activates
+            if (null === this.disconnectedIndex) {
+                if (this.pressedIndex !== gamepad.index) {
+                    this.pressedIndex = gamepad.index;
+                    this.pressedSince = Date.now();
+                    return;
+                }
+                if (Date.now() - this.pressedSince < this.holdDelay) return;
+            }
+            this.pressedIndex = null;
+
+            this.map(gamepad.index);
+
+            // confirm mapping with a vibration when available
+            if (gamepad.vibrationActuator) {
+                gamepad.vibrationActuator.playEffect(
+                    gamepad.vibrationActuator.type,
+                    {
+                        duration: 100,
+                        strongMagnitude: 0.2,
+                        weakMagnitude: 1,
+                        startDelay: 0,
+                    },
+                );
+            }
+
+            return;
         }
+
+        // no gamepad button held: reset the hold tracking
+        this.pressedIndex = null;
     }
 
     /**
