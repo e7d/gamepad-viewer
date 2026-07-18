@@ -414,6 +414,13 @@ class Gamepad {
      * @param {MouseEvent} e
      */
     onMouseMove() {
+        this.displayInterface();
+    }
+
+    /**
+     * Displays the whole interface and resets its fade-out delay
+     */
+    displayInterface() {
         this.displayInstructions();
         this.displayPlaceholder();
         this.displayOverlay();
@@ -425,6 +432,7 @@ class Gamepad {
      * @param {KeyboardEvent} e
      */
     onKeyDown(e) {
+        this.displayInterface();
         switch (e.code) {
             case "Delete":
             case "Escape":
