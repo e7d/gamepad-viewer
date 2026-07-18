@@ -22,10 +22,6 @@
 
         const axisX = parseFloat($axis.getAttribute("data-value-x"));
         const axisY = parseFloat($axis.getAttribute("data-value-y"));
-        $axis.style.marginTop = `${axisY * STICK_TRAVEL_PX}px`;
-        $axis.style.marginLeft = `${axisX * STICK_TRAVEL_PX}px`;
-        $axis.style.transform = `rotateX(${-axisY * STICK_TILT_DEG}deg) rotateY(${
-            axisX * STICK_TILT_DEG
-        }deg)`;
+        $axis.style.transform = `translate(${axisX * STICK_TRAVEL_PX}px, ${axisY * STICK_TRAVEL_PX}px) rotateX(${-axisY * STICK_TILT_DEG}deg) rotateY(${axisX * STICK_TILT_DEG}deg)`;
     };
 })();
