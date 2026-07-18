@@ -1,8 +1,17 @@
 services:
     server:
-        build: .
+        build:
+            context: .
+            target: dev
         ports:
             - 8080:8080
+        volumes:
+            - ./index.html:/public/index.html:ro
+            - ./favicon.ico:/public/favicon.ico:ro
+            - ./favicon.png:/public/favicon.png:ro
+            - ./css:/public/css:ro
+            - ./js:/public/js:ro
+            - ./templates:/public/templates:ro
         read_only: true
         cap_drop:
             - ALL

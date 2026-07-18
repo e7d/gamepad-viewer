@@ -1,4 +1,4 @@
-FROM alpine:3.21 AS build
+FROM alpine:3.21 AS compress
 RUN apk add --no-cache brotli gzip
 WORKDIR /public
 COPY index.html favicon.ico favicon.png ./
@@ -11,10 +11,14 @@ RUN find . -type f \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '
         brotli -q 11 -k "$f"; \
     done
 
-FROM scratch
+FROM scratch AS base
 COPY --from=ghcr.io/static-web-server/static-web-server:2.43.0@sha256:6acea6260b14e08dda986361e42640082fbfaab8d88c327de532bb13a3b22994 /static-web-server /static-web-server
 COPY sws.toml /sws.toml
-COPY --from=build /public /public
 USER 65534:65534
 EXPOSE 8080
 ENTRYPOINT ["/static-web-server", "-w", "/sws.toml"]
+
+FROM base AS dev
+
+FROM base AS prod
+COPY --from=compress /public /public
