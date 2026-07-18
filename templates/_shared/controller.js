@@ -1,12 +1,10 @@
 (() => {
-    "use strict";
-
     const STICK_TRAVEL_PX = 25;
     const STICK_TILT_DEG = 30;
 
     const gamepad = window.gamepad;
 
-    gamepad.updateButton = function ($button) {
+    gamepad.updateButton = ($button) => {
         if (!$button.matches(".trigger")) return;
 
         const value = parseFloat($button.getAttribute("data-value"));
@@ -19,7 +17,7 @@
         }
     };
 
-    gamepad.updateAxis = function ($axis) {
+    gamepad.updateAxis = ($axis) => {
         if (!$axis.matches(".stick")) return;
 
         const axisX = parseFloat($axis.getAttribute("data-value-x"));

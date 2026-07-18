@@ -1,6 +1,4 @@
 (() => {
-    "use strict";
-
     const gamepad = window.gamepad;
     let activeGamepad = gamepad.getActive();
     if (!activeGamepad) {
@@ -59,15 +57,15 @@
         );
     }
 
-    gamepad.updateButton = function ($button) {
+    gamepad.updateButton = ($button) => {
         updateElem($button);
     };
 
-    gamepad.updateAxis = function ($axis) {
+    gamepad.updateAxis = ($axis) => {
         updateElem($axis, 6);
     };
 
-    gamepad.updateFrame = function () {
+    gamepad.updateFrame = () => {
         updateTimestamp();
     };
 

@@ -382,10 +382,8 @@ class Gamepad {
 
     /**
      * Handles the gamepad connection event
-     *
-     * @param {GamepadEvent} e
      */
-    onGamepadConnect(e) {
+    onGamepadConnect() {
         // refresh gamepad list on help, if displayed
         if (this.helpVisible) this.buildHelpGamepadList();
     }
@@ -467,11 +465,9 @@ class Gamepad {
     }
 
     /**
-     * Handles the keyboard "keydown" event
-     *
-     * @param {WindowEvent} e
+     * Handles the window "resize" event
      */
-    onResize(e) {
+    onResize() {
         if (this.zoomMode === "auto") this.changeZoom("auto");
     }
 
@@ -545,7 +541,7 @@ class Gamepad {
         }
 
         // else, determine the template to use from the gamepad identifier and update settings
-        for (let gamepadType in this.identifiers) {
+        for (const gamepadType in this.identifiers) {
             if (this.identifiers[gamepadType].id.test(gamepad.id)) {
                 return gamepadType;
             }
@@ -836,7 +832,7 @@ class Gamepad {
         for (let index = 0; index < gamepad.buttons.length; index++) {
             // find the DOM elements
             const $buttons = this.mapping.buttons[index];
-            if (!$buttons || !$buttons.length) {
+            if (!$buttons?.length) {
                 // nothing to do for this button if no DOM element exists
                 continue;
             }
@@ -867,7 +863,7 @@ class Gamepad {
         for (let index = 0; index < gamepad.axes.length; index++) {
             // find the DOM elements
             const $axes = this.mapping.axes[index];
-            if (!$axes || !$axes.length) {
+            if (!$axes?.length) {
                 // nothing to do for this axis if no DOM element exists
                 continue;
             }
@@ -1002,9 +998,12 @@ class Gamepad {
         } else if (level === "-" && this.zoomLevel > 0.1) {
             // "-" means a zoom out if we still can
             this.zoomLevel -= 0.1;
-        } else if (!isNaN((level = parseFloat(level)))) {
-            // an integer value means a value-based zoom
-            this.zoomLevel = level;
+        } else {
+            const parsed = parseFloat(level);
+            if (!Number.isNaN(parsed)) {
+                // an integer value means a value-based zoom
+                this.zoomLevel = parsed;
+            }
         }
 
         // hack: fix js float issues
