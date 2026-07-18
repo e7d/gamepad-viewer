@@ -38,3 +38,6 @@ Please read below or use this video tutorial: https://youtu.be/vHzf_ESseTc
 - Adjust position and size of the source as you will
 
 *: These gamepads work both wired and wireless via Bluetooth
+
+## Credits
+The gamepad skins are inspired by and largely reworked from the assets originally created by [mrmcpowned](https://github.com/mrmcpowned) for [gamepadviewer.com](https://gamepadviewer.com). Thanks for the original work.
