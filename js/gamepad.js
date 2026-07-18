@@ -435,7 +435,14 @@ class Gamepad {
         this.displayInterface();
         switch (e.code) {
             case "Delete":
+                this.clear();
+                this.displayPlaceholder();
+                break;
             case "Escape":
+                if (this.helpVisible) {
+                    this.toggleHelp();
+                    break;
+                }
                 this.clear();
                 this.displayPlaceholder();
                 break;
