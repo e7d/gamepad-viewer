@@ -16,7 +16,7 @@
 <body>
 	<div id="unsupported">Sorry, but your browser does not support the <a target="_blank"
 			href="https://developer.mozilla.org/docs/Web/API/Gamepad_API">Gamepad API</a>.</div>
-	<div id="instructions" style="display: none;">
+	<div id="instructions" class="hidden">
 		<p>Press <kbd>H</kbd> to read instructions.</p>
 	</div>
 	<div id="placeholder">
@@ -83,7 +83,7 @@
 		</svg>
 	</div>
 	<div id="gamepad"></div>
-	<div id="overlay" style="display: none;">
+	<div id="overlay" class="hidden">
 		<span id="skin">
 			<label for="skin">Skin</label>
 			<select name="skin">
@@ -105,13 +105,13 @@
 				<option value="magenta">Magenta</option>
 			</select>
 		</span>
-		<span id="color">
+		<span id="color" class="hidden">
 			<label for="color">Color</label>
 			<select name="color">
 				<option value="">Default</option>
 			</select>
 		</span>
-		<span id="triggers">
+		<span id="triggers" class="hidden">
 			<label for="triggers">Triggers</label>
 			<select name="triggers">
 				<option value="opacity">Opacity</option>
@@ -198,7 +198,6 @@
 				href="https://github.com/e7d/gamepad-viewer">e7d/gamepad-viewer</a>.</p>
 	</div>
 
-	<script src="js/jquery.min.js"></script>
 	<script src="js/gamepad.js"></script>
 </body>
 

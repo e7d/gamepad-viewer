@@ -1,11 +1,11 @@
 (() => {
-    $id = $("#info-id .value");
-    $timestamp = $("#info-timestamp .value");
-    $index = $("#info-index .value");
-    $mapping = $("#info-mapping .value");
-    $rumble = $("#info-rumble .value");
-    $axes = $(".axes .container");
-    $buttons = $(".buttons .container");
+    $id = document.querySelector("#info-id .value");
+    $timestamp = document.querySelector("#info-timestamp .value");
+    $index = document.querySelector("#info-index .value");
+    $mapping = document.querySelector("#info-mapping .value");
+    $rumble = document.querySelector("#info-rumble .value");
+    $axes = document.querySelector(".axes .container");
+    $buttons = document.querySelector(".buttons .container");
 
     gamepad = window.gamepad;
     activeGamepad = gamepad.getActive();
@@ -14,29 +14,30 @@
         return;
     }
 
-    $id.html(activeGamepad.id);
+    $id.innerHTML = activeGamepad.id;
     updateTimestamp();
-    $index.html(activeGamepad.index);
-    $mapping.html(activeGamepad.mapping);
-    $rumble.html(
-        activeGamepad.vibrationActuator
-            ? activeGamepad.vibrationActuator.type
-            : "N/A"
-    );
+    $index.textContent = activeGamepad.index;
+    $mapping.textContent = activeGamepad.mapping;
+    $rumble.textContent = activeGamepad.vibrationActuator
+        ? activeGamepad.vibrationActuator.type
+        : "N/A";
 
     for (
         let axisIndex = 0;
         axisIndex < activeGamepad.axes.length;
         axisIndex++
     ) {
-        $axes.append(`
+        $axes.insertAdjacentHTML(
+            "beforeend",
+            `
             <div class="box medium">
                <div class="content">
                    <div class="label">Axis ${axisIndex}</div>
                    <div class="value" data-axis="${axisIndex}"></div>
                </div>
             </div>
-        `);
+        `
+        );
     }
 
     for (
@@ -44,14 +45,17 @@
         buttonIndex < activeGamepad.buttons.length;
         buttonIndex++
     ) {
-        $buttons.append(`
+        $buttons.insertAdjacentHTML(
+            "beforeend",
+            `
             <div class="box small">
                <div class="content">
                    <div class="label">B${buttonIndex}</div>
                    <div class="value" data-button="${buttonIndex}"></div>
                </div>
             </div>
-        `);
+        `
+        );
     }
 
     gamepad.updateButton = function ($button) {
@@ -65,10 +69,12 @@
     function updateElem($elem, precision = 2) {
         updateTimestamp();
 
-        let value = parseFloat($elem.attr("data-value"), 10).toFixed(precision);
-        $elem.html(value);
+        let value = parseFloat($elem.getAttribute("data-value"), 10).toFixed(
+            precision
+        );
+        $elem.textContent = value;
         let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
-        $elem.css({ color: `rgb(${color}, ${color}, ${color})` });
+        $elem.style.color = `rgb(${color}, ${color}, ${color})`;
     }
 
     function updateTimestamp() {
@@ -76,6 +82,6 @@
         if (!activeGamepad) {
             return;
         }
-        $timestamp.html(parseFloat(activeGamepad.timestamp).toFixed(3));
+        $timestamp.textContent = parseFloat(activeGamepad.timestamp).toFixed(3);
     }
 })();

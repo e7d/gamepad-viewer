@@ -5,6 +5,10 @@ body {
     overflow: hidden;
 }
 
+.hidden {
+    display: none !important;
+}
+
 #unsupported {
     display: none;
     text-align: center;
@@ -122,11 +126,6 @@ body.unsupported #gamepad {
 
 #overlay > span {
     padding: 0 8px;
-}
-
-#overlay #color,
-#overlay #triggers {
-    display: none;
 }
 
 #overlay select {

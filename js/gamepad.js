@@ -9,21 +9,21 @@ class Gamepad {
      */
     constructor() {
         // cached DOM references
-        this.$body = $("body");
-        this.$instructions = $("#instructions");
-        this.$placeholder = $("#placeholder");
-        this.$gamepad = $("#gamepad");
-        this.$overlay = $("#overlay");
-        this.$skinSelect = $("select[name=skin]");
-        this.$backgroundSelect = $("select[name=background]");
-        this.$colorOverlay = this.$overlay.find("#color");
-        this.$colorSelect = this.$colorOverlay.find("select[name=color]");
-        this.$triggersOverlay = this.$overlay.find("#triggers");
-        this.$triggersSelect = this.$triggersOverlay.find(
+        this.$body = document.body;
+        this.$instructions = document.querySelector("#instructions");
+        this.$placeholder = document.querySelector("#placeholder");
+        this.$gamepad = document.querySelector("#gamepad");
+        this.$overlay = document.querySelector("#overlay");
+        this.$skinSelect = document.querySelector("select[name=skin]");
+        this.$backgroundSelect = document.querySelector("select[name=background]");
+        this.$colorOverlay = this.$overlay.querySelector("#color");
+        this.$colorSelect = this.$colorOverlay.querySelector("select[name=color]");
+        this.$triggersOverlay = this.$overlay.querySelector("#triggers");
+        this.$triggersSelect = this.$triggersOverlay.querySelector(
             "select[name=triggers]"
         );
-        this.$helpPopout = $("#help-popout");
-        this.$gamepadList = $("#gamepad-list");
+        this.$helpPopout = document.querySelector("#help-popout");
+        this.$gamepadList = document.querySelector("#gamepad-list");
 
         this.backgroundStyle = [
             "transparent",
@@ -113,6 +113,8 @@ class Gamepad {
         this.triggersMeter = false;
         this.zoomMode = "auto";
         this.zoomLevel = 1;
+        this.updateButton = null;
+        this.updateAxis = null;
         this.mapping = {
             buttons: [],
             axes: [],
@@ -179,27 +181,95 @@ class Gamepad {
             ? () => navigator.webkitGetGamepads()
             : null;
         if (!getGamepadsFn) {
-            this.$body.addClass("unsupported");
+            this.$body.classList.add("unsupported");
             throw new Error("Unsupported gamepad API");
         }
         this.getNavigatorGamepads = getGamepadsFn;
     }
 
     /**
+     * Shows an element by removing its "hidden" state, cancelling any running fade
+     *
+     * @param {HTMLElement} $element
+     */
+    show($element) {
+        this.stopFade($element);
+        $element.style.opacity = "";
+        $element.classList.remove("hidden");
+    }
+
+    /**
+     * Hides an element right away, cancelling any running fade
+     *
+     * @param {HTMLElement} $element
+     */
+    hide($element) {
+        this.stopFade($element);
+        $element.style.opacity = "";
+        $element.classList.add("hidden");
+    }
+
+    /**
+     * Fades an element in
+     *
+     * @param {HTMLElement} $element
+     */
+    fadeIn($element) {
+        this.stopFade($element);
+        $element.classList.remove("hidden");
+        $element._fade = $element.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: 400,
+        });
+        $element._fade.onfinish = () => {
+            $element.style.opacity = "";
+            $element._fade = null;
+        };
+    }
+
+    /**
+     * Fades an element out, then hides it
+     *
+     * @param {HTMLElement} $element
+     */
+    fadeOut($element) {
+        this.stopFade($element);
+        $element._fade = $element.animate([{ opacity: 1 }, { opacity: 0 }], {
+            duration: 400,
+        });
+        $element._fade.onfinish = () => {
+            $element.style.opacity = "";
+            $element.classList.add("hidden");
+            $element._fade = null;
+        };
+    }
+
+    /**
+     * Cancels a running fade animation on an element, if any
+     *
+     * @param {HTMLElement} $element
+     */
+    stopFade($element) {
+        if ($element._fade) {
+            $element._fade.cancel();
+            $element._fade = null;
+        }
+    }
+
+    /**
      * Initialises the overlay selectors
      */
     initOverlaySelectors() {
-        this.$skinSelect.on("change", () =>
-            this.changeSkin(this.$skinSelect.val())
+        this.$skinSelect.addEventListener("change", () =>
+            this.changeSkin(this.$skinSelect.value)
         );
-        this.$backgroundSelect.on("change", () =>
-            this.changeBackgroundStyle(this.$backgroundSelect.val())
+        this.$backgroundSelect.addEventListener("change", () =>
+            this.changeBackgroundStyle(this.$backgroundSelect.value)
         );
-        this.$colorSelect.on("change", () =>
-            this.changeGamepadColor(this.$colorSelect.val())
+        this.$colorSelect.addEventListener("change", () =>
+            this.changeGamepadColor(this.$colorSelect.value)
         );
-        this.$triggersSelect.on("change", () =>
-            this.toggleTriggersMeter(this.$triggersSelect.val() === "meter")
+        this.$triggersSelect.addEventListener("change", () =>
+            this.toggleTriggersMeter(this.$triggersSelect.value === "meter")
         );
     }
 
@@ -213,7 +283,7 @@ class Gamepad {
         // cancel the queued display of the instructions animation, if any
         window.clearTimeout(this.instructionsTimeout);
         // show the instructions
-        this.$instructions.show();
+        this.show(this.$instructions);
 
         // enqueue a delayed display of the instructions animation
         this.hideInstructions();
@@ -227,12 +297,12 @@ class Gamepad {
     hideInstructions(hideNow = false) {
         // hide the message right away if needed
         if (hideNow) {
-            this.$instructions.hide();
+            this.hide(this.$instructions);
         }
 
         // hide instructions animation if no gamepad is active after X ms
         this.instructionsTimeout = window.setTimeout(() => {
-            this.$instructions.fadeOut();
+            this.fadeOut(this.$instructions);
         }, this.instructionsDelay);
     }
 
@@ -246,7 +316,7 @@ class Gamepad {
         // cancel the queued display of the placeholder animation, if any
         window.clearTimeout(this.placeholderTimeout);
         // show the placeholder
-        this.$placeholder.show();
+        this.show(this.$placeholder);
 
         // enqueue a delayed display of the placeholder animation
         this.hidePlaceholder();
@@ -260,12 +330,12 @@ class Gamepad {
     hidePlaceholder(hideNow = false) {
         // hide the animation right away if needed
         if (hideNow) {
-            this.$placeholder.hide();
+            this.hide(this.$placeholder);
         }
 
         // hide placeholder animation if no gamepad is active after X ms
         this.placeholderTimeout = window.setTimeout(() => {
-            this.$placeholder.fadeOut();
+            this.fadeOut(this.$placeholder);
         }, this.placeholderDelay);
     }
 
@@ -276,7 +346,7 @@ class Gamepad {
         // cancel the queued display of the overlay animation, if any
         window.clearTimeout(this.overlayTimeout);
         // show the overlay
-        this.$overlay.show();
+        this.show(this.$overlay);
 
         // enqueue a delayed display of the overlay animation
         this.hideOverlay();
@@ -290,12 +360,12 @@ class Gamepad {
     hideOverlay(hideNow = false) {
         // hide the message right away if needed
         if (hideNow) {
-            this.$overlay.hide();
+            this.hide(this.$overlay);
         }
 
         // hide overlay animation if no gamepad is active after X ms
         this.overlayTimeout = window.setTimeout(() => {
-            this.$overlay.fadeOut();
+            this.fadeOut(this.$overlay);
         }, this.overlayDelay);
     }
 
@@ -304,21 +374,20 @@ class Gamepad {
      */
     updateColors() {
         if (!this.type) {
-            this.$colorOverlay.hide();
+            this.hide(this.$colorOverlay);
             return;
         }
 
         const colors = this.identifiers[this.type].colors;
         if (!colors) {
-            this.$colorOverlay.hide();
+            this.hide(this.$colorOverlay);
             return;
         }
 
-        const colorOptions = colors.map(
-            (color) => `<option value="${color}">${color}</option>`
-        );
-        this.$colorSelect.html(colorOptions);
-        this.$colorOverlay.fadeIn();
+        this.$colorSelect.innerHTML = colors
+            .map((color) => `<option value="${color}">${color}</option>`)
+            .join("");
+        this.fadeIn(this.$colorOverlay);
     }
 
     /**
@@ -326,17 +395,17 @@ class Gamepad {
      */
     updateTriggers() {
         if (!this.type) {
-            this.$triggersOverlay.hide();
+            this.hide(this.$triggersOverlay);
             return;
         }
 
         const triggers = this.identifiers[this.type].triggers;
         if (!triggers) {
-            this.$triggersOverlay.hide();
+            this.hide(this.$triggersOverlay);
             return;
         }
 
-        this.$triggersOverlay.fadeIn();
+        this.fadeIn(this.$triggersOverlay);
     }
 
     /**
@@ -357,7 +426,7 @@ class Gamepad {
     onGamepadDisconnect(e) {
         if (e.gamepad.index === this.index) {
             // display a disconnection indicator
-            this.$gamepad.addClass("disconnected");
+            this.$gamepad.classList.add("disconnected");
             this.disconnectedIndex = e.gamepad.index;
 
             // refresh gamepad list on help, if displayed
@@ -465,7 +534,7 @@ class Gamepad {
             $tbody.push('<tr><td colspan="2">No gamepad detected.</td></tr>');
         }
 
-        this.$gamepadList.html($tbody.join(""));
+        this.$gamepadList.innerHTML = $tbody.join("");
     }
 
     /**
@@ -567,13 +636,13 @@ class Gamepad {
 
         // hide the help messages
         this.hideInstructions(true);
-        this.$helpPopout.removeClass("active");
+        this.$helpPopout.classList.remove("active");
         this.hidePlaceholder(true);
 
         // update local references
         this.index = index;
         this.disconnectedIndex = null;
-        this.$gamepad.removeClass("disconnected");
+        this.$gamepad.classList.remove("disconnected");
         const gamepad = this.getActive();
 
         // ensure that a gamepad was actually found for this index
@@ -636,7 +705,9 @@ class Gamepad {
         this.colorIndex = null;
         this.colorName = null;
         this.zoomLevel = 1;
-        this.$gamepad.empty();
+        this.updateButton = null;
+        this.updateAxis = null;
+        this.$gamepad.replaceChildren();
         this.updateColors();
         this.updateTriggers();
         this.clearUrlParams();
@@ -659,46 +730,91 @@ class Gamepad {
      */
     loadTemplate(gamepad) {
         // hide the gamepad while we prepare it
-        this.$gamepad.hide();
+        this.hide(this.$gamepad);
 
-        $.ajax(`templates/${this.type}/template.html`).done((template) => {
-            // inject the template HTML
-            this.$gamepad.html(template);
+        // reset any template-provided update hooks from a previous skin
+        this.updateButton = null;
+        this.updateAxis = null;
 
-            // read for parameters to apply:
-            // - color
-            this.changeGamepadColor(this.getUrlParam("color"));
-            // - triggers mode
-            this.toggleTriggersMeter(this.getUrlParam("triggers") === "meter");
-            // - zoom$
-            window.setTimeout(() =>
-                this.changeZoom(
-                    this.type === "debug"
-                        ? "auto"
-                        : this.getUrlParam("zoom") || "auto"
-                )
-            );
+        fetch(`templates/${this.type}/template.html`)
+            .then((response) => response.text())
+            .then(async (template) => {
+                // inject the template HTML, then run its scripts in order
+                this.$gamepad.innerHTML = template;
+                await this.runTemplateScripts(this.$gamepad);
 
-            // save the buttons mapping of this template
-            this.mapping.buttons = [];
-            for (let index = 0; index < gamepad.buttons.length; index++) {
-                this.mapping.buttons[index] = $(`[data-button="${index}"]`);
-            }
-
-            // save the axes mapping of this template
-            this.mapping.axes = [];
-            for (let index = 0; index < gamepad.axes.length; index++) {
-                this.mapping.axes[index] = $(
-                    `[data-axis=${index}], [data-axis-x=${index}], [data-axis-y=${index}], [data-axis-z=${index}]`
+                // read for parameters to apply:
+                // - color
+                this.changeGamepadColor(this.getUrlParam("color"));
+                // - triggers mode
+                this.toggleTriggersMeter(
+                    this.getUrlParam("triggers") === "meter"
                 );
-            }
+                // - zoom
+                window.setTimeout(() =>
+                    this.changeZoom(
+                        this.type === "debug"
+                            ? "auto"
+                            : this.getUrlParam("zoom") || "auto"
+                    )
+                );
 
-            // enqueue the initial display refresh
-            this.pollStatus(true);
+                // save the buttons mapping of this template
+                this.mapping.buttons = [];
+                for (let index = 0; index < gamepad.buttons.length; index++) {
+                    this.mapping.buttons[index] = this.$gamepad.querySelectorAll(
+                        `[data-button="${index}"]`
+                    );
+                }
 
-            // once fully loaded, display the gamepad
-            this.$gamepad.fadeIn();
-        });
+                // save the axes mapping of this template
+                this.mapping.axes = [];
+                for (let index = 0; index < gamepad.axes.length; index++) {
+                    this.mapping.axes[index] = this.$gamepad.querySelectorAll(
+                        `[data-axis="${index}"], [data-axis-x="${index}"], [data-axis-y="${index}"], [data-axis-z="${index}"]`
+                    );
+                }
+
+                // enqueue the initial display refresh
+                this.pollStatus(true);
+
+                // once fully loaded, display the gamepad
+                this.fadeIn(this.$gamepad);
+            });
+    }
+
+    /**
+     * Re-runs the <script> tags of a freshly injected template, in order.
+     * innerHTML never executes injected scripts, and the mapping below relies
+     * on the template script having built its DOM first, so we await each one.
+     *
+     * @param {HTMLElement} $container
+     */
+    runTemplateScripts($container) {
+        const scripts = Array.from($container.querySelectorAll("script"));
+        return scripts.reduce(
+            (chain, $old) =>
+                chain.then(
+                    () =>
+                        new Promise((resolve, reject) => {
+                            const $script = document.createElement("script");
+                            for (const { name, value } of $old.attributes) {
+                                if (name === "async") continue;
+                                $script.setAttribute(name, value);
+                            }
+                            $script.textContent = $old.textContent;
+                            if ($old.src) {
+                                $script.onload = resolve;
+                                $script.onerror = reject;
+                                $old.replaceWith($script);
+                            } else {
+                                $old.replaceWith($script);
+                                resolve();
+                            }
+                        })
+                ),
+            Promise.resolve()
+        );
     }
 
     /**
@@ -736,9 +852,9 @@ class Gamepad {
     updateButtons(gamepad) {
         // update the buttons
         for (let index = 0; index < gamepad.buttons.length; index++) {
-            // find the DOM element
-            const $button = this.mapping.buttons[index];
-            if (!$button) {
+            // find the DOM elements
+            const $buttons = this.mapping.buttons[index];
+            if (!$buttons) {
                 // nothing to do for this button if no DOM element exists
                 break;
             }
@@ -746,14 +862,16 @@ class Gamepad {
             // read the button data
             const button = gamepad.buttons[index];
 
-            // update the display values
-            $button.attr("data-pressed", button.pressed);
-            $button.attr("data-value", button.value);
+            $buttons.forEach(($button) => {
+                // update the display values
+                $button.setAttribute("data-pressed", button.pressed);
+                $button.setAttribute("data-value", button.value);
 
-            // hook the template defined button update method
-            if ("function" === typeof this.updateButton) {
-                this.updateButton($button);
-            }
+                // hook the template defined button update method
+                if ("function" === typeof this.updateButton) {
+                    this.updateButton($button);
+                }
+            });
         }
     }
 
@@ -765,34 +883,36 @@ class Gamepad {
     updateAxes(gamepad) {
         // update the axes
         for (let index = 0; index < gamepad.axes.length; index++) {
-            // find the DOM element
-            const $axis = this.mapping.axes[index];
-            if (!$axis) {
-                // nothing to do for this button if no DOM element exists
+            // find the DOM elements
+            const $axes = this.mapping.axes[index];
+            if (!$axes) {
+                // nothing to do for this axis if no DOM element exists
                 break;
             }
 
             // read the axis data
             const axis = gamepad.axes[index];
 
-            // update the display values
-            if ($axis.is("[data-axis=" + index + "]")) {
-                $axis.attr("data-value", axis);
-            }
-            if ($axis.is("[data-axis-x=" + index + "]")) {
-                $axis.attr("data-value-x", axis);
-            }
-            if ($axis.is("[data-axis-y=" + index + "]")) {
-                $axis.attr("data-value-y", axis);
-            }
-            if ($axis.is("[data-axis-z=" + index + "]")) {
-                $axis.attr("data-value-z", axis);
-            }
+            $axes.forEach(($axis) => {
+                // update the display values
+                if ($axis.matches(`[data-axis="${index}"]`)) {
+                    $axis.setAttribute("data-value", axis);
+                }
+                if ($axis.matches(`[data-axis-x="${index}"]`)) {
+                    $axis.setAttribute("data-value-x", axis);
+                }
+                if ($axis.matches(`[data-axis-y="${index}"]`)) {
+                    $axis.setAttribute("data-value-y", axis);
+                }
+                if ($axis.matches(`[data-axis-z="${index}"]`)) {
+                    $axis.setAttribute("data-value-z", axis);
+                }
 
-            // hook the template defined axis update method
-            if ("function" === typeof this.updateAxis) {
-                this.updateAxis($axis);
-            }
+                // hook the template defined axis update method
+                if ("function" === typeof this.updateAxis) {
+                    this.updateAxis($axis);
+                }
+            });
         }
     }
 
@@ -803,10 +923,10 @@ class Gamepad {
      */
     changeSkin(skin) {
         // update the visual skin selector
-        this.$skinSelect.val(skin);
+        this.$skinSelect.value = skin;
 
         // set the selected skin
-        this.debug = skin === 'debug';
+        this.debug = skin === "debug";
         this.updateUrlParams({ type: skin !== "auto" ? skin : undefined });
         this.map(this.index);
     }
@@ -818,31 +938,25 @@ class Gamepad {
      */
     changeBackgroundStyle(style) {
         if ("undefined" === typeof style) {
-            this.backgroundStyleIndex++;
-            if (this.backgroundStyleIndex > this.backgroundStyle.length - 1) {
-                this.backgroundStyleIndex = 0;
-            }
+            this.backgroundStyleIndex =
+                (this.backgroundStyleIndex + 1) % this.backgroundStyle.length;
         } else if ("string" === typeof style) {
-            this.backgroundStyleIndex = this.backgroundStyle.findIndex(
-                (s) => s === style
-            );
+            this.backgroundStyleIndex = this.backgroundStyle.indexOf(style);
         } else {
             this.backgroundStyleIndex = style;
         }
         this.backgroundStyleName =
             this.backgroundStyle[this.backgroundStyleIndex];
 
-        this.$body.css({
-            background:
-                this.backgroundStyleName === "checkered"
-                    ? "url(css/transparent-bg.png)"
-                    : this.backgroundStyleName,
-            color: this.textColors[this.backgroundStyleIndex],
-        });
+        this.$body.style.background =
+            this.backgroundStyleName === "checkered"
+                ? "url(css/transparent-bg.png)"
+                : this.backgroundStyleName;
+        this.$body.style.color = this.textColors[this.backgroundStyleIndex];
 
         // update current settings
         this.updateUrlParams({ background: this.backgroundStyleName });
-        this.$backgroundSelect.val(this.backgroundStyleName);
+        this.$backgroundSelect.value = this.backgroundStyleName;
 
         // save statistics
         if (!!window.ga) {
@@ -894,11 +1008,11 @@ class Gamepad {
             : null;
 
         // update the DOM with the color value
-        this.$gamepad.attr("data-color", this.colorName);
+        this.$gamepad.setAttribute("data-color", this.colorName);
 
         // update current settings
         this.updateUrlParams({ color: this.colorName });
-        this.$colorSelect.val(this.colorName);
+        this.$colorSelect.value = this.colorName;
 
         // save statistics
         if (!!window.ga) {
@@ -928,8 +1042,8 @@ class Gamepad {
         if (this.zoomMode === "auto") {
             // "auto" means a "contained in window" zoom, with a max zoom of 1
             this.zoomLevel = Math.min(
-                window.innerWidth / this.$gamepad.width(),
-                window.innerHeight / this.$gamepad.height(),
+                window.innerWidth / this.$gamepad.offsetWidth,
+                window.innerHeight / this.$gamepad.offsetHeight,
                 1
             );
         } else if (level === 0) {
@@ -950,10 +1064,7 @@ class Gamepad {
         this.zoomLevel = +this.zoomLevel.toFixed(2);
 
         // update the DOM with the zoom value
-        this.$gamepad.css(
-            "transform",
-            `translate(-50%, -50%) scale(${this.zoomLevel}, ${this.zoomLevel})`
-        );
+        this.$gamepad.style.transform = `translate(-50%, -50%) scale(${this.zoomLevel}, ${this.zoomLevel})`;
 
         // update current settings
         this.updateUrlParams({
@@ -1028,19 +1139,19 @@ class Gamepad {
         }
 
         // update current settings
-        this.changeSkin(this.debug ? 'debug' : 'auto')
+        this.changeSkin(this.debug ? "debug" : "auto");
     }
 
     /**
      * Toggles the on-screen help message
      */
     toggleHelp() {
-        // refresh gamepad lsit with latest data
+        // refresh gamepad list with latest data
         this.buildHelpGamepadList();
 
         // display the help popout
-        this.$helpPopout.toggleClass("active");
-        this.helpVisible = this.$helpPopout.is(".active");
+        this.$helpPopout.classList.toggle("active");
+        this.helpVisible = this.$helpPopout.classList.contains("active");
 
         // save statistics
         if (!!window.ga) {
@@ -1048,7 +1159,7 @@ class Gamepad {
                 eventCategory: "Gamepad",
                 eventAction: "toggle-help",
                 eventLabel: "Toggle Help",
-                eventValue: this.$helpPopout.is("active"),
+                eventValue: this.$helpPopout.classList.contains("active"),
             });
         }
     }
@@ -1062,14 +1173,12 @@ class Gamepad {
 
         this.triggersMeter =
             useMeter !== undefined ? useMeter : !this.triggersMeter;
-        this.$gamepad[this.triggersMeter ? "addClass" : "removeClass"](
-            "triggers-meter"
-        );
+        this.$gamepad.classList.toggle("triggers-meter", this.triggersMeter);
 
         // update current settings
         const triggers = this.triggersMeter ? "meter" : "opacity";
         this.updateUrlParams({ triggers });
-        this.$triggersSelect.val(triggers);
+        this.$triggersSelect.value = triggers;
     }
 
     /**
