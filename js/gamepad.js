@@ -513,22 +513,32 @@ class Gamepad {
         // refresh gamepads information
         this.pollGamepads();
 
-        const $tbody = [];
+        const $rows = [];
         for (let key = 0; key < this.gamepads.length; key++) {
             const gamepad = this.gamepads[key];
             if (!gamepad) {
                 continue;
             }
 
-            $tbody.push(
-                `<tr><td>${gamepad.index}</td><td>${gamepad.id}</td></tr>`
-            );
-        }
-        if ($tbody.length === 0) {
-            $tbody.push('<tr><td colspan="2">No gamepad detected.</td></tr>');
+            const $row = document.createElement("tr");
+            const $index = document.createElement("td");
+            $index.textContent = gamepad.index;
+            const $id = document.createElement("td");
+            $id.textContent = gamepad.id;
+            $row.append($index, $id);
+            $rows.push($row);
         }
 
-        this.$gamepadList.innerHTML = $tbody.join("");
+        this.$gamepadList.replaceChildren();
+        if ($rows.length === 0) {
+            const $row = document.createElement("tr");
+            const $cell = document.createElement("td");
+            $cell.colSpan = 2;
+            $cell.textContent = "No gamepad detected.";
+            $row.append($cell);
+            $rows.push($row);
+        }
+        this.$gamepadList.append(...$rows);
     }
 
     /**

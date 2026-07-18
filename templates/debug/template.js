@@ -14,7 +14,7 @@
         return;
     }
 
-    $id.innerHTML = activeGamepad.id;
+    $id.textContent = activeGamepad.id;
     updateTimestamp();
     $index.textContent = activeGamepad.index;
     $mapping.textContent = activeGamepad.mapping;
