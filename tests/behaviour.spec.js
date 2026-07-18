@@ -165,3 +165,115 @@ test("persists color changes to the URL via URLSearchParams", async ({
         /color=white/,
     );
 });
+
+test("requires holding a button to activate, ignoring a quick tap", async ({
+    page,
+    errors,
+}) => {
+    await installGamepad(page);
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    // a quick tap (released well under the hold delay) does not activate
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = true;
+    });
+    await page.waitForTimeout(400);
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = false;
+    });
+    await page.waitForTimeout(500);
+    expect(await page.evaluate(() => window.gamepad.index)).toBeNull();
+
+    // a sustained hold activates
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = true;
+    });
+    await page.waitForFunction(() => window.gamepad.index !== null, null, {
+        timeout: 3000,
+    });
+    expect(await page.evaluate(() => window.gamepad.index)).toBe(0);
+    expect(errors).toEqual([]);
+});
+
+test("activates the DualSense skin for a 0ce6 controller", async ({
+    page,
+    errors,
+}) => {
+    await installGamepad(page, {
+        id: "DualSense Wireless Controller (Vendor: 054c Product: 0ce6)",
+    });
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = true;
+    });
+    await page.waitForFunction(
+        () => window.gamepad?.type === "dualsense",
+        null,
+        { timeout: 3000 },
+    );
+    await page.waitForSelector("#gamepad .controller", { timeout: 3000 });
+    expect(errors).toEqual([]);
+});
+
+test("lists connected gamepads and activates the one picked in the selector", async ({
+    page,
+    errors,
+}) => {
+    await installGamepad(page);
+    await page.goto("/", { waitUntil: "networkidle" });
+
+    await expect
+        .poll(() =>
+            page.evaluate(
+                () =>
+                    document.querySelectorAll("select[name=gamepad-id] option")
+                        .length,
+            ),
+        )
+        .toBe(2);
+
+    await page.evaluate(() =>
+        window.gamepad.changeGamepad("054c DualShock 4"),
+    );
+    await page.waitForFunction(() => window.gamepad.index === 0, null, {
+        timeout: 3000,
+    });
+    expect(
+        await page.evaluate(() =>
+            new URLSearchParams(location.search).get("gamepad"),
+        ),
+    ).toBe("054c DualShock 4");
+    expect(errors).toEqual([]);
+});
+
+test("closes the help modal on Escape without clearing the gamepad", async ({
+    page,
+    errors,
+}) => {
+    await installGamepad(page);
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = true;
+    });
+    await page.waitForFunction(() => window.gamepad.index !== null, null, {
+        timeout: 3000,
+    });
+    await page.evaluate(() => {
+        window.__pad.buttons[0].pressed = false;
+        window.gamepad.toggleHelp();
+    });
+    expect(
+        await page.evaluate(() =>
+            document.querySelector("#help-popout").classList.contains("active"),
+        ),
+    ).toBe(true);
+
+    await page.keyboard.press("Escape");
+    expect(
+        await page.evaluate(() =>
+            document.querySelector("#help-popout").classList.contains("active"),
+        ),
+    ).toBe(false);
+    expect(await page.evaluate(() => window.gamepad.index)).toBe(0);
+    expect(errors).toEqual([]);
+});

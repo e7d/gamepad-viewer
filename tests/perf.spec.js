@@ -65,16 +65,23 @@ test.describe("compositor-only stick rendering", () => {
     });
 });
 
-test("keeps the placeholder glow as a static drop-shadow", async ({
+test("syncs the placeholder glow with the button press animation", async ({
     page,
     errors,
 }) => {
     await installGamepad(page);
     await page.goto("/", { waitUntil: "networkidle" });
-    const filter = await page.evaluate(() => {
-        const el = document.querySelector("#placeholder #a-button path");
-        return el ? getComputedStyle(el).filter : null;
-    });
-    expect(filter).toContain("drop-shadow");
+    const filterAt = (ms) =>
+        page.evaluate((ms) => {
+            const el = document.querySelector("#placeholder #a-button path");
+            const anim = el.getAnimations()[0];
+            anim.pause();
+            anim.currentTime = ms;
+            return getComputedStyle(el).filter;
+        }, ms);
+    // at rest (grey frame) the glow is fully transparent
+    expect(await filterAt(2500)).toMatch(/rgba?\(0,\s*0,\s*0,\s*0\)/);
+    // while pressed (green frame) the glow shows
+    expect(await filterAt(600)).toMatch(/rgba?\(0,\s*229,\s*48,\s*0\.4\)/);
     expect(errors).toEqual([]);
 });
