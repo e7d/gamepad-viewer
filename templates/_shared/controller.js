@@ -1,8 +1,11 @@
 (() => {
     const STICK_TRAVEL_PX = 25;
     const STICK_TILT_DEG = 30;
+    const STICK_DEADZONE = 0.05;
 
     const gamepad = window.gamepad;
+
+    const deadzone = (value) => (Math.abs(value) < STICK_DEADZONE ? 0 : value);
 
     gamepad.updateButton = ($button) => {
         if (!$button.matches(".trigger")) return;
@@ -20,8 +23,10 @@
     gamepad.updateAxis = ($axis) => {
         if (!$axis.matches(".stick")) return;
 
-        const axisX = parseFloat($axis.getAttribute("data-value-x"));
-        const axisY = parseFloat($axis.getAttribute("data-value-y"));
-        $axis.style.transform = `translate(${axisX * STICK_TRAVEL_PX}px, ${axisY * STICK_TRAVEL_PX}px) rotateX(${-axisY * STICK_TILT_DEG}deg) rotateY(${axisX * STICK_TILT_DEG}deg)`;
+        const axisX = deadzone(parseFloat($axis.getAttribute("data-value-x")));
+        const axisY = deadzone(parseFloat($axis.getAttribute("data-value-y")));
+        const x = Math.round(axisX * STICK_TRAVEL_PX);
+        const y = Math.round(axisY * STICK_TRAVEL_PX);
+        $axis.style.transform = `translate(${x}px, ${y}px) rotateX(${-axisY * STICK_TILT_DEG}deg) rotateY(${axisX * STICK_TILT_DEG}deg)`;
     };
 })();
