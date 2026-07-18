@@ -824,13 +824,10 @@ class Gamepad {
         // load latest gamepad data
         this.pollGamepads();
         const activeGamepad = this.getActive();
+        if (!activeGamepad) return;
 
         // check for actual gamepad update
-        if (
-            !force &&
-            (!activeGamepad || activeGamepad.timestamp === this.lastTimestamp)
-        )
-            return;
+        if (!force && activeGamepad.timestamp === this.lastTimestamp) return;
         this.lastTimestamp = activeGamepad.timestamp;
 
         // actually update the active gamepad graphically
