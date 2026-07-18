@@ -1197,26 +1197,29 @@ class Gamepad {
      * @param {*} name
      */
     getUrlParam(name) {
-        let matches = new RegExp("[?&]" + name + "(=([^&#]*))?").exec(
-            window.location.search
-        );
-        return matches ? decodeURIComponent(matches[2] || true) || true : null;
+        return new URLSearchParams(window.location.search).get(name);
     }
 
     /**
-     * Read url settings to produce a key/value object
+     * Update url settings with new params, then rewrite the query string
+     *
+     * @param {*} newParams
      */
-    getUrlParams() {
-        const settingsArr = window.location.search
-            .replace("?", "")
-            .split("&")
-            .map((param) => param.split("="));
-        const settings = {};
-        Object.keys(settingsArr).forEach((key) => {
-            const [k, v] = settingsArr[key];
-            settings[k] = v;
-        });
-        return settings;
+    updateUrlParams(newParams) {
+        const params = new URLSearchParams(window.location.search);
+        for (const [key, value] of Object.entries(newParams)) {
+            if (value === undefined || value === null) {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        }
+        const query = params.toString();
+        window.history.replaceState(
+            {},
+            document.title,
+            query ? `${window.location.pathname}?${query}` : window.location.pathname
+        );
     }
 
     /**
@@ -1230,20 +1233,6 @@ class Gamepad {
             triggers: undefined,
             zoom: undefined,
         });
-    }
-
-    /**
-     * Update url hash with new settings
-     *
-     * @param {*} newParams
-     */
-    updateUrlParams(newParams) {
-        const params = Object.assign(this.getUrlParams(), newParams);
-        const query = Object.entries(params)
-            .filter(([, value]) => value !== undefined && value !== null)
-            .map(([key, value]) => `${key}=${value}`)
-            .join("&");
-        window.history.replaceState({}, document.title, `/?${query}`);
     }
 }
 
