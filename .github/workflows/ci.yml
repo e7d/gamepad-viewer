@@ -4,7 +4,15 @@ on:
   push:
     branches: [master]
     tags: ["v*"]
+    paths-ignore:
+      - "**/*.md"
+      - LICENSE
+      - .editorconfig
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - LICENSE
+      - .editorconfig
 
 jobs:
   test:
