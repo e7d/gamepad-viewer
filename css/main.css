@@ -131,6 +131,7 @@ body.unsupported #unsupported {
     align-items: flex-end;
     justify-content: center;
     gap: 4px;
+    width: max-content;
     max-width: calc(100vw - 32px);
     padding: 12px 14px;
     background: var(--gv-surface);
