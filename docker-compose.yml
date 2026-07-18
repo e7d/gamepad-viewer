@@ -4,22 +4,9 @@ services:
             context: .
             target: dev
         ports:
-            - 8080:8080
+            - 127.0.0.1:8080:8080
         volumes:
-            - ./index.html:/public/index.html:ro
-            - ./favicon.ico:/public/favicon.ico:ro
-            - ./favicon-16x16.png:/public/favicon-16x16.png:ro
-            - ./favicon-32x32.png:/public/favicon-32x32.png:ro
-            - ./apple-touch-icon.png:/public/apple-touch-icon.png:ro
-            - ./android-chrome-192x192.png:/public/android-chrome-192x192.png:ro
-            - ./android-chrome-512x512.png:/public/android-chrome-512x512.png:ro
-            - ./mstile-150x150.png:/public/mstile-150x150.png:ro
-            - ./safari-pinned-tab.svg:/public/safari-pinned-tab.svg:ro
-            - ./site.webmanifest:/public/site.webmanifest:ro
-            - ./browserconfig.xml:/public/browserconfig.xml:ro
-            - ./css:/public/css:ro
-            - ./js:/public/js:ro
-            - ./templates:/public/templates:ro
+            - ./:/public:ro
         read_only: true
         cap_drop:
             - ALL
