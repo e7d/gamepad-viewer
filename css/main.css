@@ -111,23 +111,27 @@ body.unsupported #unsupported {
     position: fixed;
     top: 0;
     left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     width: 100vw;
     height: 100vh;
     pointer-events: none;
 }
 
 #placeholder svg {
+    height: 90%;
+    left: 50%;
     max-width: 600px;
-    max-height: 90%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 90%;
 }
 
 #placeholder-instructions {
-    margin-top: -40px;
+    position: absolute;
+    left: 50%;
+    top: 73%;
+    transform: translateX(-50%);
+    text-align: center;
 }
 
 #placeholder #a-button path {
