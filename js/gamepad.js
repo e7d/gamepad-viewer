@@ -11,6 +11,7 @@ class Gamepad {
         // cached DOM references
         this.$body = document.body;
         this.$instructions = document.querySelector("#instructions");
+        this.$instructionsLink = this.$instructions.querySelector("button");
         this.$placeholder = document.querySelector("#placeholder");
         this.$gamepad = document.querySelector("#gamepad");
         this.$overlay = document.querySelector("#overlay");
@@ -124,6 +125,10 @@ class Gamepad {
         // listen for keyboard events
         window.addEventListener("resize", this.onResize.bind(this));
 
+        this.$instructionsLink.addEventListener("click", () =>
+            this.toggleHelp(),
+        );
+
         // bind a gamepads scan
         window.setInterval(this.scan.bind(this), this.scanDelay);
 
@@ -144,7 +149,9 @@ class Gamepad {
         }
 
         // by default, enqueue a delayed display of the placeholder animation
-        this.displayPlaceholder();
+        if (this.getUrlParam("placeholder") !== "no") {
+            this.displayPlaceholder();
+        }
     }
 
     /**
@@ -316,6 +323,30 @@ class Gamepad {
     }
 
     /**
+     * Toggles the placeholder animation through the URL parameter and on screen
+     */
+    togglePlaceholder() {
+        let placeholder = this.getUrlParam("placeholder");
+        switch (placeholder) {
+            case "yes":
+                placeholder = "no";
+                break;
+            case "no":
+                placeholder = undefined;
+                break;
+            default:
+                placeholder = "yes";
+                break;
+        }
+        this.updateUrlParams({ placeholder });
+        if (placeholder === "no") {
+            this.hidePlaceholder(true);
+        } else {
+            this.displayPlaceholder();
+        }
+    }
+
+    /**
      * Displays the overlay animation on screen
      */
     displayOverlay() {
@@ -460,6 +491,9 @@ class Gamepad {
                 break;
             case "KeyH":
                 this.toggleHelp();
+                break;
+            case "KeyP":
+                this.togglePlaceholder();
                 break;
             case "KeyT":
                 this.toggleTriggersMeter();

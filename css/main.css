@@ -45,6 +45,16 @@ body.unsupported #unsupported {
     width: 100vw;
 }
 
+#instructions button {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 @keyframes press-button {
     0% {
         fill: #898989;
@@ -97,14 +107,27 @@ body.unsupported #unsupported {
     }
 }
 
+#placeholder {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+}
+
 #placeholder svg {
-    height: 90%;
-    left: 50%;
     max-width: 600px;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    max-height: 90%;
     width: 90%;
+}
+
+#placeholder-instructions {
+    margin-top: -40px;
 }
 
 #placeholder #a-button path {
