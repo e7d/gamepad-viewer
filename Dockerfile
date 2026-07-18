@@ -1,7 +1,9 @@
 FROM alpine:3.21 AS compress
 RUN apk add --no-cache brotli gzip
 WORKDIR /public
-COPY index.html favicon.ico favicon.png ./
+COPY index.html site.webmanifest browserconfig.xml ./
+COPY favicon.ico favicon-16x16.png favicon-32x32.png apple-touch-icon.png ./
+COPY android-chrome-192x192.png android-chrome-512x512.png mstile-150x150.png safari-pinned-tab.svg ./
 COPY css ./css
 COPY js ./js
 COPY templates ./templates
