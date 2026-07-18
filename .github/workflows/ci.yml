@@ -27,8 +27,22 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm test
 
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
   build-and-push:
-    needs: test
+    needs: [test, scan]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -50,7 +64,22 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha
             type=semver,pattern={{version}}
-      - uses: docker/build-push-action@v7
+      - name: Build image for scan
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: gamepad-viewer:scan
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: gamepad-viewer:scan
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Push image
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
