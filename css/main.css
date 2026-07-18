@@ -33,52 +33,42 @@ body.unsupported #unsupported {
 @keyframes press-button {
     0% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 
     7% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 
     10% {
         fill: #00e530;
-        filter: drop-shadow(0 0 5px rgb(0 229 48 / 0.4));
     }
 
     17% {
         fill: #00e530;
-        filter: drop-shadow(0 0 5px rgb(0 229 48 / 0.4));
     }
 
     20% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 
     27% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 
     30% {
         fill: #00e530;
-        filter: drop-shadow(0 0 5px rgb(0 229 48 / 0.4));
     }
 
     37% {
         fill: #00e530;
-        filter: drop-shadow(0 0 5px rgb(0 229 48 / 0.4));
     }
 
     40% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 
     100% {
         fill: #898989;
-        filter: drop-shadow(0 0 0 rgb(0 229 48 / 0.4));
     }
 }
 
@@ -93,6 +83,7 @@ body.unsupported #unsupported {
 }
 
 #placeholder #a-button path {
+    filter: drop-shadow(0 0 5px rgb(0 229 48 / 0.4));
     animation: press-button 5s linear infinite;
 }
 
