@@ -16,5 +16,6 @@ RUN apk add --no-cache nginx nginx-mod-http-brotli
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /src /usr/share/nginx/html
 RUN nginx -t
-EXPOSE 80
+USER nginx
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

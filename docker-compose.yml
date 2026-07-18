@@ -12,4 +12,11 @@ services:
             - dist
         build: .
         ports:
-            - 8082:80
+            - 8082:8080
+        read_only: true
+        tmpfs:
+            - /tmp
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
