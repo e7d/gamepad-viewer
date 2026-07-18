@@ -278,6 +278,9 @@ class Gamepad {
      * @param {boolean} [hideNow=false]
      */
     hideInstructions(hideNow = false) {
+        // cancel any previously queued fade-out
+        window.clearTimeout(this.instructionsTimeout);
+
         // hide the message right away if needed
         if (hideNow) {
             this.hide(this.$instructions);
@@ -311,6 +314,9 @@ class Gamepad {
      * @param {boolean} [hideNow=false]
      */
     hidePlaceholder(hideNow = false) {
+        // cancel any previously queued fade-out
+        window.clearTimeout(this.placeholderTimeout);
+
         // hide the animation right away if needed
         if (hideNow) {
             this.hide(this.$placeholder);
@@ -365,6 +371,9 @@ class Gamepad {
      * @param {boolean} [hideNow=false]
      */
     hideOverlay(hideNow = false) {
+        // cancel any previously queued fade-out
+        window.clearTimeout(this.overlayTimeout);
+
         // hide the message right away if needed
         if (hideNow) {
             this.hide(this.$overlay);
