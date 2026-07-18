@@ -1,18 +1,19 @@
 (() => {
-    $id = document.querySelector("#info-id .value");
-    $timestamp = document.querySelector("#info-timestamp .value");
-    $index = document.querySelector("#info-index .value");
-    $mapping = document.querySelector("#info-mapping .value");
-    $rumble = document.querySelector("#info-rumble .value");
-    $axes = document.querySelector(".axes .container");
-    $buttons = document.querySelector(".buttons .container");
+    "use strict";
 
-    gamepad = window.gamepad;
-    activeGamepad = gamepad.getActive();
-
+    const gamepad = window.gamepad;
+    let activeGamepad = gamepad.getActive();
     if (!activeGamepad) {
         return;
     }
+
+    const $id = document.querySelector("#info-id .value");
+    const $timestamp = document.querySelector("#info-timestamp .value");
+    const $index = document.querySelector("#info-index .value");
+    const $mapping = document.querySelector("#info-mapping .value");
+    const $rumble = document.querySelector("#info-rumble .value");
+    const $axes = document.querySelector(".axes .container");
+    const $buttons = document.querySelector(".buttons .container");
 
     $id.textContent = activeGamepad.id;
     updateTimestamp();
@@ -71,11 +72,11 @@
     };
 
     function updateElem($elem, precision = 2) {
-        let value = parseFloat($elem.getAttribute("data-value"), 10).toFixed(
+        const value = parseFloat($elem.getAttribute("data-value")).toFixed(
             precision
         );
         $elem.textContent = value;
-        let color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
+        const color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));
         $elem.style.color = `rgb(${color}, ${color}, ${color})`;
     }
 
