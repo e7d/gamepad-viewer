@@ -845,9 +845,9 @@ class Gamepad {
         for (let index = 0; index < gamepad.buttons.length; index++) {
             // find the DOM elements
             const $buttons = this.mapping.buttons[index];
-            if (!$buttons) {
+            if (!$buttons || !$buttons.length) {
                 // nothing to do for this button if no DOM element exists
-                break;
+                continue;
             }
 
             // read the button data
@@ -876,9 +876,9 @@ class Gamepad {
         for (let index = 0; index < gamepad.axes.length; index++) {
             // find the DOM elements
             const $axes = this.mapping.axes[index];
-            if (!$axes) {
+            if (!$axes || !$axes.length) {
                 // nothing to do for this axis if no DOM element exists
-                break;
+                continue;
             }
 
             // read the axis data
