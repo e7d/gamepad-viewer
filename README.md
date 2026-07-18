@@ -39,5 +39,14 @@ Please read below or use this video tutorial: https://youtu.be/vHzf_ESseTc
 
 *: These gamepads work both wired and wireless via Bluetooth
 
+## Run with Docker
+A prebuilt, multi-architecture (amd64/arm64) image is published to GitHub Container Registry:
+
+```sh
+docker run -p 8080:8080 ghcr.io/e7d/gamepad-viewer
+```
+
+Then open [http://localhost:8080](http://localhost:8080). Pin a version with `:1`, `:1.0` or `:1.0.0`, use `:latest` for the newest release, or `:edge` to track the latest `master` commit.
+
 ## Credits
 The gamepad skins are inspired by and largely reworked from the assets originally created by [mrmcpowned](https://github.com/mrmcpowned) for [gamepadviewer.com](https://gamepadviewer.com). Thanks for the original work.
