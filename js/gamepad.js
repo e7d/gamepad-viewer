@@ -562,9 +562,9 @@ class Gamepad {
             return "debug";
         }
 
-        // if the gamepad type is set through params, apply it
+        // if the gamepad type is set through params, only apply it when known
         if (type) {
-            return type;
+            return this.identifiers[type] ? type : null;
         }
 
         // else, determine the template to use from the gamepad identifier and update settings
