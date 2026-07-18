@@ -62,6 +62,12 @@ class Gamepad {
                 id: /debug/,
                 name: "Debug",
             },
+            dualsense: {
+                id: /0ce6/, // 0ce6 = DualSense controller product code
+                name: "DualSense",
+                colors: ["white", "black"],
+                triggers: true,
+            },
             ds4: {
                 id: /054c|54c|09cc|046d|0810|2563/, // 054c = Sony vendor code, 046d,0810,2563 = PS-like controllers vendor codes
                 name: "DualShock 4",
