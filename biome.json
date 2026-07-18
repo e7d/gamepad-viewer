@@ -1,0 +1,12 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+    "files": {
+        "includes": ["**", "!css/normalize.css", "!**/*.svg"]
+    },
+    "formatter": {
+        "enabled": false
+    },
+    "linter": {
+        "enabled": true
+    }
+}

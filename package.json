@@ -1,0 +1,19 @@
+{
+    "name": "gamepad-viewer",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Displays live status about gamepads connected to your computer",
+    "homepage": "https://gamepad.e7d.io/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/e7d/gamepad-viewer.git"
+    },
+    "license": "MIT",
+    "scripts": {
+        "lint": "biome lint .",
+        "lint:fix": "biome lint --write ."
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.5.4"
+    }
+}
