@@ -828,6 +828,9 @@ class Gamepad {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
+        // suspend the render loop while disconnected; it resumes on reconnect
+        if (this.disconnectedIndex !== null) return;
+
         // enqueue the next refresh
         window.requestAnimationFrame(this.pollStatus.bind(this));
 
