@@ -1,0 +1,17 @@
+.git
+.github
+.remember
+node_modules
+tests
+test-results
+playwright-report
+playwright.config.js
+biome.json
+package.json
+package-lock.json
+docker-compose.yml
+README.md
+TODO.md
+LICENSE
+.editorconfig
+.gitignore
