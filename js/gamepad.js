@@ -155,16 +155,10 @@ class Gamepad {
         // change the background if specified
         const background = this.getUrlParam("background");
         if (background) {
-            let backgroundStyleIndex;
-            for (let i = 0; i < this.backgroundStyle.length; i++) {
-                if (background === this.backgroundStyle[i]) {
-                    backgroundStyleIndex = i;
-                    break;
-                }
-            }
-
-            if (backgroundStyleIndex)
+            const backgroundStyleIndex = this.backgroundStyle.indexOf(background);
+            if (backgroundStyleIndex !== -1) {
                 this.changeBackgroundStyle(backgroundStyleIndex);
+            }
         }
 
         // by default, enqueue a delayed display of the placeholder animation
