@@ -15,6 +15,7 @@ class Gamepad {
         this.$placeholder = document.querySelector("#placeholder");
         this.$gamepad = document.querySelector("#gamepad");
         this.$overlay = document.querySelector("#overlay");
+        this.$gamepadSelect = document.querySelector("select[name=gamepad-id]");
         this.$skinSelect = document.querySelector("select[name=skin]");
         this.$backgroundSelect = document.querySelector(
             "select[name=background]",
@@ -85,6 +86,7 @@ class Gamepad {
 
         // active gamepad default values
         this.scanDelay = 200;
+        this.isFirstscan = true;
         this.holdDelay = 1000;
         this.pressedIndex = null;
         this.pressedSince = null;
@@ -245,6 +247,9 @@ class Gamepad {
      * Initialises the overlay selectors
      */
     initOverlaySelectors() {
+        this.$gamepadSelect.addEventListener("change", () =>
+            this.changeGamepad(this.$gamepadSelect.value),
+        );
         this.$skinSelect.addEventListener("change", () =>
             this.changeSkin(this.$skinSelect.value),
         );
@@ -431,6 +436,10 @@ class Gamepad {
      * Handles the gamepad connection event
      */
     onGamepadConnect() {
+        // refresh the gamepad information and selector
+        this.pollGamepads();
+        this.updateGamepadList();
+
         // refresh gamepad list on help, if displayed
         if (this.helpVisible) this.buildHelpGamepadList();
     }
@@ -441,14 +450,18 @@ class Gamepad {
      * @param {GamepadEvent} e
      */
     onGamepadDisconnect(e) {
+        // refresh the gamepad information and selector
+        this.pollGamepads();
+        this.updateGamepadList();
+
         if (e.gamepad.index === this.index) {
             // display a disconnection indicator
             this.$gamepad.classList.add("disconnected");
             this.disconnectedIndex = e.gamepad.index;
-
-            // refresh gamepad list on help, if displayed
-            if (this.helpVisible) this.buildHelpGamepadList();
         }
+
+        // refresh gamepad list on help, if displayed
+        if (this.helpVisible) this.buildHelpGamepadList();
     }
 
     /**
@@ -580,6 +593,63 @@ class Gamepad {
     }
 
     /**
+     * Extracts a human-readable name from a gamepad identifier
+     *
+     * @param {string} id
+     * @returns {string}
+     */
+    toGamepadName(id) {
+        const chrome =
+            /^(?<name>.*) \((?:.*?Vendor: [0-9a-f]{4} Product: [0-9a-f]{4}|.*)\)$/i.exec(
+                id,
+            );
+        if (chrome) return chrome.groups.name;
+
+        const firefox = /^[0-9a-f]{4}-[0-9a-f]{4}-(?<name>.*)$/i.exec(id);
+        if (firefox) return firefox.groups.name;
+
+        return id;
+    }
+
+    /**
+     * Updates the connected gamepads listed in the overlay selector
+     */
+    updateGamepadList() {
+        // remove previously listed gamepads, keeping the "Auto" option
+        for (const $entry of this.$gamepadSelect.querySelectorAll(".entry")) {
+            $entry.remove();
+        }
+
+        for (let index = 0; index < this.gamepads.length; index++) {
+            const gamepad = this.gamepads[index];
+            if (!gamepad) continue;
+
+            const $option = document.createElement("option");
+            $option.className = "entry";
+            $option.value = gamepad.id;
+            $option.textContent = this.toGamepadName(gamepad.id);
+            this.$gamepadSelect.append($option);
+        }
+    }
+
+    /**
+     * Activates a gamepad from its identifier, or clears the active one
+     *
+     * @param {string} id
+     */
+    changeGamepad(id) {
+        this.pollGamepads();
+        const index = this.gamepads.findIndex((g) => g && id === g.id);
+
+        this.updateUrlParams({ gamepad: id !== "auto" ? id : undefined });
+        if (index === -1) {
+            this.clear();
+        } else {
+            this.map(index);
+        }
+    }
+
+    /**
      * Return the connected gamepad
      */
     getActive() {
@@ -625,6 +695,12 @@ class Gamepad {
         // refresh gamepad information
         this.pollGamepads();
 
+        // populate the gamepad selector on the first scan
+        if (this.isFirstscan) {
+            this.updateGamepadList();
+            this.isFirstscan = false;
+        }
+
         for (let index = 0; index < this.gamepads.length; index++) {
             if (
                 null !== this.disconnectedIndex &&
@@ -634,6 +710,12 @@ class Gamepad {
 
             const gamepad = this.gamepads[index];
             if (!gamepad) continue;
+
+            // a gamepad selected through the URL activates right away
+            if (this.getUrlParam("gamepad") === gamepad.id) {
+                this.map(gamepad.index);
+                return;
+            }
 
             // look for any pressed button on this gamepad
             let pressed = false;
@@ -721,6 +803,12 @@ class Gamepad {
         // initial setup of the gamepad
         this.identifier = this.identifiers[this.type];
 
+        // reflect the active gamepad in the selector when pinned through the URL
+        const gamepadId = this.getUrlParam("gamepad");
+        if (gamepadId) {
+            this.$gamepadSelect.value = gamepadId;
+        }
+
         // update gamepad color and triggers selectors on overlay
         this.updateColors();
         this.updateTriggers();
@@ -757,6 +845,7 @@ class Gamepad {
         this.updateAxis = null;
         this.updateFrame = null;
         this.$gamepad.replaceChildren();
+        this.$gamepadSelect.value = "auto";
         this.updateColors();
         this.updateTriggers();
         this.clearUrlParams();
