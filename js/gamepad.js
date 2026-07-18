@@ -521,7 +521,7 @@ class Gamepad {
             }
 
             $tbody.push(
-                `<tr><td>${gamepad.index}</td><td>${gamepad.id}</td></tr>"`
+                `<tr><td>${gamepad.index}</td><td>${gamepad.id}</td></tr>`
             );
         }
         if ($tbody.length === 0) {
