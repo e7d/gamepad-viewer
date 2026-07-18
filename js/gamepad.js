@@ -972,34 +972,19 @@ class Gamepad {
         // ensure that a gamepad is currently active
         if (this.index === null) return;
 
+        // ensure the active gamepad type actually has colors
+        const colors = this.identifier.colors;
+        if (!colors) return;
+
         if ("undefined" === typeof color) {
             // no color was specified, load the next one in list
-            this.colorIndex++;
-            if (this.colorIndex > this.identifier.colors.length - 1) {
-                this.colorIndex = 0;
-            }
-        } else if ("string" === typeof style) {
-            this.colorIndex = this.identifier.colors.findIndex(
-                (c) => c === color
-            );
+            this.colorIndex = (this.colorIndex + 1) % colors.length;
         } else {
-            if (!isNaN(parseInt(color))) {
-                // the color is a number, load it by its index
-                this.colorIndex = color;
-            } else {
-                // the color is a string, load it by its name
-                this.colorIndex = 0;
-                for (let gamepadColorIndex in this.identifier.colors) {
-                    if (color === this.identifier.colors[gamepadColorIndex]) {
-                        this.colorIndex = gamepadColorIndex;
-                        break;
-                    }
-                }
-            }
+            // load the color by its name, defaulting to the first one
+            const index = colors.indexOf(color);
+            this.colorIndex = index === -1 ? 0 : index;
         }
-        this.colorName = this.identifier.colors
-            ? this.identifier.colors[this.colorIndex]
-            : null;
+        this.colorName = colors[this.colorIndex];
 
         // update the DOM with the color value
         this.$gamepad.setAttribute("data-color", this.colorName);
