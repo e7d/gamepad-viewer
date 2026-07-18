@@ -1,6 +1,6 @@
 {
     "name": "gamepad-viewer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "private": true,
     "description": "Displays live status about gamepads connected to your computer",
     "homepage": "https://gamepad.e7d.io/",
