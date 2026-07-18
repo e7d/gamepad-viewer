@@ -1,12 +1,24 @@
 {
     "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
     "files": {
-        "includes": ["**", "!css/normalize.css", "!**/*.svg"]
+        "includes": [
+            "**",
+            "!css/normalize.css",
+            "!**/*.svg",
+            "!package-lock.json"
+        ]
     },
     "formatter": {
-        "enabled": false
+        "enabled": true,
+        "useEditorconfig": true
     },
     "linter": {
         "enabled": true
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.html"],
+            "formatter": { "enabled": false }
+        }
+    ]
 }

@@ -15,12 +15,15 @@ class Gamepad {
         this.$gamepad = document.querySelector("#gamepad");
         this.$overlay = document.querySelector("#overlay");
         this.$skinSelect = document.querySelector("select[name=skin]");
-        this.$backgroundSelect = document.querySelector("select[name=background]");
+        this.$backgroundSelect = document.querySelector(
+            "select[name=background]",
+        );
         this.$colorOverlay = this.$overlay.querySelector("#color");
-        this.$colorSelect = this.$colorOverlay.querySelector("select[name=color]");
+        this.$colorSelect =
+            this.$colorOverlay.querySelector("select[name=color]");
         this.$triggersOverlay = this.$overlay.querySelector("#triggers");
         this.$triggersSelect = this.$triggersOverlay.querySelector(
-            "select[name=triggers]"
+            "select[name=triggers]",
         );
         this.$helpPopout = document.querySelector("#help-popout");
         this.$gamepadList = document.querySelector("#gamepad-list");
@@ -106,11 +109,11 @@ class Gamepad {
         if (this.haveEvents) {
             window.addEventListener(
                 "gamepadconnected",
-                this.onGamepadConnect.bind(this)
+                this.onGamepadConnect.bind(this),
             );
             window.addEventListener(
                 "gamepaddisconnected",
-                this.onGamepadDisconnect.bind(this)
+                this.onGamepadDisconnect.bind(this),
             );
         }
 
@@ -133,7 +136,8 @@ class Gamepad {
         // change the background if specified
         const background = this.getUrlParam("background");
         if (background) {
-            const backgroundStyleIndex = this.backgroundStyle.indexOf(background);
+            const backgroundStyleIndex =
+                this.backgroundStyle.indexOf(background);
             if (backgroundStyleIndex !== -1) {
                 this.changeBackgroundStyle(backgroundStyleIndex);
             }
@@ -150,8 +154,8 @@ class Gamepad {
         const getGamepadsFn = navigator.getGamepads
             ? () => navigator.getGamepads()
             : navigator.webkitGetGamepads
-            ? () => navigator.webkitGetGamepads()
-            : null;
+              ? () => navigator.webkitGetGamepads()
+              : null;
         if (!getGamepadsFn) {
             this.$body.classList.add("unsupported");
             throw new Error("Unsupported gamepad API");
@@ -232,16 +236,16 @@ class Gamepad {
      */
     initOverlaySelectors() {
         this.$skinSelect.addEventListener("change", () =>
-            this.changeSkin(this.$skinSelect.value)
+            this.changeSkin(this.$skinSelect.value),
         );
         this.$backgroundSelect.addEventListener("change", () =>
-            this.changeBackgroundStyle(this.$backgroundSelect.value)
+            this.changeBackgroundStyle(this.$backgroundSelect.value),
         );
         this.$colorSelect.addEventListener("change", () =>
-            this.changeGamepadColor(this.$colorSelect.value)
+            this.changeGamepadColor(this.$colorSelect.value),
         );
         this.$triggersSelect.addEventListener("change", () =>
-            this.toggleTriggersMeter(this.$triggersSelect.value === "meter")
+            this.toggleTriggersMeter(this.$triggersSelect.value === "meter"),
         );
     }
 
@@ -592,7 +596,7 @@ class Gamepad {
                                 strongMagnitude: 0.2,
                                 weakMagnitude: 1,
                                 startDelay: 0,
-                            }
+                            },
                         );
                     }
 
@@ -707,30 +711,31 @@ class Gamepad {
                 this.changeGamepadColor(this.getUrlParam("color"));
                 // - triggers mode
                 this.toggleTriggersMeter(
-                    this.getUrlParam("triggers") === "meter"
+                    this.getUrlParam("triggers") === "meter",
                 );
                 // - zoom
                 window.setTimeout(() =>
                     this.changeZoom(
                         this.type === "debug"
                             ? "auto"
-                            : this.getUrlParam("zoom") || "auto"
-                    )
+                            : this.getUrlParam("zoom") || "auto",
+                    ),
                 );
 
                 // save the buttons mapping of this template
                 this.mapping.buttons = [];
                 for (let index = 0; index < gamepad.buttons.length; index++) {
-                    this.mapping.buttons[index] = this.$gamepad.querySelectorAll(
-                        `[data-button="${index}"]`
-                    );
+                    this.mapping.buttons[index] =
+                        this.$gamepad.querySelectorAll(
+                            `[data-button="${index}"]`,
+                        );
                 }
 
                 // save the axes mapping of this template
                 this.mapping.axes = [];
                 for (let index = 0; index < gamepad.axes.length; index++) {
                     this.mapping.axes[index] = this.$gamepad.querySelectorAll(
-                        `[data-axis="${index}"], [data-axis-x="${index}"], [data-axis-y="${index}"], [data-axis-z="${index}"]`
+                        `[data-axis="${index}"], [data-axis-x="${index}"], [data-axis-y="${index}"], [data-axis-z="${index}"]`,
                     );
                 }
 
@@ -770,9 +775,9 @@ class Gamepad {
                                 $old.replaceWith($script);
                                 resolve();
                             }
-                        })
+                        }),
                 ),
-            Promise.resolve()
+            Promise.resolve(),
         );
     }
 
@@ -987,7 +992,7 @@ class Gamepad {
             this.zoomLevel = Math.min(
                 window.innerWidth / this.$gamepad.offsetWidth,
                 window.innerHeight / this.$gamepad.offsetHeight,
-                1
+                1,
             );
         } else if (level === 0) {
             // 0 means a zoom reset
@@ -1030,7 +1035,7 @@ class Gamepad {
 
         // compute next type
         const types = Object.keys(this.identifiers).filter(
-            (i) => i !== "debug"
+            (i) => i !== "debug",
         );
         let typeIndex = types.reduce((typeIndex, type, index) => {
             return type === this.type ? index : typeIndex;
@@ -1114,7 +1119,9 @@ class Gamepad {
         window.history.replaceState(
             {},
             document.title,
-            query ? `${window.location.pathname}?${query}` : window.location.pathname
+            query
+                ? `${window.location.pathname}?${query}`
+                : window.location.pathname,
         );
     }
 

@@ -35,7 +35,7 @@
                    <div class="value" data-axis="${axisIndex}"></div>
                </div>
             </div>
-        `
+        `,
         );
     }
 
@@ -53,7 +53,7 @@
                    <div class="value" data-button="${buttonIndex}"></div>
                </div>
             </div>
-        `
+        `,
         );
     }
 
@@ -71,7 +71,7 @@
 
     function updateElem($elem, precision = 2) {
         const value = parseFloat($elem.getAttribute("data-value")).toFixed(
-            precision
+            precision,
         );
         $elem.textContent = value;
         const color = Math.floor(255 * 0.3 + 255 * 0.7 * Math.abs(value));

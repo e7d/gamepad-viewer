@@ -220,15 +220,21 @@ kbd[title],
 }
 
 kbd {
-    -moz-box-shadow: inset 0 0 1px rgb(150, 150, 150),
-        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+    -moz-box-shadow:
+        inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80),
+        0 0.1em 0 rgb(30, 30, 30),
         0 0.1em 0.1em rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: inset 0 0 1px rgb(150, 150, 150),
-        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+    -webkit-box-shadow:
+        inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80),
+        0 0.1em 0 rgb(30, 30, 30),
         0 0.1em 0.1em rgba(0, 0, 0, 0.3);
     background: rgb(80, 80, 80);
-    box-shadow: inset 0 0 1px rgb(150, 150, 150),
-        inset 0 -0.05em 0.4em rgb(80, 80, 80), 0 0.1em 0 rgb(30, 30, 30),
+    box-shadow:
+        inset 0 0 1px rgb(150, 150, 150),
+        inset 0 -0.05em 0.4em rgb(80, 80, 80),
+        0 0.1em 0 rgb(30, 30, 30),
         0 0.1em 0.1em rgba(0, 0, 0, 0.3);
     color: rgb(250, 250, 250);
     text-shadow: -1px -1px 0 rgb(70, 70, 70);
