@@ -115,6 +115,7 @@ class Gamepad {
         this.zoomLevel = 1;
         this.updateButton = null;
         this.updateAxis = null;
+        this.updateFrame = null;
         this.mapping = {
             buttons: [],
             axes: [],
@@ -502,8 +503,7 @@ class Gamepad {
      */
     pollGamepads() {
         // get fresh information from DOM about gamepads
-        const gamepads = this.getNavigatorGamepads();
-        if (gamepads !== this.gamepads) this.gamepads = gamepads;
+        this.gamepads = this.getNavigatorGamepads();
     }
 
     /**
@@ -711,6 +711,7 @@ class Gamepad {
         this.zoomLevel = 1;
         this.updateButton = null;
         this.updateAxis = null;
+        this.updateFrame = null;
         this.$gamepad.replaceChildren();
         this.updateColors();
         this.updateTriggers();
@@ -739,6 +740,7 @@ class Gamepad {
         // reset any template-provided update hooks from a previous skin
         this.updateButton = null;
         this.updateAxis = null;
+        this.updateFrame = null;
 
         fetch(`templates/${this.type}/template.html`)
             .then((response) => response.text())
@@ -832,7 +834,7 @@ class Gamepad {
         if (this.disconnectedIndex !== null) return;
 
         // enqueue the next refresh
-        window.requestAnimationFrame(this.pollStatus.bind(this));
+        window.requestAnimationFrame(() => this.pollStatus());
 
         // load latest gamepad data
         this.pollGamepads();
@@ -846,6 +848,25 @@ class Gamepad {
         // actually update the active gamepad graphically
         this.updateButtons(activeGamepad);
         this.updateAxes(activeGamepad);
+
+        // hook the template defined per-frame update method
+        if ("function" === typeof this.updateFrame) {
+            this.updateFrame(activeGamepad);
+        }
+    }
+
+    /**
+     * Writes an attribute only when its value actually changed
+     *
+     * @param {HTMLElement} $element
+     * @param {string} name
+     * @param {*} value
+     */
+    setValue($element, name, value) {
+        const string = String(value);
+        if ($element.getAttribute(name) !== string) {
+            $element.setAttribute(name, string);
+        }
     }
 
     /**
@@ -868,8 +889,8 @@ class Gamepad {
 
             $buttons.forEach(($button) => {
                 // update the display values
-                $button.setAttribute("data-pressed", button.pressed);
-                $button.setAttribute("data-value", button.value);
+                this.setValue($button, "data-pressed", button.pressed);
+                this.setValue($button, "data-value", button.value);
 
                 // hook the template defined button update method
                 if ("function" === typeof this.updateButton) {
@@ -900,16 +921,16 @@ class Gamepad {
             $axes.forEach(($axis) => {
                 // update the display values
                 if ($axis.matches(`[data-axis="${index}"]`)) {
-                    $axis.setAttribute("data-value", axis);
+                    this.setValue($axis, "data-value", axis);
                 }
                 if ($axis.matches(`[data-axis-x="${index}"]`)) {
-                    $axis.setAttribute("data-value-x", axis);
+                    this.setValue($axis, "data-value-x", axis);
                 }
                 if ($axis.matches(`[data-axis-y="${index}"]`)) {
-                    $axis.setAttribute("data-value-y", axis);
+                    this.setValue($axis, "data-value-y", axis);
                 }
                 if ($axis.matches(`[data-axis-z="${index}"]`)) {
-                    $axis.setAttribute("data-value-z", axis);
+                    this.setValue($axis, "data-value-z", axis);
                 }
 
                 // hook the template defined axis update method

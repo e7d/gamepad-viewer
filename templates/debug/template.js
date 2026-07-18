@@ -66,9 +66,11 @@
         updateElem($axis, 6);
     };
 
-    function updateElem($elem, precision = 2) {
+    gamepad.updateFrame = function () {
         updateTimestamp();
+    };
 
+    function updateElem($elem, precision = 2) {
         let value = parseFloat($elem.getAttribute("data-value"), 10).toFixed(
             precision
         );
