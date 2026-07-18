@@ -1,0 +1,17 @@
+[general]
+host = "::"
+port = 8080
+root = "/public"
+compression-static = true
+cache-control-headers = false
+
+[advanced]
+[[advanced.headers]]
+source = "**/*.{html,htm,js,css,svg,json}"
+[advanced.headers.headers]
+Cache-Control = "no-cache"
+
+[[advanced.headers]]
+source = "**/*.{ico,png,jpg,jpeg,gif,webp,woff,woff2}"
+[advanced.headers.headers]
+Cache-Control = "public, max-age=86400"
