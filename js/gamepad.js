@@ -48,6 +48,15 @@ class Gamepad {
             "black",
             "black",
         ];
+        this.haloColors = [
+            "white",
+            "white",
+            "dimgrey",
+            "black",
+            "white",
+            "lime",
+            "magenta",
+        ];
 
         // ensure the GamePad API is available on this browser
         this.assertGamepadAPI();
@@ -91,11 +100,10 @@ class Gamepad {
         this.overlayDelay = 5000;
 
         // active gamepad default values
-        this.scanDelay = 200;
+        this.scanDelay = 50;
         this.isFirstscan = true;
-        this.holdDelay = 1000;
-        this.pressedIndex = null;
-        this.pressedSince = null;
+        this.axisActivityThreshold = 0.5;
+        this.activity = {};
         this.debug = false;
         this.index = null;
         this.disconnectedIndex = null;
@@ -723,31 +731,7 @@ class Gamepad {
                 return;
             }
 
-            // look for any pressed button on this gamepad
-            let pressed = false;
-            for (
-                let buttonIndex = 0;
-                buttonIndex < gamepad.buttons.length;
-                buttonIndex++
-            ) {
-                if (gamepad.buttons[buttonIndex].pressed) {
-                    pressed = true;
-                    break;
-                }
-            }
-            if (!pressed) continue;
-
-            // a reconnecting gamepad resumes right away; a fresh one must have a
-            // button held for at least holdDelay before it activates
-            if (null === this.disconnectedIndex) {
-                if (this.pressedIndex !== gamepad.index) {
-                    this.pressedIndex = gamepad.index;
-                    this.pressedSince = Date.now();
-                    return;
-                }
-                if (Date.now() - this.pressedSince < this.holdDelay) return;
-            }
-            this.pressedIndex = null;
+            if (!this.hasNewActivity(gamepad)) continue;
 
             this.map(gamepad.index);
 
@@ -766,9 +750,36 @@ class Gamepad {
 
             return;
         }
+    }
 
-        // no gamepad button held: reset the hold tracking
-        this.pressedIndex = null;
+    /**
+     * Tells whether a gamepad was just acted upon
+     *
+     * @param {object} gamepad
+     * @returns {boolean}
+     */
+    hasNewActivity(gamepad) {
+        const previous = this.activity[gamepad.index];
+        const buttons = [];
+        const axes = [];
+        let isActive = false;
+
+        for (let index = 0; index < gamepad.buttons.length; index++) {
+            buttons[index] = gamepad.buttons[index].pressed;
+            if (previous && buttons[index] && !previous.buttons[index]) {
+                isActive = true;
+            }
+        }
+        for (let index = 0; index < gamepad.axes.length; index++) {
+            axes[index] =
+                Math.abs(gamepad.axes[index]) > this.axisActivityThreshold;
+            if (previous && axes[index] && !previous.axes[index]) {
+                isActive = true;
+            }
+        }
+        this.activity[gamepad.index] = { buttons, axes };
+
+        return isActive;
     }
 
     /**
@@ -1108,6 +1119,10 @@ class Gamepad {
                 ? "url(css/transparent-bg.png)"
                 : this.backgroundStyleName;
         this.$body.style.color = this.textColors[this.backgroundStyleIndex];
+        this.$body.style.setProperty(
+            "--gv-halo",
+            this.haloColors[this.backgroundStyleIndex],
+        );
 
         // update current settings
         this.updateUrlParams({ background: this.backgroundStyleName });

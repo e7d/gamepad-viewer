@@ -10,6 +10,7 @@
     --gv-accent-ring: oklch(0.82 0.27 145 / 0.4);
     --gv-radius: 12px;
     --gv-radius-sm: 8px;
+    --gv-halo: white;
     --gv-shadow: 0 12px 34px oklch(0 0 0 / 0.5), 0 3px 10px oklch(0 0 0 / 0.4);
 }
 
@@ -116,22 +117,27 @@ body.unsupported #unsupported {
     pointer-events: none;
 }
 
-#placeholder svg {
-    height: 90%;
-    left: 50%;
-    max-width: 600px;
+#placeholder-frame {
     position: absolute;
+    left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
+}
+
+#placeholder svg {
+    display: block;
+    width: min(90vw, 600px, (100vh - 240px) * (549.3125 / 367.98749));
+    height: auto;
 }
 
 #placeholder-instructions {
     position: absolute;
+    bottom: 10%;
     left: 50%;
-    top: 73%;
     transform: translateX(-50%);
-    text-align: center;
+    width: max-content;
+    paint-order: stroke fill;
+    -webkit-text-stroke: 2px var(--gv-halo);
 }
 
 #placeholder #a-button path {
